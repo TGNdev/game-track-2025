@@ -4,8 +4,6 @@ import { GameProvider } from "./components/contexts/GameContext";
 import AnimatedRoutes from "./routes/AnimatedRoutes";
 
 const App = () => {
-  document.title = process.env.REACT_APP_TITLE;
-
   return (
     <GameProvider>
       <HashRouter>
