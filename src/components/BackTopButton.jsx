@@ -18,7 +18,7 @@ export default function BackToTopButton() {
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       className={`fixed bottom-7 right-7 bg-blue-500 text-white flex justify-center items-center text-lg
         rounded-full shadow-lg h-14 w-14 sm:w-32 transition-all duration-300 ease-in-out transform
-        ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5 pointer-events-none"}`}
+        ${isVisible ? "opacity-100 translate-y-0 z-50" : "opacity-0 translate-y-5 pointer-events-none"}`}
       aria-label="Back to top"
     >
       <div className="hidden sm:block">Back to top</div>

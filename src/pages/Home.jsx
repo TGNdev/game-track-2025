@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { collection, onSnapshot, query, Timestamp, where } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../js/firebase";
 import { FaPlus, FaSignOutAlt } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
@@ -24,21 +24,6 @@ const Home = () => {
   } = useGame();
 
   useEffect(() => {
-    //Testing multiple featured games
-    //const june5Start = Timestamp.fromDate(new Date("2025-06-05T00:00:00"));
-    //const june6Start = Timestamp.fromDate(new Date("2025-06-06T00:00:00"));
-
-    //const q = query(
-    //  collection(db, "games"),
-    //  where("release_date", ">=", june5Start),
-    //  where("release_date", "<", june6Start)
-    //);
-
-    //const unsub = onSnapshot(q, (snapshot) => {
-    //  const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    //  setGames(list);
-    //});
-
     const unsub = onSnapshot(collection(db, "games"), snapshot => {
       const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setGames(list);

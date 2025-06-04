@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { Timestamp } from "firebase/firestore";
 import { FaPlus, FaFilter } from "react-icons/fa";
 import { useGame } from "./contexts/GameContext";
+import FeaturedGames from "./FeaturedGames";
 
 const GamesView = ({ games, openButtonRef }) => {
   const {
@@ -150,18 +151,6 @@ const GamesView = ({ games, openButtonRef }) => {
     }
   }, [isModalOpen]);
 
-  const getReleaseMessage = releaseDate => {
-    const today = new Date();
-    const release = new Date(releaseDate.seconds * 1000);
-    const diffTime = release - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) return "Releases today !";
-    if (diffDays === 1) return "Releases tomorrow";
-    if (diffDays > 1) return `Releases in ${diffDays} days`;
-    return "Already released";
-  };
-
   const useOutsideClick = (callback, exceptions = []) => {
     const ref = useRef();
   
@@ -188,91 +177,9 @@ const GamesView = ({ games, openButtonRef }) => {
   
   const modalRef = useOutsideClick(handleCloseModal, [openButtonRef]);
 
-
-  const featured = games.reduce((closest, game) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const release = new Date(game.release_date.seconds * 1000);
-    const releaseDate = new Date(release);
-    releaseDate.setHours(0, 0, 0, 0);
-
-    const diffTime = releaseDate - today;
-
-    if (
-      diffTime >= 0 &&
-      (closest === null || diffTime < closest.diffTime)
-    ) {
-      return { game, diffTime };
-    }
-
-    return closest;
-  }, null)?.game;
-
   return (
     <>
-      {/* Featured section */}
-      {featured && (
-        <div className="flex flex-col items-center w-full border rounded-xl">
-          <div className="text-2xl font-semibold italic mt-2">Next release</div>
-          <div className="w-full p-5 flex flex-col gap-3 justify-between">
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-row items-center justify-between w-full">
-                <div className="flex flex-col">
-                  <h2 className="text-lg font-bold">{featured.name}</h2>
-                  <div className="flex flex-row gap-1 text-sm text-slate-500">
-                    <div>By</div>
-                    {featured.developers.map((dev, index) => (
-                      <div key={`featured-${dev.name}`} className="font-semibold">
-                        {dev.name}
-                        {index < featured.developers.length - 2
-                          ? ", "
-                          : index === featured.developers.length - 2
-                            ? " & "
-                            : ""}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-row items-center justify-between">
-                <button
-                  onClick={() => {
-                    const element = document.getElementById(`game-${featured.id}`);
-                    if (element) {
-                      element.scrollIntoView({ behavior: "smooth", block: "center" });
-                      setFeaturedOpen(featured.id);
-                    }
-                  }}
-                  className="self-start bg-blue-500 text-white text-sm px-3 py-1.5 rounded-md hover:scale-105 transition hidden sm:block"
-                >
-                  View Game
-                </button>
-                <button
-                  onClick={() => {
-                    const element = document.getElementById(`gamecard-${featured.id}`);
-                    if (element) {
-                      element.scrollIntoView({ behavior: "smooth", block: "center" });
-                      setFeaturedOpen(featured.id);
-                    }
-                  }}
-                  className="self-start bg-blue-500 text-white text-sm px-3 py-1.5 rounded-md hover:scale-105 transition block sm:hidden"
-                >
-                  View Game
-                </button>
-                <span
-                  className={`px-2 py-1 sm:px-4 text-sm sm:text-base rounded-full font-semibold text-center ${getReleaseMessage(featured.release_date) === "Releases today !"
-                    ? "bg-green-200 text-green-700"
-                    : "bg-amber-200 text-amber-700"
-                    }`}
-                >
-                  {getReleaseMessage(featured.release_date)}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <FeaturedGames games={games} />
 
       <div className="w-full flex justify-center mt-6">
         <div className="flex flex-row w-full gap-4 items-center justify-center">
