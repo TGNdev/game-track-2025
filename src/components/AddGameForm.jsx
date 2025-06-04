@@ -136,6 +136,7 @@ const AddGameForm = ({ games, onSuccess }) => {
       setAddNew(false);
     } catch (err) {
       console.error("Failed to add game:", err);
+      toast.error(err.message || "Failed to add game.");
     }
   };
 
