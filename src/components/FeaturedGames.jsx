@@ -95,7 +95,7 @@ const FeaturedGames = ({ games }) => {
         ))}
       </div>
       {showAll && (
-        <div className="w-full max-h-[400px] overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+        <div className="w-full max-h-[400px] overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-4">
           {otherRows.map(featured => (
             <FeaturedGame key={featured.id} featured={featured} />
           ))}
