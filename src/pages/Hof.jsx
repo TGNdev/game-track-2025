@@ -40,7 +40,15 @@ const Hof = () => {
   return (
     <Layout>
       <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-8">
-        <h2 className="text-2xl font-bold text-center">Hall Of Fame</h2>
+        <div className="text-center">
+          <h2 className="text-2xl font-bold">Hall Of Fame</h2>
+          <p className="text-sm italic text-slate-500">
+            Based on{" "}
+            <span className="font-semibold">{ratedGames.length}</span>{" "}
+            eligible games on{" "}
+            <span className="font-semibold">{process.env.REACT_APP_TITLE}</span>
+          </p>
+        </div>
         <div>
           {unratedCount > 0 && (
             <p className="mb-6 text-center text-sm text-yellow-700 bg-yellow-100 rounded-md py-2 px-4">
@@ -101,10 +109,15 @@ const Hof = () => {
                         </span>
                       )}
                       <div className="flex-1 min-w-0">
-                        <a href={game.link} className="font-semibold text-xl truncate hover:scale-105">
+                        <a
+                          target="_blank"
+                          rel="noreferrer"
+                          href={game.link}
+                          className="font-semibold text-xl hover:scale-110 transition"
+                        >
                           {game.name}
                         </a>
-                        <div className="text-gray-500 truncate">
+                        <div className="text-gray-500">
                           {game.developers.map((dev, index) => (
                             <div key={`featured-${dev.name}`} className="font-semibold">
                               {dev.name}
