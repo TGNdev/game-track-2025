@@ -33,7 +33,7 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
     remaster: "Remaster",
     port: "Port / Re-release",
   };
-  const enabledTags = Object.keys(game.tags).filter(t => game.tags[t]);
+  const enabledTags = Object.keys(game.tags || {}).filter(t => game.tags && game.tags[t]);
 
   useEffect(() => {
     setIsOpen(opened || forceOpen);

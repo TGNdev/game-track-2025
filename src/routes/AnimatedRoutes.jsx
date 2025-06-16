@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import Home from "../pages/Home";
 import RedditFeed from "../pages/RedditFeed";
 import PageFade from "../components/PageFade";
+import Hof from "../pages/Hof";
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -24,6 +25,14 @@ const AnimatedRoutes = () => {
           element={
             <PageFade>
               <RedditFeed />
+            </PageFade>
+          }
+        />
+        <Route
+          path="/hall-of-fame"
+          element={
+            <PageFade>
+              <Hof />
             </PageFade>
           }
         />

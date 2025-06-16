@@ -1,0 +1,146 @@
+import { useEffect, useState } from "react";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../js/firebase";
+import Layout from "../components/Layout";
+
+const Hof = () => {
+  const [games, setGames] = useState([]);
+
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "games"), snapshot => {
+      const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setGames(list);
+    });
+
+    return () => unsub();
+  }, []);
+
+  const uniqueGamesMap = new Map();
+  games.forEach(game => {
+    if (!uniqueGamesMap.has(game.name)) {
+      uniqueGamesMap.set(game.name, game);
+    }
+  });
+  const uniqueGames = Array.from(uniqueGamesMap.values());
+
+  const ratedGames = uniqueGames.filter(
+    (game) =>
+      game.ratings.critics > 0 ||
+      game.ratings.players > 0
+  );
+
+  const podiumColors = {
+    1: "text-yellow-500 border-yellow-500",
+    2: "text-gray-400 border-gray-400",
+    3: "text-amber-700 border-amber-700",
+  };
+
+  const unratedCount = games.length - ratedGames.length;
+
+  return (
+    <Layout>
+      <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-8">
+        <h2 className="text-2xl font-bold text-center">Hall Of Fame</h2>
+        <div>
+          {unratedCount > 0 && (
+            <p className="mb-6 text-center text-sm text-yellow-700 bg-yellow-100 rounded-md py-2 px-4">
+              There {unratedCount === 1 ? "is" : "are"} still{" "}
+              <span className="font-semibold">{unratedCount}</span>{" "}
+              game{unratedCount === 1 ? "" : "s"} that need to receive critics or players rating.
+            </p>
+          )}
+
+          {ratedGames.length === 0 ? (
+            <p className="text-center text-gray-500 text-lg">
+              No rated games available yet.
+            </p>
+          ) : (
+            <ol className="relative space-y-12">
+              {[...ratedGames]
+                .sort((a, b) => {
+                  const aCritic = a.ratings.critics;
+                  const bCritic = b.ratings.critics;
+                  if (bCritic !== aCritic) return bCritic - aCritic;
+
+                  const aPlayer = a.ratings.players;
+                  const bPlayer = b.ratings.players;
+                  return bPlayer - aPlayer;
+                })
+                .map((game, idx) => {
+                  const rank = idx + 1;
+                  const isPodium = rank <= 3;
+
+                  return (
+                    <li
+                      key={game.id}
+                      className={`bg-white rounded-lg shadow-md p-5 flex flex-col md:items-center md:flex-row gap-4 md:gap-6 hover:shadow-lg transition-shadow ${isPodium ? "relative" : ""
+                        }`}
+                    >
+                      {isPodium ? (
+                        <div
+                          className="flex flex-col items-center justify-center select-none"
+                          style={{
+                            width: rank === 1 ? 60 : 50,
+                            height: rank === 1 ? 100 : 80,
+                            marginBottom: rank === 1 ? -12 : -4,
+                          }}
+                        >
+                          <div
+                            className={`font-extrabold ${podiumColors[rank]} text-center rounded-full border-2 px-2 py-1`}
+                            style={{
+                              fontSize: rank === 1 ? 36 : 28,
+                              lineHeight: 1,
+                            }}
+                          >
+                            #{rank}
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-lg font-bold text-gray-400 w-10 text-center select-none">
+                          #{rank}
+                        </span>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <a href={game.link} className="font-semibold text-xl truncate hover:scale-105">
+                          {game.name}
+                        </a>
+                        <div className="text-gray-500 truncate">
+                          {game.developers.map((dev, index) => (
+                            <div key={`featured-${dev.name}`} className="font-semibold">
+                              {dev.name}
+                              {index < game.developers.length - 2
+                                ? ", "
+                                : index === game.developers.length - 2
+                                  ? " & "
+                                  : ""}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-end space-y-1 text-sm text-gray-700 min-w-[100px]">
+                        <div>
+                          <span className="font-semibold text-indigo-600">
+                            Critics:
+                          </span>{" "}
+                          {game.ratings.critics}
+                        </div>
+                        <div>
+                          <span className="font-semibold text-indigo-600">
+                            Players:
+                          </span>{" "}
+                          {game.ratings.players}
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+            </ol>
+          )}
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default Hof;
