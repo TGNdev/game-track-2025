@@ -27,6 +27,13 @@ const getPlatformsSvg = (platform) => {
 
 const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen, setGameToEdit }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const tagsLabels = {
+    dlc: "DLC / Expansion",
+    remake: "Remake",
+    remaster: "Remaster",
+    port: "Port / Re-release",
+  };
+  const enabledTags = Object.keys(game.tags).filter(t => game.tags[t]);
 
   useEffect(() => {
     setIsOpen(opened || forceOpen);
@@ -41,8 +48,10 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
   const platforms = Object.keys(game.platforms).filter(p => game.platforms[p]);
 
   return (
-    <div id={`gamecard-${game.id}`} className={`${forceOpen ? "" : ""} bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 relative`}>
-      {/* Header (Toggle) */}
+    <div
+      id={`gamecard-${game.id}`}
+      className={`${forceOpen ? "" : ""} bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 relative`}
+    >
       <button
         className="w-full flex justify-between items-center px-7 pt-7 pb-3 text-left bg-slate-100 hover:bg-slate-200 transition"
         onClick={() => {
@@ -70,24 +79,39 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
         />
       </button>
 
-      <div className="absolute top-0 left-0 flex flex-row">
-        {/* Released badge */}
-        {isReleased() ? (
-          <div className="bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 z-20">
-            Released
+      <div className="absolute top-0 left-0 flex flex-row justify-between w-full">
+        <div className="flex flex-row">
+          {/* Released badge */}
+          {isReleased() ? (
+            <div className="bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 z-20">
+              Released
+            </div>
+          ) : (
+            <div className="bg-amber-400 text-white text-xs font-bold px-1.5 py-0.5 z-20">
+              Coming soon
+            </div>
+          )}
+          <div className="flex flex-row items-center h-5">
+            {platforms.sort().map((platform, idx) => (
+              <span key={idx}>
+                {getPlatformsSvg(platform)}
+              </span>
+            ))}
           </div>
-        ) : (
-          <div className="bg-amber-400 text-white text-xs font-bold px-1.5 py-0.5 z-20">
-            Coming soon
+        </div>
+        {enabledTags.length > 0 && (
+          <div className="flex items-center justify-center divide-x-2">
+            {enabledTags.map((tag, idx) => (
+              <span
+                key={idx}
+                className="whitespace-nowrap text-xs bg-blue-500 text-white px-1.5 py-0.5 font-semibold"
+                title={tag}
+              >
+                {tagsLabels[tag]}
+              </span>
+            ))}
           </div>
         )}
-        <div className="flex flex-row items-center h-5">
-          {platforms.sort().map((platform, idx) => (
-            <span key={idx}>
-              {getPlatformsSvg(platform)}
-            </span>
-          ))}
-        </div>
       </div>
 
       {/* Content drawer */}

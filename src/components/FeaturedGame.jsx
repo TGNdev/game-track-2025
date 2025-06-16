@@ -7,7 +7,6 @@ const FeaturedGame = ({ featured }) => {
 
   return (
     <div
-      key={featured.id}
       className="flex flex-col gap-3 bg-white rounded-lg border p-5 shadow-lg"
     >
       <div className="flex flex-col h-full justify-between gap-4">

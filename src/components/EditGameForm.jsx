@@ -8,12 +8,19 @@ import isEqual from "lodash.isequal";
 import Modal from "./Modal";
 
 const platformOptions = ["pc", "ps", "xbox", "switch", "switch_2"];
+const tagsOptions = ["dlc", "remake", "remaster", "port"];
 const platformLabels = {
   pc: "PC",
   ps: "PlayStation",
   xbox: "Xbox Series",
   switch: "Nintendo Switch",
   switch_2: "Nintendo Switch 2",
+};
+const tagsLabels = {
+  dlc: "DLC / Expansion",
+  remake: "Remake",
+  remaster: "Remaster",
+  port: "Port / Re-release",
 };
 
 const EditGameForm = ({ game, games, onSuccess }) => {
@@ -28,6 +35,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
     editors: game.editors || [{ name: "", link: "" }],
     platforms: game.platforms || platformOptions.reduce((acc, p) => ({ ...acc, [p]: false }), {}),
     ratings: game.ratings || { critics: 0, players: 0, link: "" },
+    tags: game.tags || tagsOptions.reduce((acc, tag) => ({ ...acc, [tag]: false }), {}),
   });
 
   const [form, setForm] = useState(getInitialFormState());
@@ -77,6 +85,16 @@ const EditGameForm = ({ game, games, onSuccess }) => {
     }));
   };
 
+  const handleTagToggle = (tag) => {
+    setForm((prev) => ({
+      ...prev,
+      tags: {
+        ...prev.tags,
+        [tag]: !prev.tags[tag],
+      },
+    }));
+  };
+
   const updateEntry = (type, index, field, value) => {
     const updated = [...form[type]];
     updated[index][field] = value;
@@ -96,13 +114,15 @@ const EditGameForm = ({ game, games, onSuccess }) => {
     const errs = {};
     if (!form.name) errs.name = "Name is required";
     if (!form.link) errs.link = "Link is required";
-    if (form.developers.length === 0 || form.developers.some(d => !d.name || !d.link)) {
+    if (form.developers.length === 0) errs.developers = "Enter at least one developer";
+    if (form.developers.some(dev => !dev.name || !dev.link)) {
       errs.developers = "All developers must have a name and a link";
     }
-    if (form.editors.length === 0 || form.editors.some(e => !e.name || !e.link)) {
+    if (form.editors.length === 0) errs.editors = "Enter at least one editor";
+    if (form.editors.some(ed => !ed.name || !ed.link)) {
       errs.editors = "All editors must have a name and a link";
     }
-    if (!form.releaseDate) errs.releaseDate = "Release date is required";
+    if (!form.releaseDate) errs.releaseDate = "Release date is required"
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -126,6 +146,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
         editors: form.editors,
         platforms: form.platforms,
         ratings: form.ratings,
+        tags: form.tags,
       });
 
       toast.success("Game updated successfully!");
@@ -143,7 +164,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
         {/* General Info */}
         <div className="flex flex-col gap-4">
           <div className="flex flex-col">
-            <label className="block text-sm mb-2">Name</label>
+            <label className="block text-sm mb-2 font-semibold">Name</label>
             <input
               className="px-4 py-2 rounded border"
               name="name"
@@ -155,7 +176,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-sm mb-2">Link</label>
+            <label className="block text-sm mb-2 font-semibold">Link</label>
             <input
               className="px-4 py-2 rounded border"
               name="link"
@@ -167,7 +188,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-sm mb-2">Release date</label>
+            <label className="block text-sm mb-2 font-semibold">Release date</label>
             <div className="flex flex-row justify-between gap-4">
               <input
                 type={`${releaseTba ? "text" : "date"}`}
@@ -187,11 +208,30 @@ const EditGameForm = ({ game, games, onSuccess }) => {
             </div>
             {errors.releaseDate && <span className="text-red-500 text-sm">{errors.releaseDate}</span>}
           </div>
+
+          <div>
+            <label className="block text-sm mb-2 font-semibold">Tags</label>
+            <div className="flex flex-wrap gap-2">
+              {tagsOptions.map((tag) => (
+                <button
+                  type="button"
+                  key={tag}
+                  onClick={() => handleTagToggle(tag)}
+                  className={`px-3 py-1 rounded-full border text-sm hover:bg-blue-100 transition ${
+                    form.tags[tag] ? "bg-blue-500 text-white hover:bg-blue-400" : ""
+                  }`}
+                >
+                  {tagsLabels[tag]}
+                </button>
+              ))}
+            </div>
+            {errors.tags && <span className="text-red-500 text-sm">{errors.tags}</span>}
+          </div>
         </div>
 
         {/* Developers */}
         <div>
-          <label className="block text-sm mb-2">Developers</label>
+          <label className="block text-sm mb-2 font-semibold">Developers</label>
           {form.developers.map((dev, i) => (
             <div key={i} className="flex flex-row gap-2 mb-2 items-center">
               <div className="relative w-full">
@@ -250,7 +290,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
 
         {/* Editors */}
         <div>
-          <label className="block text-sm mb-2">Editors</label>
+          <label className="block text-sm mb-2 font-semibold">Editors</label>
           {form.editors.map((ed, i) => (
             <div key={i} className="flex flex-row gap-2 mb-2 items-center">
               <div className="relative w-full">
@@ -307,7 +347,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
 
         {/* Platforms */}
         <div>
-          <label className="block text-sm mb-2">Platforms</label>
+          <label className="block text-sm mb-2 font-semibold">Platforms</label>
           <div className="flex flex-wrap gap-2">
             {platformOptions.map((platform) => (
               <button
@@ -327,7 +367,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
 
         {/* Ratings */}
         <div>
-          <label className="block text-sm mb-2">Ratings</label>
+          <label className="block text-sm mb-2 font-semibold">Ratings</label>
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col">
               <label className="text-xs mb-1" htmlFor="ratings.critics">Critics</label>
