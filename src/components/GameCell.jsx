@@ -47,27 +47,54 @@ function GameCell({ game }) {
   }, [game.tags, game.release_date]);
 
   return (
-    <td className="p-3 sticky left-0 bg-white z-20">
-      <div className="w-fit">
-        {activeTags.map((tag, index) => (
-          <div
-            key={tag.key}
-            ref={(el) => (tagRefs.current[index] = el)}
-            className={`absolute top-0 z-30 ${tag.color} text-white whitespace-nowrap text-xs font-bold px-2 py-1 rounded transform -rotate-12 shadow-lg`}
-            style={{
-              left: `${tagLefts[index] || 0}px`,
-              transformOrigin: "left top",
-            }}
-          >
-            {tag.label}
+    <td className="p-3 sticky left-0 bg-white z-20 w-64">
+      <div className="relative flex items-center text-left gap-8">
+        {/* Tags */}
+        <div className="absolute -top-4 left-0 z-30">
+          {activeTags.map((tag, index) => (
+            <div
+              key={tag.key}
+              ref={(el) => (tagRefs.current[index] = el)}
+              className={`absolute ${tag.color} text-white whitespace-nowrap text-xs font-bold px-2 py-1 rounded transform -rotate-12 shadow-lg`}
+              style={{
+                left: `${tagLefts[index] || 0}px`,
+                transformOrigin: "left top",
+              }}
+            >
+              {tag.label}
+            </div>
+          ))}
+        </div>
+        <div className="relative size-14 overflow-visible shrink-0">
+          {game.cover ? (
+            <img
+              src={game.cover}
+              loading="lazy"
+              alt={`${game.name} cover`}
+              className="absolute w-full h-full object-cover rounded shadow-md"
+              style={{
+                transformOrigin: "left center",
+                willChange: "transform",
+              }}
+            />
+          ) : (
+            <div
+              className="absolute w-full h-full bg-gray-300 rounded shadow-md flex items-center justify-center"
+              style={{
+                transformOrigin: "left center",
+                willChange: "transform",
+              }}
+            >
+              <span className="text-xs text-gray-500">No image</span>
+            </div>
+          )}
+        </div>
+        <a target="_blank" rel="noreferrer" href={game.link}>
+          <div className="hover:scale-105 transition text-base font-semibold text-black">
+            {game.name}
           </div>
-        ))}
+        </a>
       </div>
-
-      {/* Game name with link */}
-      <a target="_blank" rel="noreferrer" href={game.link}>
-        <div className="hover:scale-110 transition text-base">{game.name}</div>
-      </a>
     </td>
   );
 }

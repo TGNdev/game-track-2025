@@ -44,7 +44,7 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
     const releaseDate = new Date(game.release_date.seconds * 1000);
     return releaseDate < today;
   };
-  
+
   const platforms = Object.keys(game.platforms).filter(p => game.platforms[p]);
 
   return (
@@ -67,15 +67,15 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
           <span className="text-xs">
             {game.release_date?.seconds
               ? new Date(game.release_date.seconds * 1000).toLocaleDateString("en-EN", {
-                  day: "2-digit",
-                  month: "long",
-                  year: "numeric",
-                })
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })
               : game.release_date || "Unknown"}
           </span>
         </div>
         <FiChevronDown
-          className={`text-xl transform transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+          className={`text-xl absolute right-4 top-8 size-6 transform transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -116,27 +116,43 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
 
       {/* Content drawer */}
       <div
-        className={`grid transition-all duration-500 ease-in-out overflow-hidden border-x ${
-          isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-        }`}
+        className={`grid transition-all duration-500 ease-in-out overflow-hidden border-x ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+          }`}
+        style={{
+          backgroundImage: game.cover ? `url(${game.cover})` : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          position: "relative",
+          zIndex: 0,
+        }}
       >
-        <div className="min-h-0">
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "rgba(255,255,255,0.65)",
+            zIndex: 1,
+            borderRadius: "inherit",
+          }}
+        />
+        <div className="min-h-0 relative z-10">
           <div className="p-4 flex flex-row gap-6 relative">
             <div className="flex flex-1 flex-col gap-6">
               {/* Developers */}
-              <div className="flex flex-col gap-1 text-sm pt-2">
+              <div className="flex flex-col gap-1 w-fit text-sm pt-2">
                 <div className="font-semibold">Developers :</div>
                 {game.developers.map((dev, idx) => (
-                  <a target="_blank" rel="noreferrer" href={dev.link} key={idx} className="hover:scale-105 transition">{dev.name}</a>
+                  <a target="_blank" rel="noreferrer" href={dev.link} key={idx} className="hover:scale-110 transition">{dev.name}</a>
                 ))}
               </div>
 
 
               {/* Editors */}
-              <div className="flex flex-col gap-1 text-sm pt-2">
+              <div className="flex flex-col gap-1 w-fit text-sm pt-2">
                 <div className="font-semibold">Editors :</div>
                 {game.editors.map((edit, idx) => (
-                  <a target="_blank" rel="noreferrer" href={edit.link} key={idx} className="hover:scale-105 transition">{edit.name}</a>
+                  <a target="_blank" rel="noreferrer" href={edit.link} key={idx} className="hover:scale-110 transition">{edit.name}</a>
                 ))}
               </div>
 
@@ -155,17 +171,17 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
             </div>
 
             {/* Ratings */}
-            <div className="w-1/3 flex flex-col items-center justify-center gap-3">
+            <div className="max-w-fit flex flex-col items-center justify-center gap-3">
               {["critics", "players"].map((type, idx) => {
                 const rating = game.ratings[type];
                 const bgClass = rating == 0 ? "bg-gray-300" :
                   rating < 70 ? "bg-red-500" :
-                  rating < 80 ? "bg-amber-400" :
-                  rating < 90 ? "bg-green-400" : "bg-green-600";
+                    rating < 80 ? "bg-amber-400" :
+                      rating < 90 ? "bg-green-400" : "bg-green-600";
                 const ringClass = rating == 0 ? "bg-gray-400" :
                   rating < 70 ? "bg-red-600" :
-                  rating < 80 ? "bg-amber-500" :
-                  rating < 90 ? "bg-green-500" : "bg-green-700";
+                    rating < 80 ? "bg-amber-500" :
+                      rating < 90 ? "bg-green-500" : "bg-green-700";
 
                 return (
                   <div key={idx} className={`rounded-full p-1 ${ringClass}`}>
@@ -182,10 +198,10 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
               })}
               {game.ratings.link ? (
                 <a target="_blank" rel="noreferrer" href={game.ratings.link} className="text-center">
-                  <div className="text-xs text-slate-500 hover:scale-110 transition"><span className="font-normal">Details on</span> <span className="font-bold">OpenCritic</span></div>
+                  <div className="text-xs hover:scale-110 transition"><span className="font-normal">Details on</span> <span className="font-bold">OpenCritic</span></div>
                 </a>
               ) : (
-                <div className="text-center text-xs text-slate-500">Edit to add link</div>
+                <div className="text-center text-xs">Edit to add link</div>
               )}
             </div>
           </div>

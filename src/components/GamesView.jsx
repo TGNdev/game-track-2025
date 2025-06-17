@@ -293,7 +293,7 @@ const GamesView = ({ games, openButtonRef }) => {
       {/* Table */}
       <div className="flex-col max-w-full overflow-x-auto hidden sm:flex mt-4">
         <div className="relative">
-          <table className="w-full table-fixed border-collapse min-w-[900px]">
+          <table className="w-full border-collapse min-w-[900px]">
             <thead className="border-b">
               <tr>
                 <th className="p-3 sticky left-0 bg-white z-10">Name</th>
