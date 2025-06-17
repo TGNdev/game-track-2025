@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../js/firebase";
 import Layout from "../components/Layout";
+import { getGamesFromFirestore } from "../js/firebase";
 
 const Hof = () => {
   const [games, setGames] = useState([]);
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, "games"), snapshot => {
-      const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setGames(list);
-    });
+    const fetchGames = async () => {
+      try {
+        const gamesList = await getGamesFromFirestore();
+        setGames(gamesList);
+      } catch (error) {
+        console.error("Error fetching games:", error);
+      }
+    };
 
-    return () => unsub();
+    fetchGames();
   }, []);
 
   const uniqueGamesMap = new Map();

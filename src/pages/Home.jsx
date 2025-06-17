@@ -1,6 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../js/firebase";
 import { FaPlus, FaSignOutAlt } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
 import { ToastContainer } from "react-toastify";
@@ -8,6 +6,7 @@ import GamesView from "../components/GamesView"
 import EventsView from "../components/EventsView"
 import { useGame } from "../components/contexts/GameContext";
 import Layout from "../components/Layout";
+import { getGamesFromFirestore } from "../js/firebase";
 
 const Home = () => {
   const [games, setGames] = useState([]);
@@ -24,12 +23,16 @@ const Home = () => {
   } = useGame();
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, "games"), snapshot => {
-      const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setGames(list);
-    })
+    const fetchGames = async () => {
+      try {
+        const gamesList = await getGamesFromFirestore();
+        setGames(gamesList);
+      } catch (error) {
+        console.error("Error fetching games:", error);
+      }
+    };
 
-    return () => unsub();
+    fetchGames();
   }, []);
 
   const handleViewSwitch = (toGames) => {

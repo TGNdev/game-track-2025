@@ -22,11 +22,20 @@ const EventsView = () => {
 
         const today = new Date();
         const futureEvent = events.find(e => new Date(e.start) >= today);
-        const initialDate = futureEvent ? new Date(futureEvent.start) : new Date(events[0].start);
-        const initialWeekStart = getStartOfWeek(initialDate);
+
+        let initialDate;
+        let initialWeekStart;
+        if (futureEvent) {
+          initialDate = new Date(futureEvent.start);
+          initialWeekStart = getStartOfWeek(initialDate);
+          setFirstFutureWeekStart(initialWeekStart);
+        } else {
+          initialDate = today;
+          initialWeekStart = getStartOfWeek(today);
+          setFirstFutureWeekStart(null);
+        }
 
         setCurrentWeekStart(initialWeekStart);
-        setFirstFutureWeekStart(initialWeekStart);
         initialWeekStartRef.current = initialWeekStart;
       })
       .catch(console.error);

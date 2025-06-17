@@ -19,6 +19,18 @@ const db = initializeFirestore(app, {
     }),
 });
 
+export const getGamesFromFirestore = async () => {
+    try {
+        const gamesRef = collection(db, "games");
+        const querySnapshot = await getDocs(gamesRef);
+        const gamesList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return gamesList;
+    } catch (e) {
+        console.error("Error fetching games: ", e);
+        throw e;
+    }
+}
+
 export const addGameToFirestore = async (gameData) => {
   try {
     const gamesRef = collection(db, "games");
