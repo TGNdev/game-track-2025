@@ -66,16 +66,16 @@ const Hof = () => {
               No rated games available yet.
             </p>
           ) : (
-            <ol className="relative space-y-12">
+            <ol className="space-y-6">
               {[...ratedGames]
                 .sort((a, b) => {
                   const aCritic = a.ratings.critics;
                   const bCritic = b.ratings.critics;
                   if (bCritic !== aCritic) return bCritic - aCritic;
-
-                  const aPlayer = a.ratings.players;
-                  const bPlayer = b.ratings.players;
-                  return bPlayer - aPlayer;
+                  const aPlayers = a.ratings.players;
+                  const bPlayers = b.ratings.players;
+                  if (bPlayers !== aPlayers) return bPlayers - aPlayers;
+                  return a.name.localeCompare(b.name);
                 })
                 .map((game, idx) => {
                   const rank = idx + 1;
@@ -84,84 +84,71 @@ const Hof = () => {
                   return (
                     <li
                       key={game.id}
-                      className={`bg-white rounded-lg shadow-md h-40 p-5 flex flex-col md:items-center md:flex-row gap-4 md:gap-6 hover:shadow-lg transition-shadow ${isPodium ? "relative" : ""}`}
-                      style={{
-                        backgroundImage: game.cover ? `url(${game.cover})` : undefined,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        backgroundRepeat: "no-repeat",
-                        position: "relative",
-                        zIndex: 0,
-                      }}
+                      className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row transition hover:shadow-lg relative"
                     >
-                      <div
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          background: "rgba(255,255,255,0.70)",
-                          zIndex: 1,
-                          borderRadius: "inherit",
-                        }}
-                      />
-                      <div style={{ position: "relative", zIndex: 2 }} className="flex w-full items-center gap-4 md:gap-6">
+                      {/* Image side */}
+                      <div className="w-full md:w-1/3 h-48 md:h-auto relative">
+                        <img
+                          src={game.cover}
+                          alt={`${game.name} cover`}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
                         {isPodium ? (
                           <div
-                            className="flex flex-col items-center justify-center select-none"
+                            className={`absolute top-2 left-2 z-10 font-extrabold text-xl px-3 py-1 rounded-full border-2 ${podiumColors[rank]}`}
                             style={{
-                              width: rank === 1 ? 60 : 50,
-                              height: rank === 1 ? 100 : 80,
-                              marginBottom: rank === 1 ? -12 : -4,
+                              backdropFilter: "blur(2px)",
+                              backgroundColor: "rgba(255, 255, 255, 0.5)",
+                              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
                             }}
                           >
-                            <div
-                              className={`font-extrabold ${podiumColors[rank]} text-center rounded-full border-2 px-2 py-1`}
-                              style={{
-                                fontSize: rank === 1 ? 36 : 28,
-                                lineHeight: 1,
-                              }}
-                            >
-                              #{rank}
-                            </div>
+                            #{rank}
                           </div>
                         ) : (
-                          <span className="text-lg font-bold text-gray-400 w-10 text-center select-none">
+                          <div
+                            className="absolute top-1 left-1 z-10 text-sm px-1 py-0.5 rounded-full border-2"
+                            style={{
+                              backgroundColor: "rgba(255, 255, 255, 0.3)",
+                              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
+                            }}
+                          >
                             #{rank}
-                          </span>
+                          </div>
                         )}
-                        <div className="flex-1 min-w-0">
+                      </div>
+
+                      {/* Info side */}
+                      <div className="flex-1 p-5 flex flex-col justify-between gap-4">
+                        <div className="flex flex-col gap-2">
                           <a
+                            href={game.link}
                             target="_blank"
                             rel="noreferrer"
-                            href={game.link}
-                            className="font-semibold text-xl hover:scale-110 transition"
+                            className="text-xl font-semibold hover:underline"
                           >
                             {game.name}
                           </a>
-                          <div className="text-gray-500">
+                          <div className="text-sm text-gray-600">
                             {game.developers.map((dev, index) => (
-                              <div key={`featured-${dev.name}`} className="font-semibold">
+                              <span key={dev.name}>
                                 {dev.name}
                                 {index < game.developers.length - 2
                                   ? ", "
                                   : index === game.developers.length - 2
                                     ? " & "
                                     : ""}
-                              </div>
+                              </span>
                             ))}
                           </div>
                         </div>
 
-                        <div className="flex flex-col items-end space-y-1 text-sm text-gray-700 min-w-[100px]">
+                        <div className="flex flex-row justify-between text-base text-gray-700">
                           <div>
-                            <span className="font-semibold text-indigo-600">
-                              Critics:
-                            </span>{" "}
+                            <span className="font-semibold text-indigo-600">Critics:</span>{" "}
                             {game.ratings.critics}
                           </div>
                           <div>
-                            <span className="font-semibold text-indigo-600">
-                              Players:
-                            </span>{" "}
+                            <span className="font-semibold text-indigo-600">Players:</span>{" "}
                             {game.ratings.players}
                           </div>
                         </div>
