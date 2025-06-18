@@ -32,6 +32,7 @@ const AddGameForm = ({ games, onSuccess }) => {
     platforms: platformOptions.reduce((acc, platform) => ({ ...acc, [platform]: false }), {}),
     ratings: { critics: 0, players: 0, link: "" },
     tags: tagsOptions.reduce((acc, tag) => ({ ...acc, [tag]: false }), {}),
+    cover: null,
   });
   const [form, setForm] = useState(getInitialFormState());
   const [errors, setErrors] = useState({});

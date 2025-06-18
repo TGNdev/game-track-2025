@@ -36,6 +36,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
     platforms: game.platforms || platformOptions.reduce((acc, p) => ({ ...acc, [p]: false }), {}),
     ratings: game.ratings || { critics: 0, players: 0, link: "" },
     tags: game.tags || tagsOptions.reduce((acc, tag) => ({ ...acc, [tag]: false }), {}),
+    cover: game.cover || null,
   });
 
   const [form, setForm] = useState(getInitialFormState());
