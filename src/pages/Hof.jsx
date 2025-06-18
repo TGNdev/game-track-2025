@@ -42,7 +42,7 @@ const Hof = () => {
 
   return (
     <Layout>
-      <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-8">
+      <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-4">
         <div className="text-center">
           <h2 className="text-2xl font-bold">Hall Of Fame</h2>
           <p className="text-sm italic text-slate-500">
@@ -54,10 +54,12 @@ const Hof = () => {
         </div>
         <div>
           {unratedCount > 0 && (
-            <p className="mb-6 text-center text-sm text-yellow-700 bg-yellow-100 rounded-md py-2 px-4">
+            <p className="mb-10 text-center text-sm text-yellow-700 bg-yellow-100 rounded-md py-2 px-4">
               There {unratedCount === 1 ? "is" : "are"} still{" "}
               <span className="font-semibold">{unratedCount}</span>{" "}
               game{unratedCount === 1 ? "" : "s"} that need to receive critics or players rating.
+              <br></br>
+              <span className="text-xs">Also, please note that certain games here are <b>Ports or Re-releases</b> and ratings might be from the original release.</span>
             </p>
           )}
 
@@ -87,7 +89,7 @@ const Hof = () => {
                       className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row transition hover:shadow-lg relative"
                     >
                       {/* Image side */}
-                      <div className="w-full md:w-1/3 h-48 md:h-auto relative">
+                      <div className="w-full md:w-2/5 h-48 relative">
                         <img
                           src={game.cover}
                           alt={`${game.name} cover`}
@@ -95,9 +97,9 @@ const Hof = () => {
                         />
                         {isPodium ? (
                           <div
-                            className={`absolute top-2 left-2 z-10 font-extrabold text-xl px-3 py-1 rounded-full border-2 ${podiumColors[rank]}`}
+                            className={`absolute top-2 left-2 z-10 font-extrabold text-xl px-4 py-1.5 rounded-full border-2 ${podiumColors[rank]}`}
                             style={{
-                              backdropFilter: "blur(2px)",
+                              backdropFilter: "blur(3px)",
                               backgroundColor: "rgba(255, 255, 255, 0.5)",
                               boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
                             }}
@@ -108,8 +110,8 @@ const Hof = () => {
                           <div
                             className="absolute top-1 left-1 z-10 text-sm px-1 py-0.5 rounded-full border-2"
                             style={{
-                              backgroundColor: "rgba(255, 255, 255, 0.3)",
-                              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.3)",
+                              backgroundColor: "rgba(255, 255, 255, 0.5)",
+                              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.2)",
                             }}
                           >
                             #{rank}
@@ -124,14 +126,14 @@ const Hof = () => {
                             href={game.link}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-xl font-semibold hover:underline"
+                            className="text-xl font-semibold hover:scale-105 transition"
                           >
                             {game.name}
                           </a>
-                          <div className="text-sm text-gray-600">
-                            {game.developers.map((dev, index) => (
+                          <div className="text-xs text-gray-600">
+                            By {game.developers.map((dev, index) => (
                               <span key={dev.name}>
-                                {dev.name}
+                                <span className="font-semibold text-sm">{dev.name}</span>
                                 {index < game.developers.length - 2
                                   ? ", "
                                   : index === game.developers.length - 2
@@ -144,12 +146,12 @@ const Hof = () => {
 
                         <div className="flex flex-row justify-between text-base text-gray-700">
                           <div>
-                            <span className="font-semibold text-indigo-600">Critics:</span>{" "}
-                            {game.ratings.critics}
+                            <span className="text-blue-600">Critics:</span>{" "}
+                            <span className="font-semibold">{game.ratings.critics}</span>
                           </div>
                           <div>
-                            <span className="font-semibold text-indigo-600">Players:</span>{" "}
-                            {game.ratings.players}
+                            <span className="text-blue-600">Players:</span>{" "}
+                            <span className="font-semibold">{game.ratings.players}</span>
                           </div>
                         </div>
                       </div>
