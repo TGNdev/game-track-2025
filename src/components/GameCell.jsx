@@ -5,7 +5,7 @@ function HoverImage({ src, bounds, isVisible }) {
   if (!bounds) return null;
 
   const width = 140;
-  const height = 62;
+  const height = 70;
 
   return createPortal(
     <img
@@ -150,7 +150,7 @@ function GameCell({ game }) {
             />
           ) : (
             <div className="absolute w-full h-full bg-gray-300 rounded shadow-md flex items-center justify-center">
-              <span className="text-xs text-gray-500">No image</span>
+              <span className="text-xs text-gray-500 text-center">No image ... Admin ?!</span>
             </div>
           )}
         </div>
@@ -162,7 +162,7 @@ function GameCell({ game }) {
         </a>
       </div>
 
-      {hoverBounds && (
+      {hoverBounds && game.cover && (
         <HoverImage
           src={game.cover}
           bounds={hoverBounds}

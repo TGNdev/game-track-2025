@@ -143,6 +143,7 @@ const AddGameForm = ({ games, onSuccess }) => {
         platforms: form.platforms,
         ratings: form.ratings,
         tags: form.tags,
+        cover: null,
       });
 
       toast.success("Game added successfully!");

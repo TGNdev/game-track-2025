@@ -148,6 +148,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
         platforms: form.platforms,
         ratings: form.ratings,
         tags: form.tags,
+        cover: form.cover,
       });
 
       toast.success("Game updated successfully!");
