@@ -289,7 +289,6 @@ const GamesView = ({ games, openButtonRef }) => {
           </div>
         </div>
       </div>
-
       {/* Table */}
       <div className="flex-col max-w-full overflow-x-auto hidden sm:flex mt-4">
         <div className="relative">

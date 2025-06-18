@@ -49,6 +49,7 @@ const Home = () => {
   return (
     <Layout>
       <div className="flex flex-col items-end gap-7 sm:gap-10">
+        <div id="image-portal-root" className="fixed top-0 left-0 w-screen h-screen z-[9999] pointer-events-none"></div>
         {viewGames && (
           <div className="flex flex-row justify-between min-w-full sm:px-7 mt-1">
             <div>
