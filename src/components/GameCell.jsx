@@ -1,32 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { createPortal } from "react-dom";
-
-function HoverImage({ src, bounds, isVisible }) {
-  if (!bounds) return null;
-
-  const width = 140;
-  const height = 70;
-
-  return createPortal(
-    <img
-      src={src}
-      alt=""
-      className="absolute object-cover rounded shadow-xl transition-all duration-200 ease-out"
-      style={{
-        width: `${width}px`,
-        height: `${height}px`,
-        top: `${bounds.top}px`,
-        left: `${bounds.left}px`,
-        transform: isVisible ? "scale(2.3)" : "scale(1)",
-        opacity: isVisible ? 1 : 0,
-        transformOrigin: "left center",
-        pointerEvents: "none",
-        zIndex: 9999,
-      }}
-    />,
-    document.getElementById("image-portal-root")
-  );
-}
+import HoverImageSlider from "./HoverImageSlider";
 
 function GameCell({ game }) {
   const tagRefs = useRef([]);
@@ -80,21 +53,9 @@ function GameCell({ game }) {
 
   const handleMouseEnter = () => {
     clearTimeout(unmountTimeoutRef.current);
-
     const rect = imgRef.current.getBoundingClientRect();
-    setHoverBounds({
-      top: rect.top,
-      left: rect.left,
-    });
-
+    setHoverBounds({ top: rect.top, left: rect.left });
     requestAnimationFrame(() => setIsVisible(true));
-  };
-
-  const handleMouseLeave = () => {
-    setIsVisible(false);
-    unmountTimeoutRef.current = setTimeout(() => {
-      setHoverBounds(null);
-    }, 200);
   };
 
   useEffect(() => {
@@ -138,7 +99,6 @@ function GameCell({ game }) {
         <div
           ref={imgRef}
           onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
           className="relative w-20 h-14 overflow-visible shrink-0"
         >
           {game.cover ? (
@@ -163,10 +123,13 @@ function GameCell({ game }) {
       </div>
 
       {hoverBounds && game.cover && (
-        <HoverImage
-          src={game.cover}
+        <HoverImageSlider
+          images={[game.cover, ...(game.images || [])]}
           bounds={hoverBounds}
           isVisible={isVisible}
+          onClose={() => {
+            setIsVisible(false);
+          }}
         />
       )}
     </td>
