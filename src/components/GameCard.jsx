@@ -27,6 +27,7 @@ const getPlatformsSvg = (platform) => {
 
 const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen, setGameToEdit }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const tagsLabels = {
     dlc: "DLC / Expansion",
     remake: "Remake",
@@ -34,10 +35,24 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
     port: "Port / Re-release",
   };
   const enabledTags = Object.keys(game.tags || {}).filter(t => game.tags && game.tags[t]);
+  const images = game.cover ? [game.cover, ...(game.images || [])] : (game.images || []);
 
   useEffect(() => {
     setIsOpen(opened || forceOpen);
   }, [opened, forceOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setCurrentImageIndex(0);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [isOpen, images.length]);
 
   const isReleased = () => {
     const today = new Date();
@@ -119,7 +134,7 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
         className={`grid transition-all duration-500 ease-in-out overflow-hidden border-x ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
           }`}
         style={{
-          backgroundImage: game.cover ? `url(${game.cover})` : undefined,
+        backgroundImage: images.length > 0 ? `url(${images[currentImageIndex]})` : undefined,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
