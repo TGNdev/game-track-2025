@@ -34,7 +34,9 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
     remaster: "Remaster",
     port: "Port / Re-release",
   };
-  const enabledTags = Object.keys(game.tags || {}).filter(t => game.tags && game.tags[t]);
+  const enabledTags = Object.keys(game.tags || {})
+    .filter(t => game.tags && game.tags[t])
+    .sort((a, b) => a.localeCompare(b));
   const images = game.cover ? [game.cover, ...(game.images || [])] : (game.images || []);
 
   useEffect(() => {

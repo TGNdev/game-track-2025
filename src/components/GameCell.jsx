@@ -30,6 +30,7 @@ function GameCell({ game }) {
     },
     ...Object.keys(game.tags || {})
       .filter((tag) => game.tags[tag])
+      .sort((a, b) => a.localeCompare(b))
       .map((tag) => ({
         key: tag,
         label: tagsLabels[tag] || tag,
