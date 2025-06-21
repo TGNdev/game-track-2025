@@ -42,6 +42,19 @@ const GamesView = ({ games, openButtonRef }) => {
     return false;
   });
 
+  function useMediaQuery(query) {
+    const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
+
+    useEffect(() => {
+      const media = window.matchMedia(query);
+      const listener = () => setMatches(media.matches);
+      media.addListener(listener);
+      return () => media.removeListener(listener);
+    }, [query]);
+
+    return matches;
+  }
+
   useEffect(() => {
     const filters = {
       selectedPlatforms,
@@ -153,28 +166,30 @@ const GamesView = ({ games, openButtonRef }) => {
 
   const useOutsideClick = (callback, exceptions = []) => {
     const ref = useRef();
-  
+
     useEffect(() => {
       const handleClick = (event) => {
         const clickedInsideModal = ref.current && ref.current.contains(event.target);
         const clickedException = exceptions.some(
           exceptionRef => exceptionRef.current && exceptionRef.current.contains(event.target)
         );
-  
+
         if (!clickedInsideModal && !clickedException) {
           callback();
         }
       };
-  
+
       document.addEventListener('click', handleClick);
       return () => {
         document.removeEventListener('click', handleClick);
       };
     }, [callback, exceptions]);
-  
+
     return ref;
   };
-  
+
+  const isSmallScreen = useMediaQuery('(max-width: 639px)');
+
   const modalRef = useOutsideClick(handleCloseModal, [openButtonRef]);
 
   return (
@@ -213,9 +228,8 @@ const GamesView = ({ games, openButtonRef }) => {
         </div>
         {/* Filters */}
         <div
-          className={`overflow-hidden transition-all duration-500 ease-in-out w-full ${
-            filtersVisible ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
-          }`}
+          className={`overflow-hidden transition-all duration-500 ease-in-out w-full ${filtersVisible ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+            }`}
         >
           <div className="flex flex-col gap-4 items-center md:flex-row md:items-center md:justify-center md:flex-wrap w-full">
             {/* Platform Filter */}
@@ -223,11 +237,10 @@ const GamesView = ({ games, openButtonRef }) => {
               {allPlatforms.map(platform => (
                 <button
                   key={platform}
-                  className={`px-3 py-1 rounded-full border text-sm ${
-                    selectedPlatforms.includes(platform)
-                      ? "bg-blue-500 text-white"
-                      : "bg-white text-black"
-                  }`}
+                  className={`px-3 py-1 rounded-full border text-sm ${selectedPlatforms.includes(platform)
+                    ? "bg-blue-500 text-white"
+                    : "bg-white text-black"
+                    }`}
                   onClick={() => {
                     setSelectedPlatforms(prev =>
                       prev.includes(platform)
@@ -243,31 +256,28 @@ const GamesView = ({ games, openButtonRef }) => {
             {/* Release Status Filter */}
             <div className="flex flex-wrap justify-center gap-2 md:justify-start">
               <button
-                className={`px-3 py-1 rounded-full border text-sm ${
-                  showOnlyUpcoming === true
-                    ? "bg-blue-500 text-white"
-                    : "bg-white text-black"
-                }`}
+                className={`px-3 py-1 rounded-full border text-sm ${showOnlyUpcoming === true
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-black"
+                  }`}
                 onClick={() => setShowOnlyUpcoming(true)}
               >
                 Upcoming only
               </button>
               <button
-                className={`px-3 py-1 rounded-full border text-sm ${
-                  showOnlyUpcoming === false
-                    ? "bg-blue-500 text-white"
-                    : "bg-white text-black"
-                }`}
+                className={`px-3 py-1 rounded-full border text-sm ${showOnlyUpcoming === false
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-black"
+                  }`}
                 onClick={() => setShowOnlyUpcoming(false)}
               >
                 Already released
               </button>
               <button
-                className={`px-3 py-1 rounded-full border text-sm ${
-                  showOnlyUpcoming === null
-                    ? "bg-blue-500 text-white"
-                    : "bg-white text-black"
-                }`}
+                className={`px-3 py-1 rounded-full border text-sm ${showOnlyUpcoming === null
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-black"
+                  }`}
                 onClick={() => setShowOnlyUpcoming(null)}
               >
                 All
@@ -289,61 +299,62 @@ const GamesView = ({ games, openButtonRef }) => {
           </div>
         </div>
       </div>
-      {/* Table */}
-      <div className="flex-col max-w-full overflow-x-auto hidden sm:flex mt-4">
-        <div className="relative">
-          <table className="w-full border-collapse min-w-[900px]">
-            <thead className="border-b">
-              <tr>
-                <th className="p-3 sticky left-0 bg-white z-10">Name</th>
-                <th className="p-3">Release Date</th>
-                <th className="p-3">Developers</th>
-                <th className="p-3">Editors</th>
-                <th className="p-3">Platforms</th>
-                <th className="p-3 flex flex-col">
-                  <div>Ratings</div>
-                  <div className="flex flex-row gap-x-3 justify-center">
-                    <div className="text-xs opacity-50">Critics</div>
-                    <div className="text-xs opacity-50">Players</div>
-                  </div>
-                </th>
-                {edit && (
-                  <th className="p-3 sticky right-0 bg-white z-10">Edit actions</th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(game => (
-                <GameRow
-                  key={game.id}
-                  game={game}
-                  edit={edit}
-                  setGameToEdit={setGameToEdit}
-                  setIsModalOpen={setIsModalOpen}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
 
-      {/* Cards */}
-      <div className="overflow-y-auto min-w-full sm:hidden pb-8 mt-4">
-        <div className="flex flex-col gap-5">
-          {filtered.map(game => (
-            <GameCard
-              key={game.id}
-              game={game}
-              edit={edit}
-              opened={opened}
-              forceOpen={featuredOpen === game.id}
-              setForceOpen={() => setFeaturedOpen(null)}
-              setGameToEdit={setGameToEdit}
-              setIsModalOpen={setIsModalOpen}
-            />
-          ))}
+      {isSmallScreen ? (
+        <div className="overflow-y-auto min-w-full sm:hidden pb-8 mt-4">
+          <div className="flex flex-col gap-5">
+            {filtered.map(game => (
+              <GameCard
+                key={game.id}
+                game={game}
+                edit={edit}
+                opened={opened}
+                forceOpen={featuredOpen === game.id}
+                setForceOpen={() => setFeaturedOpen(null)}
+                setGameToEdit={setGameToEdit}
+                setIsModalOpen={setIsModalOpen}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex-col max-w-full overflow-x-auto hidden sm:flex mt-4">
+          <div className="relative">
+            <table className="w-full border-collapse min-w-[900px]">
+              <thead className="border-b">
+                <tr>
+                  <th className="p-3 sticky left-0 bg-white z-10">Name</th>
+                  <th className="p-3">Release Date</th>
+                  <th className="p-3">Developers</th>
+                  <th className="p-3">Editors</th>
+                  <th className="p-3">Platforms</th>
+                  <th className="p-3 flex flex-col">
+                    <div>Ratings</div>
+                    <div className="flex flex-row gap-x-3 justify-center">
+                      <div className="text-xs opacity-50">Critics</div>
+                      <div className="text-xs opacity-50">Players</div>
+                    </div>
+                  </th>
+                  {edit && (
+                    <th className="p-3 sticky right-0 bg-white z-10">Edit actions</th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map(game => (
+                  <GameRow
+                    key={game.id}
+                    game={game}
+                    edit={edit}
+                    setGameToEdit={setGameToEdit}
+                    setIsModalOpen={setIsModalOpen}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Back to top button */}
       <BackToTopButton />
