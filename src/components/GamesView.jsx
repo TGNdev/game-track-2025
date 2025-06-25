@@ -33,11 +33,19 @@ const GamesView = ({ games, openButtonRef }) => {
     const saved = localStorage.getItem('gameFilters');
     return saved ? JSON.parse(saved).showOnlyUpcoming ?? null : null
   });
+  const [showThisYearOnly, setShowThisYearOnly] = useState(() => {
+    const saved = localStorage.getItem('gameFilters');
+    return saved ? JSON.parse(saved).showThisYearOnly ?? false : false;
+  });
   const [filtersVisible, setFiltersVisible] = useState(() => {
     const saved = localStorage.getItem('gameFilters');
     if (saved) {
-      const { selectedPlatforms = [], showOnlyUpcoming = null } = JSON.parse(saved);
-      return (selectedPlatforms.length > 0 || showOnlyUpcoming !== null);
+      const {
+        selectedPlatforms = [],
+        showOnlyUpcoming = null,
+        showThisYearOnly = false,
+      } = JSON.parse(saved);
+      return (selectedPlatforms.length > 0 || showOnlyUpcoming !== null || showThisYearOnly);
     }
     return false;
   });
@@ -59,10 +67,11 @@ const GamesView = ({ games, openButtonRef }) => {
     const filters = {
       selectedPlatforms,
       showOnlyUpcoming,
-      withRelease
+      withRelease,
+      showThisYearOnly,
     };
     localStorage.setItem('gameFilters', JSON.stringify(filters));
-  }, [selectedPlatforms, showOnlyUpcoming, withRelease]);
+  }, [selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly]);
 
 
   const quarterWeight = { Q1: 1, Q2: 2, Q3: 3, Q4: 4 };
@@ -134,16 +143,30 @@ const GamesView = ({ games, openButtonRef }) => {
         getPlatformArray(game.platforms).includes(platform)
       );
 
-      // Release status
       const isTimestamp = game.release_date instanceof Timestamp;
+      const now = new Date();
+      const currentYear = now.getFullYear();
+
       let matchesReleaseStatus = true;
       if (isTimestamp && showOnlyUpcoming !== null) {
         const release = new Date(game.release_date.seconds * 1000);
-        const now = new Date();
         matchesReleaseStatus = showOnlyUpcoming ? release >= now : release < now;
       }
 
-      return matchesSearch && matchesPlatform && matchesReleaseStatus;
+      let matchesYear = true;
+      if (showThisYearOnly) {
+        if (isTimestamp) {
+          const release = new Date(game.release_date.seconds * 1000);
+          matchesYear = release.getFullYear() === currentYear;
+        } else if (typeof game.release_date === "string") {
+          const yearMatch = game.release_date.match(/\b(\d{4})\b/);
+          matchesYear = yearMatch ? parseInt(yearMatch[1]) === currentYear : false;
+        } else {
+          matchesYear = false;
+        }
+      }
+
+      return matchesSearch && matchesPlatform && matchesReleaseStatus && matchesYear;
     })
     .sort((a, b) => {
       const aSort = getSortValue(a.release_date);
@@ -232,6 +255,17 @@ const GamesView = ({ games, openButtonRef }) => {
             }`}
         >
           <div className="flex flex-col gap-4 items-center md:flex-row md:items-center md:justify-center md:flex-wrap w-full">
+            <div className="flex flex-wrap justify-center gap-2 md:justify-start">
+              <button
+                className={`px-3 py-1 rounded-full border text-sm ${showThisYearOnly
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-black"
+                  }`}
+                onClick={() => setShowThisYearOnly(prev => !prev)}
+              >
+                This year
+              </button>
+            </div>
             {/* Platform Filter */}
             <div className="flex flex-wrap justify-center gap-2 md:justify-start">
               {allPlatforms.map(platform => (
@@ -290,6 +324,7 @@ const GamesView = ({ games, openButtonRef }) => {
                 onClick={() => {
                   setSelectedPlatforms([]);
                   setShowOnlyUpcoming(null);
+                  setShowThisYearOnly(false);
                   localStorage.removeItem('gameFilters');
                 }}
               >
