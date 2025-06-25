@@ -35,14 +35,15 @@ export const addGameToFirestore = async (gameData) => {
   try {
     const gamesRef = collection(db, "games");
 
-    const q = query(gamesRef, where("name", "==", gameData.name));
-    const querySnapshot = await getDocs(q);
+    // const q = query(gamesRef, where("name", "==", gameData.name));
+    // const querySnapshot = await getDocs(q);
 
-    if (!querySnapshot.empty) {
-      throw new Error("A game with this name already exists.");
-    }
+    // if (!querySnapshot.empty) {
+    //   throw new Error("A game with this name already exists.");
+    // }
 
-    await addDoc(gamesRef, gameData);
+    const game = await addDoc(gamesRef, gameData);
+    console.log("Game added with ID: ", game.id);
   } catch (e) {
     throw e;
   }
@@ -71,6 +72,18 @@ export const signIn = async (email, password) => {
         return await signInWithEmailAndPassword(auth, email, password);
     } catch (e) {
         console.error("Error logging in: ", e);
+        throw e;
+    }
+};
+
+export const getTgaFromFirestore = async () => {
+    try {
+        const tgaRef = collection(db, "tga");
+        const querySnapshot = await getDocs(tgaRef);
+        const tgaList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return tgaList;
+    } catch (e) {
+        console.error("Error fetching TGA data: ", e);
         throw e;
     }
 };

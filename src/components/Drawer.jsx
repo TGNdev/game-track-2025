@@ -51,6 +51,7 @@ const Drawer = () => {
           <Link to="/" className="hover:text-blue-500 transition">Home</Link>
           <Link to="/leaks-rumours" className="hover:text-blue-600 transition">Leaks & Rumours</Link>
           <Link to="/hall-of-fame" className="hover:text-blue-600 transition">Hall Of Fame</Link>
+          <Link to="/game-awards-history" className="hover:text-blue-600 transition">Game Awards History</Link>
           <div className="border my-6"></div>
           <button
             className="text-left hover:scale-105 rounded-md text-white py-1.5 px-2 border bg-blue-500 w-fit transition"

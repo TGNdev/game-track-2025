@@ -5,6 +5,7 @@ import Home from "../pages/Home";
 import RedditFeed from "../pages/RedditFeed";
 import PageFade from "../components/PageFade";
 import Hof from "../pages/Hof";
+import AwardsHistory from "../pages/AwardsHistory";
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -33,6 +34,14 @@ const AnimatedRoutes = () => {
           element={
             <PageFade>
               <Hof />
+            </PageFade>
+          }
+        />
+        <Route
+          path="/game-awards-history"
+          element={
+            <PageFade>
+              <AwardsHistory />
             </PageFade>
           }
         />

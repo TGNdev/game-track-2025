@@ -16,6 +16,40 @@ code {
     monospace;
 }
 
-a > div {
+a>div {
   font-weight: bold;
+}
+
+#winner {
+  @apply rounded-xl text-center flex flex-col items-center bg-amber-100 shadow-lg;
+  position: relative;
+}
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+#winner::after {
+  background: conic-gradient(from var(--angle), transparent 50%, #ffe203, #ff9a03, transparent);
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border-radius: 0.75rem;
+  z-index: -1;
+  margin: 5px;
+  animation: 2s spin linear infinite;
+}
+
+@keyframes spin {
+  from {
+    --angle: 0deg;
+  }
+
+  to {
+    --angle: 360deg;
+  }
 }
