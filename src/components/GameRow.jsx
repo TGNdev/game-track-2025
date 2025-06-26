@@ -8,6 +8,8 @@ import { AiFillEdit } from "react-icons/ai";
 import { FaTrash } from "react-icons/fa";
 import { deleteGameFromFirestore } from "../js/firebase";
 import GameCell from "./GameCell";
+import { useGame } from "./contexts/GameContext";
+import he from "he";
 
 const getRatingStyle = (rating) => {
   const baseClasses = "size-5 px-5 py-4 rounded-xl text-white hover:cursor-default text-sm flex items-center justify-center";
@@ -44,6 +46,11 @@ const getPlatformsSvg = (platform) => {
 };
 
 const GameRow = ({ game, edit, setGameToEdit, setIsModalOpen }) => {
+  const {
+    search,
+    highlightMatch,
+  } = useGame();
+
   return (
     <tr id={`game-${game.id}`} className="text-center relative text-sm">
       <GameCell
@@ -66,7 +73,9 @@ const GameRow = ({ game, edit, setGameToEdit, setIsModalOpen }) => {
         <div className="flex flex-col divide-y">
           {game.developers.map((developer) => (
             <a target="_blank" rel="noreferrer" href={developer.link} key={developer.name}>
-              <div className="hover:scale-110 transition text-sm">{developer.name}</div>
+              <div className="hover:scale-110 transition text-sm">
+                {highlightMatch(he.decode(developer.name), search)}
+              </div>
             </a>
           ))}
         </div>
@@ -76,7 +85,9 @@ const GameRow = ({ game, edit, setGameToEdit, setIsModalOpen }) => {
         <div className="flex flex-col divide-y">
           {game.editors.map((editor) => (
             <a target="_blank" rel="noreferrer" href={editor.link} key={editor.name}>
-              <div className="hover:scale-110 transition text-sm">{editor.name}</div>
+              <div className="hover:scale-110 transition text-sm">
+                {highlightMatch(he.decode(editor.name), search)}
+              </div>
             </a>
           ))}
         </div>

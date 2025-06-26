@@ -1,5 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import HoverImageSlider from "./HoverImageSlider";
+import { useGame } from "./contexts/GameContext";
+import he from "he";
 
 function GameCell({ game }) {
   const tagRefs = useRef([]);
@@ -8,6 +10,10 @@ function GameCell({ game }) {
   const [hoverBounds, setHoverBounds] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const unmountTimeoutRef = useRef(null);
+  const {
+    search,
+    highlightMatch,
+  } = useGame();
 
   const isReleased = () => {
     const today = new Date();
@@ -118,7 +124,7 @@ function GameCell({ game }) {
 
         <a target="_blank" rel="noreferrer" href={game.link}>
           <div className="hover:scale-105 transition text-base font-semibold text-black">
-            {game.name}
+            {highlightMatch(he.decode(game.name), search)}
           </div>
         </a>
       </div>

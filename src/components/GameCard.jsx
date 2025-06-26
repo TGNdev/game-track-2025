@@ -6,6 +6,8 @@ import { ReactComponent as SwitchIcon } from "../assets/icons/switch.svg";
 import { ReactComponent as Switch2Icon } from "../assets/icons/switch_2.svg";
 import { FiChevronDown } from "react-icons/fi";
 import { FaThumbsUp } from "react-icons/fa6";
+import { useGame } from "./contexts/GameContext";
+import he from "he";
 
 const getPlatformsSvg = (platform) => {
   const base = `size-5 p-1`;
@@ -28,6 +30,10 @@ const getPlatformsSvg = (platform) => {
 const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen, setGameToEdit }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const {
+    search,
+    highlightMatch,
+  } = useGame();
   const tagsLabels = {
     dlc: "DLC / Expansion",
     remake: "Remake",
@@ -80,7 +86,9 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
         }}
       >
         <div className="flex flex-col gap-1">
-          <span className="text-lg font-bold">{game.name}</span>
+          <span className="text-lg font-bold">
+            {highlightMatch(he.decode(game.name), search)}
+          </span>
           <span className="text-xs">
             {game.release_date?.seconds
               ? new Date(game.release_date.seconds * 1000).toLocaleDateString("en-EN", {

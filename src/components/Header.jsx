@@ -3,7 +3,7 @@ import Search from "./Search";
 import Drawer from "./Drawer";
 
 const Header = () => {
-  const allowedRoutes = ["/", "/leaks-rumours"];
+  const allowedRoutes = ["/", "/leaks-rumours", "/hall-of-fame"];
   const currentPath = window.location.hash
     ? window.location.hash.replace(/^#/, "")
     : window.location.pathname;
