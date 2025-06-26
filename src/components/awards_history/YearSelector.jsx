@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 
 const YearSelector = ({ tga, onSelectYear }) => {
+  const tgaSorted = [...tga].sort((a, b) => a.year - b.year);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -11,7 +13,7 @@ const YearSelector = ({ tga, onSelectYear }) => {
     >
       <h3 className="text-xl font-bold self-start mb-6">Choose a Game Awards year</h3>
       <div className="flex flex-wrap gap-4 justify-center">
-        {tga.map((yearData) => (
+        {tgaSorted.map((yearData) => (
           <button
             key={yearData.id}
             onClick={() => onSelectYear(yearData)}

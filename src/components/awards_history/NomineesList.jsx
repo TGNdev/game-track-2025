@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 const NomineeList = ({ award, getGameById, onBackToAwards, onBackToYears }) => {
   return (
@@ -43,6 +44,9 @@ const NomineeList = ({ award, getGameById, onBackToAwards, onBackToYears }) => {
         {award.nominees && award.nominees.length > 0 ? (
           award.nominees.map((nominee, idx) => {
             const game = getGameById(nominee.gameId);
+            // const proxyUrl = "https://corsproxy.io/?";
+            // const actorImageUrl = encodeURIComponent(nominee.role.actor.image);
+            // const asImageUrl = encodeURIComponent(nominee.role.as.image);
 
             return (
               <div
@@ -55,15 +59,17 @@ const NomineeList = ({ award, getGameById, onBackToAwards, onBackToYears }) => {
               >
                 {nominee.role ? (
                   <>
-                    <div className="text-xl font-medium mt-2">{nominee.role.actor.name}</div>
-                    <div className="text-lg text-gray-500">
-                      <span className='text-base'>as </span>
-                      {nominee.role.as.name}  
+                    <div className='mb-2'>
+                      <div className="text-xl font-medium mt-2">{nominee.role.actor.name}</div>
+                      <div className="text-lg text-gray-500">
+                        <span className='text-base'>as </span>
+                        {nominee.role.as.name}
+                      </div>
                     </div>
                     <img
                       src={nominee.role.actor.image}
                       alt={nominee.role.actor.name}
-                      className="object-cover h-72 w-full rounded mb-1"
+                      className="object-cover h-72 w-full rounded"
                     />
                     <div className="text-sm text-gray-500 my-2">{game.name}</div>
                   </>

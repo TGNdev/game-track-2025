@@ -7,8 +7,7 @@ const Drawer = () => {
   const [open, setOpen] = useState(false);
   const {
     logout,
-    isLogged,
-    setIsModalOpen
+    isLogged
   } = useGame();
 
   return (
@@ -57,7 +56,7 @@ const Drawer = () => {
             className="text-left hover:scale-105 rounded-md text-white py-1.5 px-2 border bg-blue-500 w-fit transition"
             onClick={() => {
               setOpen(false);
-              setIsModalOpen(true);
+              logout();
             }}
           >
             {isLogged ? (
