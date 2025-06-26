@@ -9,9 +9,24 @@ const AwardSelector = ({ year, onSelectAward, onBack }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4, ease: "easeInOut" }}
-      className="px-4 py-6 flex flex-col items-center"
+      className="px-4 py-6"
     >
-      <button onClick={onBack} className="mb-4 text-blue-500 hover:underline self-start">← Back to years</button>
+      <nav className="mb-6" aria-label="Breadcrumb">
+        <ol className="flex items-center space-x-2 text-sm text-gray-600">
+          <li>
+            <button
+              onClick={onBack}
+              className="hover:underline text-blue-500 focus:outline-none"
+            >
+              Years
+            </button>
+          </li>
+          <li>
+            <span className="mx-1">/</span>
+          </li>
+          <li className="font-semibold text-gray-900">{year.year}</li>
+        </ol>
+      </nav>
       <h3 className="text-xl font-bold self-start mb-6">Choose an Award</h3>
       <div className="flex flex-wrap gap-4 justify-center">
         {awards.map((award, idx) => (
