@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import { useGame } from "./contexts/GameContext";
+import { useGame } from "../../contexts/GameContext";
 
 const Drawer = () => {
   const [open, setOpen] = useState(false);

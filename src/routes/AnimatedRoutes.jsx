@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Home from "../pages/Home";
 import RedditFeed from "../pages/RedditFeed";
-import PageFade from "../components/PageFade";
+import PageFade from "../components/shared/PageFade";
 import Hof from "../pages/Hof";
 import AwardsHistory from "../pages/AwardsHistory";
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { GameProvider, useGame } from "../components/contexts/GameContext";
-import Layout from "../components/Layout";
+import { GameProvider, useGame } from "../contexts/GameContext";
+import Layout from "../components/shared/Layout";
 import he from 'he';
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 

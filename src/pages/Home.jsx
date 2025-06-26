@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { FaPlus, FaSignOutAlt } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
 import { ToastContainer } from "react-toastify";
-import GamesView from "../components/GamesView"
-import EventsView from "../components/EventsView"
-import { useGame } from "../components/contexts/GameContext";
-import Layout from "../components/Layout";
+import GamesView from "../components/games/GamesView"
+import EventsView from "../components/events/EventsView"
+import { useGame } from "../contexts/GameContext";
+import Layout from "../components/shared/Layout";
 import { getGamesFromFirestore } from "../js/firebase";
 
 const Home = () => {

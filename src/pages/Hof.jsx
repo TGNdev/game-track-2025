@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import Layout from "../components/Layout";
+import Layout from "../components/shared/Layout";
 import { getGamesFromFirestore } from "../js/firebase";
-import { useGame } from "../components/contexts/GameContext";
+import { useGame } from "../contexts/GameContext";
 import he from 'he';
 
 const Hof = () => {

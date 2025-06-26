@@ -1,10 +1,10 @@
 // AwardsHistory.jsx
 import { useEffect, useState } from "react";
-import Layout from "../components/Layout";
+import Layout from "../components/shared/Layout";
 import { getGamesFromFirestore, getTgaFromFirestore } from "../js/firebase";
-import YearSelector from "../components/YearSelector";
-import AwardSelector from "../components/AwardSelector";
-import NomineesList from "../components/NomineesList";
+import YearSelector from "../components/awards_history/YearSelector";
+import AwardSelector from "../components/awards_history/AwardSelector";
+import NomineesList from "../components/awards_history/NomineesList";
 
 const AwardsHistory = () => {
   const [games, setGames] = useState([]);

@@ -1,12 +1,12 @@
 import GameRow from "./GameRow";
 import GameCard from "./GameCard";
-import AddGameForm from "./AddGameForm";
-import EditGameForm from "./EditGameForm";
-import LoginForm from "./LoginForm";
+import AddGameForm from "../modals/AddGameForm";
+import EditGameForm from "../modals/EditGameForm";
+import LoginForm from "../modals/LoginForm";
 import { useEffect, useRef, useState } from "react";
 import { Timestamp } from "firebase/firestore";
 import { FaPlus, FaFilter } from "react-icons/fa";
-import { useGame } from "./contexts/GameContext";
+import { useGame } from "../../contexts/GameContext";
 import FeaturedGames from "./FeaturedGames";
 
 const GamesView = ({ games, openButtonRef }) => {

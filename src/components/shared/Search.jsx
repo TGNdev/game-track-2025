@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useGame } from "./contexts/GameContext";
+import { useGame } from "../../contexts/GameContext";
 import { FiX } from "react-icons/fi";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 

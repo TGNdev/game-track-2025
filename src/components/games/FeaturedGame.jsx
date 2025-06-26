@@ -1,4 +1,4 @@
-import { useGame } from "./contexts/GameContext";
+import { useGame } from "../../contexts/GameContext";
 
 const FeaturedGame = ({ featured }) => {
   const {

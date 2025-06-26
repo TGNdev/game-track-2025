@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import HoverImageSlider from "./HoverImageSlider";
-import { useGame } from "./contexts/GameContext";
+import { useGame } from "../../contexts/GameContext";
 import he from "he";
 
 function GameCell({ game }) {

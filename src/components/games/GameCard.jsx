@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { ReactComponent as XboxIcon } from "../assets/icons/xbox.svg";
-import { ReactComponent as PsIcon } from "../assets/icons/ps.svg";
-import { ReactComponent as PcIcon } from "../assets/icons/pc.svg";
-import { ReactComponent as SwitchIcon } from "../assets/icons/switch.svg";
-import { ReactComponent as Switch2Icon } from "../assets/icons/switch_2.svg";
+import { ReactComponent as XboxIcon } from "../../assets/icons/xbox.svg";
+import { ReactComponent as PsIcon } from "../../assets/icons/ps.svg";
+import { ReactComponent as PcIcon } from "../../assets/icons/pc.svg";
+import { ReactComponent as SwitchIcon } from "../../assets/icons/switch.svg";
+import { ReactComponent as Switch2Icon } from "../../assets/icons/switch_2.svg";
 import { FiChevronDown } from "react-icons/fi";
 import { FaThumbsUp } from "react-icons/fa6";
-import { useGame } from "./contexts/GameContext";
+import { useGame } from "../../contexts/GameContext";
 import he from "he";
 
 const getPlatformsSvg = (platform) => {

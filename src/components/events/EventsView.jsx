@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { fetchMergedEvents } from '../js/events';
+import { fetchMergedEvents } from '../../js/events';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import { useGame } from './contexts/GameContext';
+import { useGame } from '../../contexts/GameContext';
 
 const EventsView = () => {
   const [allEvents, setAllEvents] = useState([]);

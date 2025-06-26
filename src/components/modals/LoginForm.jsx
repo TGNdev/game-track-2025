@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { signIn } from "../js/firebase";
+import { signIn } from "../../js/firebase";
 import { toast } from "react-toastify";
 import Modal from "./Modal";
 
