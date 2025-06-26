@@ -3,7 +3,6 @@ import GameCard from "./GameCard";
 import AddGameForm from "./AddGameForm";
 import EditGameForm from "./EditGameForm";
 import LoginForm from "./LoginForm";
-import BackToTopButton from "./BackTopButton";
 import { useEffect, useRef, useState } from "react";
 import { Timestamp } from "firebase/firestore";
 import { FaPlus, FaFilter } from "react-icons/fa";
@@ -390,9 +389,6 @@ const GamesView = ({ games, openButtonRef }) => {
           </div>
         </div>
       )}
-
-      {/* Back to top button */}
-      <BackToTopButton />
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">

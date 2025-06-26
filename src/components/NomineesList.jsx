@@ -28,7 +28,10 @@ const NomineeList = ({ award, getGameById, onBackToAwards, onBackToYears }) => {
             return (
               <div
                 key={idx}
-                className={`${!nominee.isWinner && "bg-white rounded-xl shadow-sm border text-center flex flex-col items-center border-gray-200 opacity-65"} w-64 h-64`}
+                className={`w-72 h-auto flex-shrink-0 ${nominee.isWinner
+                  ? ''
+                  : 'bg-white rounded-xl shadow-sm border text-center flex flex-col items-center border-gray-200 opacity-65'
+                  }`}
                 id={nominee.isWinner ? 'winner' : ''}
               >
                 {nominee.role ? (
@@ -38,7 +41,7 @@ const NomineeList = ({ award, getGameById, onBackToAwards, onBackToYears }) => {
                     <img
                       src={nominee.role.actor.image}
                       alt={nominee.role.actor.name}
-                      className="object-cover rounded mb-1"
+                      className="object-cover h-36 w-full rounded mb-1"
                     />
                     <div className="text-sm text-gray-500 my-2">{game.name}</div>
                   </>
@@ -48,10 +51,12 @@ const NomineeList = ({ award, getGameById, onBackToAwards, onBackToYears }) => {
                       <img
                         src={game.cover}
                         alt={game.name}
-                        className="object-cover h-full rounded"
+                        className="object-cover h-52 w-full rounded"
                       />
                     )}
-                    <div className="text-xl font-medium my-2">{game.name}</div>
+                    <div className="flex-1 flex items-center justify-center py-2">
+                      <div className="text-xl font-medium text-center">{game.name}</div>
+                    </div>
                   </>
                 ) : (
                   <p className="text-red-500 text-sm">Game not found</p>
@@ -68,6 +73,7 @@ const NomineeList = ({ award, getGameById, onBackToAwards, onBackToYears }) => {
             return (
               <div
                 key={award.gameId}
+                className="w-96 h-auto flex-shrink-0 bg-white rounded-xl shadow-sm border text-center flex flex-col items-center border-gray-200"
                 id="winner"
               >
                 {game.cover && (
