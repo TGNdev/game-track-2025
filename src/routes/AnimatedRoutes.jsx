@@ -45,6 +45,22 @@ const AnimatedRoutes = () => {
             </PageFade>
           }
         />
+        <Route
+          path="/game-awards-history/:year"
+          element={
+            <PageFade>
+              <AwardsHistory />
+            </PageFade>
+          }
+        />
+        <Route
+          path="/game-awards-history/:year/:awardId"
+          element={
+            <PageFade>
+              <AwardsHistory />
+            </PageFade>
+          }
+        />
       </Routes>
     </AnimatePresence>
   );

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
+import WinnersRecap from "./WinnersRecap";
 
-const YearSelector = ({ tga, onSelectYear }) => {
+const YearSelector = ({ tga, getGameById, onSelectYear }) => {
   const tgaSorted = [...tga].sort((a, b) => a.year - b.year);
 
   return (
@@ -12,7 +13,7 @@ const YearSelector = ({ tga, onSelectYear }) => {
       className="px-4 py-6"
     >
       <h3 className="text-xl font-bold self-start mb-6">Choose a Game Awards year</h3>
-      <div className="flex flex-wrap gap-4 justify-center">
+      <div className="flex flex-wrap gap-4 justify-center mb-8">
         {tgaSorted.map((yearData) => (
           <button
             key={yearData.id}
@@ -23,6 +24,7 @@ const YearSelector = ({ tga, onSelectYear }) => {
           </button>
         ))}
       </div>
+      {/* <WinnersRecap tga={tga} getGameById={getGameById} /> */}
     </motion.div>
   );
 };

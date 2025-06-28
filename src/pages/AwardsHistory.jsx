@@ -1,16 +1,28 @@
-// AwardsHistory.jsx
 import { useEffect, useState } from "react";
 import Layout from "../components/shared/Layout";
 import { getGamesFromFirestore, getTgaFromFirestore } from "../js/firebase";
 import YearSelector from "../components/awards_history/YearSelector";
 import AwardSelector from "../components/awards_history/AwardSelector";
 import NomineesList from "../components/awards_history/NomineesList";
+import { useNavigate, useParams } from "react-router";
+import Breadcrumbs from "../components/awards_history/Breadcrumbs";
+import { slugify, deslugify } from "../js/utils";
+
 
 const AwardsHistory = () => {
+  const { year, awardId } = useParams();
+  const navigate = useNavigate();
+
   const [games, setGames] = useState([]);
   const [tga, setTga] = useState([]);
-  const [selectedYear, setSelectedYear] = useState(null);
-  const [selectedAward, setSelectedAward] = useState(null);
+  const [selectedYearNumber, setSelectedYearNumber] = useState(year ? parseInt(year) : null);
+
+  const selectedYearObj = tga.find((y) => y.year === selectedYearNumber) || null;
+  const awardSlug = awardId;
+  const selectedAward =
+    selectedYearObj?.awards.find(
+      (a) => slugify(a.title) === awardSlug
+    ) || null;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,22 +42,30 @@ const AwardsHistory = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    setSelectedYearNumber(year ? parseInt(year) : null);
+  }, [year]);
+
   const getGameById = (id) => games.find((g) => g.id === id);
+
+  const handleSelectYear = (selectedYearObj) => navigate(`/game-awards-history/${selectedYearObj.year}`);
+  const handleSelectAward = (award) => navigate(`/game-awards-history/${selectedYearNumber}/${slugify(award.title)}`);
 
   return (
     <Layout>
       <div className="max-w-5xl mx-auto">
         <h2 className="text-2xl font-bold text-center mb-4">Game Awards History</h2>
+        <Breadcrumbs />
 
-        {!selectedYear && (
-          <YearSelector tga={tga} onSelectYear={setSelectedYear} />
+        {!selectedYearNumber && (
+          <YearSelector tga={tga} getGameById={getGameById} onSelectYear={handleSelectYear} />
         )}
 
-        {selectedYear && !selectedAward && (
+        {selectedYearObj && !selectedAward && (
           <AwardSelector
-            year={selectedYear}
-            onBack={() => setSelectedYear(null)}
-            onSelectAward={setSelectedAward}
+            year={selectedYearObj}
+            onBack={() => navigate("/game-awards-history")}
+            onSelectAward={handleSelectAward}
           />
         )}
 
@@ -53,11 +73,8 @@ const AwardsHistory = () => {
           <NomineesList
             award={selectedAward}
             getGameById={getGameById}
-            onBackToAwards={() => setSelectedAward(null)}
-            onBackToYears={() => {
-              setSelectedAward(null);
-              setSelectedYear(null);
-            }}
+            onBackToAwards={() => navigate(`/game-awards-history/${selectedYearNumber}`)}
+            onBackToYears={() => navigate("/game-awards-history")}
           />
         )}
       </div>

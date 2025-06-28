@@ -10,34 +10,6 @@ const NomineeList = ({ award, getGameById, onBackToAwards, onBackToYears }) => {
       transition={{ duration: 0.4, ease: "easeInOut" }}
       className="px-4 py-6"
     >
-      <nav className="mb-6" aria-label="Breadcrumb">
-        <ol className="flex items-center space-x-2 text-sm text-gray-600">
-          <li>
-            <button
-              onClick={onBackToYears}
-              className="hover:underline text-blue-500 focus:outline-none"
-            >
-              Years
-            </button>
-          </li>
-          <li>
-            <span className="mx-1">/</span>
-          </li>
-          <li>
-            <button
-              onClick={onBackToAwards}
-              className="hover:underline text-blue-500 focus:outline-none"
-            >
-              Categories
-            </button>
-          </li>
-          <li>
-            <span className="mx-1">/</span>
-          </li>
-          <li className="font-semibold text-gray-900">{award.title}</li>
-        </ol>
-      </nav>
-
       <h3 className="text-xl font-bold mb-6">{award.title}</h3>
 
       <div className="flex flex-wrap gap-4 justify-center">
