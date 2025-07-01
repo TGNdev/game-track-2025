@@ -13,26 +13,15 @@ function GameCell({ game }) {
   const {
     search,
     highlightMatch,
+    tagsLabels,
+    isReleased,
   } = useGame();
-
-  const isReleased = () => {
-    const today = new Date();
-    const releaseDate = new Date(game.release_date.seconds * 1000);
-    return releaseDate < today;
-  };
-
-  const tagsLabels = {
-    dlc: "DLC / Expansion",
-    remake: "Remake",
-    remaster: "Remaster",
-    port: "Port / Re-release",
-  };
 
   const activeTags = [
     {
       key: "_release",
-      label: isReleased() ? "Released" : "Coming soon",
-      color: isReleased() ? "bg-green-500" : "bg-amber-400",
+      label: isReleased(game.release_date) ? "Released" : "Coming soon",
+      color: isReleased(game.release_date) ? "bg-green-500" : "bg-amber-400",
     },
     ...Object.keys(game.tags || {})
       .filter((tag) => game.tags[tag])

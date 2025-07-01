@@ -1,8 +1,3 @@
-import { ReactComponent as XboxIcon } from "../../assets/icons/xbox.svg";
-import { ReactComponent as PsIcon } from "../../assets/icons/ps.svg";
-import { ReactComponent as PcIcon } from "../../assets/icons/pc.svg";
-import { ReactComponent as SwitchIcon } from "../../assets/icons/switch.svg";
-import { ReactComponent as Switch2Icon } from "../../assets/icons/switch_2.svg";
 import { AiFillEdit } from "react-icons/ai";
 import { FaTrash } from "react-icons/fa";
 import { deleteGameFromFirestore } from "../../js/firebase";
@@ -19,35 +14,11 @@ const getRatingStyle = (rating) => {
   return `${baseClasses} bg-green-600`;
 };
 
-const getPlatformsSvg = (platform) => {
-  const baseClasses = "size-8 rounded p-1.5";
-  var classes = "";
-
-  switch (platform) {
-    case "xbox":
-      classes = `${baseClasses} bg-green-500`;
-      return <XboxIcon className={classes} fill="white" />;
-    case "ps":
-      classes = `${baseClasses} bg-blue-500`;
-      return <PsIcon className={classes} fill="white" />;
-    case "pc":
-      classes = `${baseClasses} bg-slate-400`;
-      return <PcIcon className={classes} fill="white" />;
-    case "switch":
-      classes = `${baseClasses} bg-red-500`;
-      return <SwitchIcon className={classes} fill="white" />;
-    case "switch_2":
-      classes = `${baseClasses} bg-red-500`;
-      return <Switch2Icon className={classes} fill="white" />;
-    default:
-      return null;
-  }
-};
-
 const GameRow = ({ game, edit, setGameToEdit, setIsModalOpen }) => {
   const {
     search,
     highlightMatch,
+    getPlatformsSvg,
   } = useGame();
 
   return (

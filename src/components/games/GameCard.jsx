@@ -1,31 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { ReactComponent as XboxIcon } from "../../assets/icons/xbox.svg";
-import { ReactComponent as PsIcon } from "../../assets/icons/ps.svg";
-import { ReactComponent as PcIcon } from "../../assets/icons/pc.svg";
-import { ReactComponent as SwitchIcon } from "../../assets/icons/switch.svg";
-import { ReactComponent as Switch2Icon } from "../../assets/icons/switch_2.svg";
+import { useEffect, useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
 import { FaThumbsUp } from "react-icons/fa6";
 import { useGame } from "../../contexts/GameContext";
 import he from "he";
-
-const getPlatformsSvg = (platform) => {
-  const base = `size-5 p-1`;
-  switch (platform) {
-    case "xbox":
-      return <XboxIcon className={`${base} bg-green-500`} fill="white" />;
-    case "ps":
-      return <PsIcon className={`${base} bg-blue-500`} fill="white" />;
-    case "pc":
-      return <PcIcon className={`${base} bg-slate-400`} fill="white" />;
-    case "switch":
-      return <SwitchIcon className={`${base} bg-red-500`} fill="white" />;
-    case "switch_2":
-      return <Switch2Icon className={`${base} bg-red-500`} fill="white" />;
-    default:
-      return null;
-  }
-};
 
 const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen, setGameToEdit }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,13 +10,10 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
   const {
     search,
     highlightMatch,
+    tagsLabels,
+    getPlatformsSvg,
+    isReleased,
   } = useGame();
-  const tagsLabels = {
-    dlc: "DLC / Expansion",
-    remake: "Remake",
-    remaster: "Remaster",
-    port: "Port / Re-release",
-  };
   const enabledTags = Object.keys(game.tags || {})
     .filter(t => game.tags && game.tags[t])
     .sort((a, b) => a.localeCompare(b));
@@ -61,12 +35,6 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
 
     return () => clearInterval(interval);
   }, [isOpen, images.length]);
-
-  const isReleased = () => {
-    const today = new Date();
-    const releaseDate = new Date(game.release_date.seconds * 1000);
-    return releaseDate < today;
-  };
 
   const platforms = Object.keys(game.platforms).filter(p => game.platforms[p]);
 
@@ -107,7 +75,7 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
       <div className="absolute top-0 left-0 flex flex-row justify-between w-full">
         <div className="flex flex-row">
           {/* Released badge */}
-          {isReleased() ? (
+          {isReleased(game.release_date) ? (
             <div className="bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 z-20">
               Released
             </div>
@@ -119,7 +87,7 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
           <div className="flex flex-row items-center h-5">
             {platforms.sort().map((platform, idx) => (
               <span key={idx}>
-                {getPlatformsSvg(platform)}
+                {getPlatformsSvg(platform, true)}
               </span>
             ))}
           </div>
@@ -144,7 +112,7 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
         className={`grid transition-all duration-500 ease-in-out overflow-hidden border-x ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
           }`}
         style={{
-        backgroundImage: images.length > 0 ? `url(${images[currentImageIndex]})` : undefined,
+          backgroundImage: images.length > 0 ? `url(${images[currentImageIndex]})` : undefined,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
