@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { fetchMergedEvents } from '../../js/events';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { useGame } from '../../contexts/GameContext';
+import { highlightMatch } from '../../js/utils';
 
 const EventsView = () => {
   const [allEvents, setAllEvents] = useState([]);
@@ -11,7 +12,6 @@ const EventsView = () => {
   const initialWeekStartRef = useRef(null);
   const {
     search,
-    highlightMatch,
   } = useGame();
 
   useEffect(() => {

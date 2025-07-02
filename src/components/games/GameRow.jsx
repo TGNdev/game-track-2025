@@ -4,6 +4,7 @@ import { deleteGameFromFirestore } from "../../js/firebase";
 import GameCell from "./GameCell";
 import { useGame } from "../../contexts/GameContext";
 import he from "he";
+import { highlightMatch } from "../../js/utils";
 
 const getRatingStyle = (rating) => {
   const baseClasses = "size-5 px-5 py-4 rounded-xl text-white hover:cursor-default text-sm flex items-center justify-center";
@@ -17,7 +18,6 @@ const getRatingStyle = (rating) => {
 const GameRow = ({ game, edit, setGameToEdit, setIsModalOpen }) => {
   const {
     search,
-    highlightMatch,
     getPlatformsSvg,
   } = useGame();
 

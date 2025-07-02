@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import HoverImageSlider from "./HoverImageSlider";
 import { useGame } from "../../contexts/GameContext";
 import he from "he";
+import { highlightMatch } from "../../js/utils";
 
 function GameCell({ game }) {
   const tagRefs = useRef([]);
@@ -12,7 +13,6 @@ function GameCell({ game }) {
   const unmountTimeoutRef = useRef(null);
   const {
     search,
-    highlightMatch,
     tagsLabels,
     isReleased,
   } = useGame();

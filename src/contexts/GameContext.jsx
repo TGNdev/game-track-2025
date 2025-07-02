@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { auth } from "../js/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { toast } from "react-toastify";
@@ -44,21 +44,6 @@ export const GameProvider = ({ children }) => {
     setIsModalOpen(false);
   };
 
-  function highlightMatch(text, query) {
-    if (!query) return text;
-
-    const parts = text.split(new RegExp(`(${query})`, 'gi'));
-    return parts.map((part, i) =>
-      part.toLowerCase() === query.toLowerCase() ? (
-        <span key={i} className="bg-yellow-200 font-semibold rounded">
-          {part}
-        </span>
-      ) : (
-        part
-      )
-    );
-  }
-
   const tagsLabels = {
     dlc: "DLC / Expansion",
     remake: "Remake",
@@ -94,33 +79,41 @@ export const GameProvider = ({ children }) => {
     return releaseDate < today;
   };
 
+  const value = useMemo(() => ({
+    viewGames,
+    setViewGames,
+    search,
+    setSearch,
+    opened,
+    setOpened,
+    isLogged,
+    setIsLogged,
+    edit,
+    setEdit,
+    isModalOpen,
+    setIsModalOpen,
+    featuredOpen,
+    setFeaturedOpen,
+    gameToEdit,
+    setGameToEdit,
+    logout,
+    handleCloseModal,
+    tagsLabels,
+    getPlatformsSvg,
+    isReleased,
+  }), [
+    viewGames,
+    search,
+    opened,
+    isLogged,
+    edit,
+    isModalOpen,
+    featuredOpen,
+    gameToEdit
+  ]);
+
   return (
-    <GameContext.Provider
-      value={{
-        viewGames,
-        setViewGames,
-        search,
-        setSearch,
-        opened,
-        setOpened,
-        isLogged,
-        setIsLogged,
-        edit,
-        setEdit,
-        isModalOpen,
-        setIsModalOpen,
-        featuredOpen,
-        setFeaturedOpen,
-        gameToEdit,
-        setGameToEdit,
-        logout,
-        handleCloseModal,
-        highlightMatch,
-        tagsLabels,
-        getPlatformsSvg,
-        isReleased,
-      }}
-    >
+    <GameContext.Provider value={value}>
       {children}
     </GameContext.Provider>
   );

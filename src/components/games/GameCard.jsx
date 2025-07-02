@@ -3,13 +3,13 @@ import { FiChevronDown } from "react-icons/fi";
 import { FaThumbsUp } from "react-icons/fa6";
 import { useGame } from "../../contexts/GameContext";
 import he from "he";
+import { highlightMatch } from "../../js/utils";
 
 const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen, setGameToEdit }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const {
     search,
-    highlightMatch,
     tagsLabels,
     getPlatformsSvg,
     isReleased,

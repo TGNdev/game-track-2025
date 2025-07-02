@@ -3,6 +3,7 @@ import { GameProvider, useGame } from "../contexts/GameContext";
 import Layout from "../components/shared/Layout";
 import he from 'he';
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { highlightMatch } from "../js/utils";
 
 const RedditFeed = () => {
   const [posts, setPosts] = useState([]);
@@ -11,7 +12,6 @@ const RedditFeed = () => {
   const [selectedFlair, setSelectedFlair] = useState("All");
   const {
     search,
-    highlightMatch,
   } = useGame();
 
   function formatDate(utcSeconds) {

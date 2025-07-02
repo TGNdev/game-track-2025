@@ -3,12 +3,12 @@ import Layout from "../components/shared/Layout";
 import { getGamesFromFirestore } from "../js/firebase";
 import { useGame } from "../contexts/GameContext";
 import he from 'he';
+import { highlightMatch } from "../js/utils";
 
 const Hof = () => {
   const [games, setGames] = useState([]);
   const {
     search,
-    highlightMatch,
   } = useGame();
 
   useEffect(() => {
