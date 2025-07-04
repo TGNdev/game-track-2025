@@ -8,7 +8,7 @@ import { highlightMatch } from "../../js/utils";
 
 const getRatingStyle = (rating) => {
   const baseClasses = "size-5 px-5 py-4 rounded-xl text-white hover:cursor-default text-sm flex items-center justify-center";
-  if (rating == 0) return `${baseClasses} bg-slate-300`;
+  if (rating === 0) return `${baseClasses} bg-slate-300`;
   if (rating < 70) return `${baseClasses} bg-red-500`;
   if (rating >= 70 && rating < 80) return `${baseClasses} bg-amber-400`;
   if (rating >= 80 && rating < 90) return `${baseClasses} bg-green-400`;

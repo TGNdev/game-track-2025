@@ -44,13 +44,6 @@ export const GameProvider = ({ children }) => {
     setIsModalOpen(false);
   };
 
-  const tagsLabels = {
-    dlc: "DLC / Expansion",
-    remake: "Remake",
-    remaster: "Remaster",
-    port: "Port / Re-release",
-  };
-
   const getPlatformsSvg = (platform, isCard = false) => {
     var base = 'size-8 rounded p-1.5';
     if (isCard) {
@@ -79,29 +72,38 @@ export const GameProvider = ({ children }) => {
     return releaseDate < today;
   };
 
-  const value = useMemo(() => ({
-    viewGames,
-    setViewGames,
-    search,
-    setSearch,
-    opened,
-    setOpened,
-    isLogged,
-    setIsLogged,
-    edit,
-    setEdit,
-    isModalOpen,
-    setIsModalOpen,
-    featuredOpen,
-    setFeaturedOpen,
-    gameToEdit,
-    setGameToEdit,
-    logout,
-    handleCloseModal,
-    tagsLabels,
-    getPlatformsSvg,
-    isReleased,
-  }), [viewGames, search, opened, isLogged, edit, isModalOpen, featuredOpen, gameToEdit, tagsLabels]);
+  const value = useMemo(() => {
+    const tagsLabels = {
+      dlc: "DLC / Expansion",
+      remake: "Remake",
+      remaster: "Remaster",
+      port: "Port / Re-release",
+    };
+
+    return {
+      viewGames,
+      setViewGames,
+      search,
+      setSearch,
+      opened,
+      setOpened,
+      isLogged,
+      setIsLogged,
+      edit,
+      setEdit,
+      isModalOpen,
+      setIsModalOpen,
+      featuredOpen,
+      setFeaturedOpen,
+      gameToEdit,
+      setGameToEdit,
+      logout,
+      handleCloseModal,
+      tagsLabels,
+      getPlatformsSvg,
+      isReleased,
+    };
+  }, [viewGames, search, opened, isLogged, edit, isModalOpen, featuredOpen, gameToEdit]);
 
   return (
     <GameContext.Provider value={value}>
