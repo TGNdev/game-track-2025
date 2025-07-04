@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
 import { IoPauseOutline, IoPlayOutline } from "react-icons/io5";
@@ -16,13 +16,13 @@ function HoverImageSlider({ images, bounds, isVisible, onClose }) {
   const width = 320;
   const height = 180;
 
-  const restartInterval = () => {
+  const restartInterval = useCallback(() => {
     clearInterval(intervalRef.current);
     if (images.length <= 1 || !shouldRender || isPaused) return;
     intervalRef.current = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length);
     }, 3000);
-  };
+  }, [images, isPaused, shouldRender]);
 
   useEffect(() => {
     if (isVisible) {
@@ -39,7 +39,7 @@ function HoverImageSlider({ images, bounds, isVisible, onClose }) {
     if (!shouldRender) return;
     restartInterval();
     return () => clearInterval(intervalRef.current);
-  }, [shouldRender, isPaused]);
+  }, [shouldRender, isPaused, restartInterval]);
 
   const handleMouseLeave = () => {
     setIsFadingOut(true);

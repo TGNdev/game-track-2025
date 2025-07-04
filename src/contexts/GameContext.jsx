@@ -101,16 +101,7 @@ export const GameProvider = ({ children }) => {
     tagsLabels,
     getPlatformsSvg,
     isReleased,
-  }), [
-    viewGames,
-    search,
-    opened,
-    isLogged,
-    edit,
-    isModalOpen,
-    featuredOpen,
-    gameToEdit
-  ]);
+  }), [viewGames, search, opened, isLogged, edit, isModalOpen, featuredOpen, gameToEdit, tagsLabels]);
 
   return (
     <GameContext.Provider value={value}>

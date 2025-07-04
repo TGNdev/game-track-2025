@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, where, getDocs } from "firebase/firestore";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, deleteDoc, updateDoc, doc, getDocs } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_API_KEY,
@@ -34,14 +34,6 @@ export const getGamesFromFirestore = async () => {
 export const addGameToFirestore = async (gameData) => {
   try {
     const gamesRef = collection(db, "games");
-
-    // const q = query(gamesRef, where("name", "==", gameData.name));
-    // const querySnapshot = await getDocs(q);
-
-    // if (!querySnapshot.empty) {
-    //   throw new Error("A game with this name already exists.");
-    // }
-
     const game = await addDoc(gamesRef, gameData);
     console.log("Game added with ID: ", game.id);
   } catch (e) {

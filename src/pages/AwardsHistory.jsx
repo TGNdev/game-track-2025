@@ -6,7 +6,7 @@ import AwardSelector from "../components/awards_history/AwardSelector";
 import NomineesList from "../components/awards_history/NomineesList";
 import { useNavigate, useParams } from "react-router";
 import Breadcrumbs from "../components/awards_history/Breadcrumbs";
-import { slugify, deslugify } from "../js/utils";
+import { slugify } from "../js/utils";
 
 
 const AwardsHistory = () => {

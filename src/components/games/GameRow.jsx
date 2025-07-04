@@ -81,7 +81,7 @@ const GameRow = ({ game, edit, setGameToEdit, setIsModalOpen }) => {
         <div className="flex flex-col gap-3">
           <div className="flex flex-row gap-2 justify-center">
             {["critics", "players"].map((ratingType, index) => (
-              <div key={index} className={`${getRatingStyle(game.ratings[ratingType])}`}>
+              <div key={index} className={`${getRatingStyle(Number(game.ratings[ratingType]))}`}>
                 {Number(game.ratings[ratingType]) === 0 ? "/" : game.ratings[ratingType]}
               </div>
             ))}

@@ -58,7 +58,7 @@ const AddGameForm = ({ games, onSuccess }) => {
     };
 
     fetchData();
-  }, []);
+  }, [games]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
