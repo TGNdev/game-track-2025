@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
-import WinnersRecap from "./WinnersRecap";
 
-const YearSelector = ({ tga, getGameById, onSelectYear }) => {
+const YearSelector = ({ tga, onSelectYear }) => {
   const tgaSorted = [...tga].sort((a, b) => a.year - b.year);
 
   return (
@@ -24,7 +23,6 @@ const YearSelector = ({ tga, getGameById, onSelectYear }) => {
           </button>
         ))}
       </div>
-      {/* <WinnersRecap tga={tga} getGameById={getGameById} /> */}
     </motion.div>
   );
 };

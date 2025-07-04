@@ -84,12 +84,12 @@ const GamesView = ({ games, openButtonRef }) => {
       const tbaMatch = release_date.match(/TBA (\d{4})/);
 
       if (quarterMatch) {
-        const [_, q, year] = quarterMatch;
+        const [, q, year] = quarterMatch;
         return parseInt(year) * 100 + quarterWeight[`Q${q}`];
       }
 
       if (tbaMatch) {
-        const [_, year] = tbaMatch;
+        const [, year] = tbaMatch;
         return parseInt(year) * 100 + 99;
       }
 

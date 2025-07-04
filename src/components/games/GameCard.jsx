@@ -166,12 +166,12 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
             {/* Ratings */}
             <div className="max-w-fit flex flex-col items-center justify-center gap-3">
               {["critics", "players"].map((type, idx) => {
-                const rating = game.ratings[type];
-                const bgClass = rating == 0 ? "bg-gray-300" :
+                const rating = Number(game.ratings[type]);
+                const bgClass = rating === 0 ? "bg-gray-300" :
                   rating < 70 ? "bg-red-500" :
                     rating < 80 ? "bg-amber-400" :
                       rating < 90 ? "bg-green-400" : "bg-green-600";
-                const ringClass = rating == 0 ? "bg-gray-400" :
+                const ringClass = rating === 0 ? "bg-gray-400" :
                   rating < 70 ? "bg-red-600" :
                     rating < 80 ? "bg-amber-500" :
                       rating < 90 ? "bg-green-500" : "bg-green-700";
@@ -184,7 +184,7 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
                           <FaThumbsUp />
                         </div>
                       )}
-                      {rating == 0 ? "/" : rating}
+                      {rating === 0 ? "/" : rating}
                     </div>
                   </div>
                 );

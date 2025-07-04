@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
 
-const NomineeList = ({ award, getGameById, onBackToAwards, onBackToYears }) => {
+const NomineeList = ({ award, getGameById }) => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -16,9 +15,6 @@ const NomineeList = ({ award, getGameById, onBackToAwards, onBackToYears }) => {
         {award.nominees && award.nominees.length > 0 ? (
           award.nominees.map((nominee, idx) => {
             const game = getGameById(nominee.gameId);
-            // const proxyUrl = "https://corsproxy.io/?";
-            // const actorImageUrl = encodeURIComponent(nominee.role.actor.image);
-            // const asImageUrl = encodeURIComponent(nominee.role.as.image);
 
             return (
               <div

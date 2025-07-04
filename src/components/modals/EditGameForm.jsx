@@ -40,7 +40,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
   });
 
   const [form, setForm] = useState(getInitialFormState());
-  const [originalData, setOriginalData] = useState(getInitialFormState());
+  const [originalData] = useState(getInitialFormState());
   const [hasChanges, setHasChanges] = useState(false);
   const [errors, setErrors] = useState({});
   const [existingDevs, setExistingDevs] = useState([]);

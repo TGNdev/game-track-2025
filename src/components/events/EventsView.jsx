@@ -7,7 +7,7 @@ import { highlightMatch } from '../../js/utils';
 const EventsView = () => {
   const [allEvents, setAllEvents] = useState([]);
   const [currentWeekStart, setCurrentWeekStart] = useState(null);
-  const [todayWeekStart, setTodayWeekStart] = useState(getStartOfWeek(new Date()));
+  const [todayWeekStart] = useState(getStartOfWeek(new Date()));
   const [firstFutureWeekStart, setFirstFutureWeekStart] = useState(null);
   const initialWeekStartRef = useRef(null);
   const {
