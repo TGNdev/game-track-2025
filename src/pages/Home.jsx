@@ -22,8 +22,8 @@ const Home = () => {
     edit, setEdit,
     setIsModalOpen,
     setFeaturedOpen,
-    coverMap, setCoverMap,
-    screenshotsMap, setScreenshotsMap
+    setCoverMap,
+    setScreenshotsMap
   } = useGame();
 
   useEffect(() => {

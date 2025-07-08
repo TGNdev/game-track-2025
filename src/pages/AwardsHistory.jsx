@@ -7,6 +7,8 @@ import NomineesList from "../components/awards_history/NomineesList";
 import { useNavigate, useParams } from "react-router";
 import Breadcrumbs from "../components/awards_history/Breadcrumbs";
 import { slugify } from "../js/utils";
+import { useGame } from "../contexts/GameContext";
+import { getGameCovers } from "../js/igdb";
 
 
 const AwardsHistory = () => {
@@ -16,6 +18,9 @@ const AwardsHistory = () => {
   const [games, setGames] = useState([]);
   const [tga, setTga] = useState([]);
   const [selectedYearNumber, setSelectedYearNumber] = useState(year ? parseInt(year) : null);
+  const {
+    coverMap, setCoverMap,
+  } = useGame();
 
   const selectedYearObj = tga.find((y) => y.year === selectedYearNumber) || null;
   const awardSlug = awardId;
@@ -41,6 +46,16 @@ const AwardsHistory = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchCovers = async () => {
+      if (games.length === 0) return;
+      const gameIds = games.map((g) => g.igdb_id);
+      const covers = await getGameCovers(gameIds);
+      setCoverMap(covers);
+    };
+    fetchCovers();
+  }, [games, setCoverMap]);
 
   useEffect(() => {
     setSelectedYearNumber(year ? parseInt(year) : null);
@@ -75,6 +90,7 @@ const AwardsHistory = () => {
             getGameById={getGameById}
             onBackToAwards={() => navigate(`/game-awards-history/${selectedYearNumber}`)}
             onBackToYears={() => navigate("/game-awards-history")}
+            coverMap={coverMap}
           />
         )}
       </div>

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-const NomineeList = ({ award, getGameById }) => {
+const NomineeList = ({ award, getGameById, coverMap }) => {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -15,6 +15,7 @@ const NomineeList = ({ award, getGameById }) => {
         {award.nominees && award.nominees.length > 0 ? (
           award.nominees.map((nominee, idx) => {
             const game = getGameById(nominee.gameId);
+            const cover = coverMap ? coverMap[game.igdb_id] : [];
 
             return (
               <div
@@ -43,9 +44,9 @@ const NomineeList = ({ award, getGameById }) => {
                   </>
                 ) : game ? (
                   <>
-                    {game.cover && (
+                    {cover && (
                       <img
-                        src={game.cover}
+                        src={cover}
                         alt={game.name}
                         className="object-cover h-52 w-full rounded"
                       />
@@ -63,6 +64,7 @@ const NomineeList = ({ award, getGameById }) => {
         ) : (
           (() => {
             const game = getGameById(award.gameId);
+            const cover = coverMap ? coverMap[game.igdb_id] : []
             if (!game) {
               return <p className="text-red-500 text-sm">Game not found</p>;
             }
@@ -74,7 +76,7 @@ const NomineeList = ({ award, getGameById }) => {
               >
                 {game.cover && (
                   <img
-                    src={game.cover}
+                    src={cover}
                     alt={game.name}
                     className="object-cover h-full rounded"
                   />
