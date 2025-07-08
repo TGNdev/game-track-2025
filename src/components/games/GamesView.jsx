@@ -9,7 +9,7 @@ import { FaPlus, FaFilter } from "react-icons/fa";
 import { useGame } from "../../contexts/GameContext";
 import FeaturedGames from "./FeaturedGames";
 
-const GamesView = ({ games, openButtonRef }) => {
+const GamesView = ({ games, openButtonRef, coverMap, screenshotsMap }) => {
   const {
     search,
     opened,
@@ -347,6 +347,8 @@ const GamesView = ({ games, openButtonRef }) => {
                 setForceOpen={() => setFeaturedOpen(null)}
                 setGameToEdit={setGameToEdit}
                 setIsModalOpen={setIsModalOpen}
+                coverImage={coverMap[game.igdb_id]}
+                screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
               />
             ))}
           </div>
@@ -382,6 +384,8 @@ const GamesView = ({ games, openButtonRef }) => {
                     edit={edit}
                     setGameToEdit={setGameToEdit}
                     setIsModalOpen={setIsModalOpen}
+                    coverImage={coverMap ? coverMap[game.igdb_id] : []}
+                    screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
                   />
                 ))}
               </tbody>

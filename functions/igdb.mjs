@@ -42,7 +42,6 @@ export async function handler(event) {
 
     const cacheKey = query.trim();
     if (cache[cacheKey]) {
-      console.log("Response from cache !");
       return {
         statusCode: 200,
         body: JSON.stringify(cache[cacheKey]),

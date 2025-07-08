@@ -4,12 +4,13 @@ import { useGame } from "../../contexts/GameContext";
 import he from "he";
 import { highlightMatch } from "../../js/utils";
 
-function GameCell({ game }) {
+function GameCell({ game, coverImage, screenshots }) {
   const tagRefs = useRef([]);
   const imgRef = useRef(null);
   const [tagLefts, setTagLefts] = useState([]);
   const [hoverBounds, setHoverBounds] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [coverLoaded, setCoverLoaded] = useState(false);
   const unmountTimeoutRef = useRef(null);
   const {
     search,
@@ -95,15 +96,23 @@ function GameCell({ game }) {
         <div
           ref={imgRef}
           onMouseEnter={handleMouseEnter}
-          className="relative w-20 h-14 overflow-visible shrink-0"
+          className="relative w-24 h-32 overflow-visible shrink-0"
         >
           {game.cover ? (
-            <img
-              src={game.cover}
-              loading="lazy"
-              alt={`${game.name} cover`}
-              className="absolute w-full h-full object-cover rounded shadow-md"
-            />
+            <>
+              {!coverLoaded && (
+                <div className="absolute w-full h-full bg-gray-200 rounded animate-pulse" />
+              )}
+              <img
+                src={coverImage}
+                loading="lazy"
+                alt={`${game.name} cover`}
+                className={`absolute w-full h-full object-cover rounded shadow-md transition-opacity duration-300
+                  ${coverLoaded ? "opacity-100" : "opacity-0"
+                }`}
+                onLoad={() => setCoverLoaded(true)}
+              />
+            </>
           ) : (
             <div className="absolute w-full h-full bg-gray-300 rounded shadow-md flex items-center justify-center">
               <span className="text-xs text-gray-500 text-center">No image ... Admin ?!</span>
@@ -118,9 +127,9 @@ function GameCell({ game }) {
         </a>
       </div>
 
-      {hoverBounds && game.cover && (
+      {hoverBounds && screenshots && (
         <HoverImageSlider
-          images={[game.cover, ...(game.images || [])]}
+          images={[...(screenshots || [])]}
           bounds={hoverBounds}
           isVisible={isVisible}
           onClose={() => {

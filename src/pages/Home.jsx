@@ -7,12 +7,15 @@ import EventsView from "../components/events/EventsView"
 import { useGame } from "../contexts/GameContext";
 import Layout from "../components/shared/Layout";
 import { getGamesFromFirestore } from "../js/firebase";
+import { getGameCovers, getGameScreenshots } from "../js/igdb";
 
 const Home = () => {
   const [games, setGames] = useState([]);
   const [viewGames, setViewGames] = useState(true);
   const openButtonRef = useRef(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [coverMap, setCoverMap] = useState(null);
+  const [screenshotsMap, setScreenshotsMap] = useState(null);
   const {
     setSearch,
     opened, setOpened,
@@ -25,15 +28,36 @@ const Home = () => {
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        const gamesList = await getGamesFromFirestore();        
+        const gamesList = (await getGamesFromFirestore())
+          .filter(game => game.igdb_id && game.igdb_id !== "");
         setGames(gamesList);
       } catch (error) {
         console.error("Error fetching games:", error);
       }
     };
-
     fetchGames();
   }, []);
+
+  useEffect(() => {
+    const fetchCovers = async () => {
+      if (games.length === 0) return;
+      const gameIds = games.map((g) => g.igdb_id);
+      const covers = await getGameCovers(gameIds);
+      setCoverMap(covers);
+    };
+    fetchCovers();
+  }, [games]);
+
+  useEffect(() => {
+    const fetchScreenshots = async () => {
+      if (games.length === 0) return;
+      const gameIds = games.map((g) => g.igdb_id);
+      const screenshots = await getGameScreenshots(gameIds);
+      console.log(screenshots)
+      setScreenshotsMap(screenshots);
+    };
+    fetchScreenshots();
+  }, [games]);
 
   const handleViewSwitch = (toGames) => {
     if (viewGames === toGames) return;
@@ -136,7 +160,12 @@ const Home = () => {
         </div>
         <div className={`transition-opacity duration-300 ${transitioning ? "opacity-0" : "opacity-100"} w-full`}>
           {viewGames ? (
-            <GamesView games={games} openButtonRef={openButtonRef} />
+            <GamesView
+              games={games}
+              openButtonRef={openButtonRef}
+              coverMap={coverMap}
+              screenshotsMap={screenshotsMap}
+            />
           ) : (
             <EventsView />
           )}

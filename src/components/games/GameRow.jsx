@@ -15,7 +15,7 @@ const getRatingStyle = (rating) => {
   return `${baseClasses} bg-green-600`;
 };
 
-const GameRow = ({ game, edit, setGameToEdit, setIsModalOpen }) => {
+const GameRow = ({ game, edit, setGameToEdit, setIsModalOpen, coverImage, screenshots }) => {
   const {
     search,
     getPlatformsSvg,
@@ -25,16 +25,18 @@ const GameRow = ({ game, edit, setGameToEdit, setIsModalOpen }) => {
     <tr id={`game-${game.id}`} className="text-center relative text-sm">
       <GameCell
         game={game}
+        coverImage={coverImage}
+        screenshots={screenshots}
       />
 
       <td className="p-3">
         <div className="hover:cursor-default text-sm">
           {game.release_date?.seconds
             ? new Date(game.release_date.seconds * 1000).toLocaleDateString("en-EN", {
-                day: "2-digit",
-                month: "long",
-                year: "numeric",
-              })
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+            })
             : game.release_date || "Unknown"}
         </div>
       </td>

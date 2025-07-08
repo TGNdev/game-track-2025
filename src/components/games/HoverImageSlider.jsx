@@ -10,6 +10,8 @@ function HoverImageSlider({ images, bounds, isVisible, onClose }) {
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [shouldRender, setShouldRender] = useState(isVisible);
   const [adjustedPosition, setAdjustedPosition] = useState({ top: 0, left: 0 });
+  const [loadedImages, setLoadedImages] = useState({});
+  const allImagesLoaded = images.length > 0 && images.every((_, i) => loadedImages[i]);
   const intervalRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -18,11 +20,13 @@ function HoverImageSlider({ images, bounds, isVisible, onClose }) {
 
   const restartInterval = useCallback(() => {
     clearInterval(intervalRef.current);
-    if (images.length <= 1 || !shouldRender || isPaused) return;
+
+    if (images.length <= 1 || !shouldRender || isPaused || !allImagesLoaded) return;
+
     intervalRef.current = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length);
     }, 3000);
-  }, [images, isPaused, shouldRender]);
+  }, [images, isPaused, shouldRender, allImagesLoaded]);
 
   useEffect(() => {
     if (isVisible) {
@@ -113,12 +117,20 @@ function HoverImageSlider({ images, bounds, isVisible, onClose }) {
         }}
       >
         {images.map((img, i) => (
-          <img
-            key={i}
-            src={img}
-            alt=""
-            className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out ${i === index ? "opacity-100 z-10" : "opacity-0 z-0"}`}
-          />
+          <div key={i} className="absolute top-0 left-0 w-full h-full">
+            {!loadedImages[i] && (
+              <div className="w-full h-full bg-gray-300 animate-pulse absolute top-0 left-0 z-0" />
+            )}
+            <img
+              src={img}
+              alt={`Screenshot ${i + 1}`}
+              loading="lazy"
+              onLoad={() =>
+                setLoadedImages((prev) => ({ ...prev, [i]: true }))
+              }
+              className={`w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-700 ease-in-out ${i === index && loadedImages[i] ? "opacity-100 z-10" : "opacity-0 z-0"}`}
+            />
+          </div>
         ))}
 
         {images.length > 1 && (
