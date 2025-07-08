@@ -55,7 +55,6 @@ const RedditFeed = () => {
       }
     };
 
-    console.log("Fetching with limit:", postLimit);
     fetchPosts();
   }, [postLimit]);
 

@@ -53,7 +53,6 @@ const Home = () => {
       if (games.length === 0) return;
       const gameIds = games.map((g) => g.igdb_id);
       const screenshots = await getGameScreenshots(gameIds);
-      console.log(screenshots)
       setScreenshotsMap(screenshots);
     };
     fetchScreenshots();

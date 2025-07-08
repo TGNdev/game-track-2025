@@ -45,7 +45,6 @@ export const getGameScreenshots = async (gameIds) => {
             );
         }
     });
-    console.log(screenshotMap);
 
     return screenshotMap;
 }
