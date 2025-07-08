@@ -1,5 +1,3 @@
-import fetch from "node-fetch";
-
 let cache = {};
 let igdbToken = {
   access_token: null,
@@ -44,6 +42,7 @@ export async function handler(event) {
 
     const cacheKey = query.trim();
     if (cache[cacheKey]) {
+      console.log("Response from cache !");
       return {
         statusCode: 200,
         body: JSON.stringify(cache[cacheKey]),

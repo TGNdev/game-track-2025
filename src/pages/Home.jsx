@@ -6,7 +6,7 @@ import GamesView from "../components/games/GamesView"
 import EventsView from "../components/events/EventsView"
 import { useGame } from "../contexts/GameContext";
 import Layout from "../components/shared/Layout";
-// import { getGamesFromFirestore } from "../js/firebase";
+import { getGamesFromFirestore } from "../js/firebase";
 
 const Home = () => {
   const [games, setGames] = useState([]);
@@ -25,14 +25,7 @@ const Home = () => {
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        const res = await fetch("/api/igdb", {
-          method: "POST",
-          body: JSON.stringify({
-            query: `fields name, summary, first_release_date, cover.url, genres.name, platforms.name, involved_companies.company.name, rating, aggregated_rating, screenshots.url, videos.video_id, websites.url;`
-          })
-        });
-
-        const gamesList = await res.json();
+        const gamesList = await getGamesFromFirestore();        
         setGames(gamesList);
       } catch (error) {
         console.error("Error fetching games:", error);
