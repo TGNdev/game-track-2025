@@ -9,7 +9,7 @@ import { FaPlus, FaFilter } from "react-icons/fa";
 import { useGame } from "../../contexts/GameContext";
 import FeaturedGames from "./FeaturedGames";
 
-const GamesView = ({ games, openButtonRef }) => {
+const GamesView = ({ games, openButtonRef, isLoading }) => {
   const {
     search,
     opened,
@@ -216,10 +216,27 @@ const GamesView = ({ games, openButtonRef }) => {
 
   const modalRef = useOutsideClick(handleCloseModal, [openButtonRef]);
 
+  if (isLoading) {
+    return (
+      <>
+        <FeaturedGames games={games} isLoading={isLoading} />
+        <div className="w-full flex flex-col items-center mt-8">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="w-full max-w-2xl h-20 bg-gray-200 animate-pulse rounded-lg mb-4"
+            />
+          ))}
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <FeaturedGames
         games={games}
+        isLoading={isLoading}
       />
 
       <div className="w-full flex justify-center mt-6">

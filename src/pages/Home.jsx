@@ -14,6 +14,7 @@ const Home = () => {
   const [viewGames, setViewGames] = useState(true);
   const openButtonRef = useRef(null);
   const [transitioning, setTransitioning] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const {
     setSearch,
     opened, setOpened,
@@ -28,10 +29,13 @@ const Home = () => {
   useEffect(() => {
     const fetchGames = async () => {
       try {
+        setIsLoading(true);
         const gamesList = (await getGamesFromFirestore());
         setGames(gamesList);
       } catch (error) {
         console.error("Error fetching games:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchGames();
@@ -161,8 +165,7 @@ const Home = () => {
             <GamesView
               games={games}
               openButtonRef={openButtonRef}
-              coverMap={coverMap}
-              screenshotsMap={screenshotsMap}
+              isLoading={isLoading}
             />
           ) : (
             <EventsView />

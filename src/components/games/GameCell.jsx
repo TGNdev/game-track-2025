@@ -98,7 +98,7 @@ function GameCell({ game, coverImage, screenshots }) {
           onMouseEnter={handleMouseEnter}
           className="relative w-24 h-32 overflow-visible shrink-0"
         >
-          {game.cover ? (
+          {coverImage && (
             <>
               {!coverLoaded && (
                 <div className="absolute w-full h-full bg-gray-200 rounded animate-pulse" />
@@ -113,10 +113,6 @@ function GameCell({ game, coverImage, screenshots }) {
                 onLoad={() => setCoverLoaded(true)}
               />
             </>
-          ) : (
-            <div className="absolute w-full h-full bg-gray-300 rounded shadow-md flex items-center justify-center">
-              <span className="text-xs text-gray-500 text-center">No image ... Admin ?!</span>
-            </div>
           )}
         </div>
 
