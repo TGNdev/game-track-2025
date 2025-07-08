@@ -1,32 +1,21 @@
 import { useGame } from "../../contexts/GameContext";
 
-const FeaturedGame = ({ featured }) => {
+const FeaturedGame = ({ featured, cover }) => {
   const {
     setFeaturedOpen,
   } = useGame();
 
   return (
-    <div
-      className="flex flex-col gap-3 bg-white rounded-lg border p-5 shadow-lg"
-      style={{
-        backgroundImage: featured.cover ? `url(${featured.cover})` : undefined,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        position: "relative",
-        zIndex: 0,
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: "rgba(255,255,255,0.65)",
-          zIndex: 1,
-          borderRadius: "inherit",
-        }}
-      />
-      <div className="flex flex-col h-full justify-between gap-4 relative z-10">
+    <div className="flex flex-row gap-3 bg-white rounded-lg border shadow-lg">
+      {cover && (
+        <img
+          src={cover}
+          alt={featured.name}
+          className="h-full w-32 object-cover rounded-lg"
+          style={{ maxHeight: "180px" }}
+        />
+      )}
+      <div className="flex flex-col h-full justify-between gap-4 relative z-10 flex-1 py-5 px-2">
         <div className="flex flex-row items-center justify-between w-full">
           <div className="flex flex-col">
             <h2 className="text-lg font-bold">{featured.name}</h2>

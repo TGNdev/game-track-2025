@@ -216,7 +216,10 @@ const GamesView = ({ games, openButtonRef, coverMap, screenshotsMap }) => {
 
   return (
     <>
-      <FeaturedGames games={games} />
+      <FeaturedGames
+        games={games}
+        coverMap={coverMap}
+      />
 
       <div className="w-full flex justify-center mt-6">
         <div className="flex flex-row w-full gap-4 items-center justify-center">
@@ -347,7 +350,7 @@ const GamesView = ({ games, openButtonRef, coverMap, screenshotsMap }) => {
                 setForceOpen={() => setFeaturedOpen(null)}
                 setGameToEdit={setGameToEdit}
                 setIsModalOpen={setIsModalOpen}
-                coverImage={coverMap[game.igdb_id]}
+                coverImage={coverMap ? coverMap[game.igdb_id] : []}
                 screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
               />
             ))}

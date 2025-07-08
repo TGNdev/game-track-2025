@@ -2,7 +2,7 @@ import { Timestamp } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import FeaturedGame from "./FeaturedGame";
 
-const FeaturedGames = ({ games }) => {
+const FeaturedGames = ({ games, coverMap }) => {
   const [showAll, setShowAll] = useState(false);
   const [columns, setColumns] = useState(3);
 
@@ -59,7 +59,7 @@ const FeaturedGames = ({ games }) => {
       }
       return false;
     })
-    .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => a.name.localeCompare(b.name));
   })();
 
   useEffect(() => {
@@ -91,13 +91,21 @@ const FeaturedGames = ({ games }) => {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
         {firstRow.map(featured => (
-          <FeaturedGame key={featured.id} featured={featured} />
+          <FeaturedGame
+            key={featured.id}
+            featured={featured}
+            cover={coverMap ? coverMap[featured.igdb_id] : []}
+          />
         ))}
       </div>
       {showAll && (
         <div className="w-full max-h-[400px] overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-4">
           {otherRows.map(featured => (
-            <FeaturedGame key={featured.id} featured={featured} />
+            <FeaturedGame
+              key={featured.id}
+              featured={featured}
+              cover={coverMap ? coverMap[featured.igdb_id] : []}
+            />
           ))}
         </div>
       )}
