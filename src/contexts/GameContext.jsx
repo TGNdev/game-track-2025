@@ -19,6 +19,8 @@ export const GameProvider = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [featuredOpen, setFeaturedOpen] = useState(null);
   const [gameToEdit, setGameToEdit] = useState(null);
+  const [coverMap, setCoverMap] = useState({});
+  const [screenshotsMap, setScreenshotsMap] = useState({});
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -102,8 +104,12 @@ export const GameProvider = ({ children }) => {
       tagsLabels,
       getPlatformsSvg,
       isReleased,
+      coverMap,
+      setCoverMap,
+      screenshotsMap,
+      setScreenshotsMap,
     };
-  }, [viewGames, search, opened, isLogged, edit, isModalOpen, featuredOpen, gameToEdit]);
+  }, [viewGames, search, opened, isLogged, edit, isModalOpen, featuredOpen, gameToEdit, coverMap, screenshotsMap]);
 
   return (
     <GameContext.Provider value={value}>

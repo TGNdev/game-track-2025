@@ -9,7 +9,7 @@ import { FaPlus, FaFilter } from "react-icons/fa";
 import { useGame } from "../../contexts/GameContext";
 import FeaturedGames from "./FeaturedGames";
 
-const GamesView = ({ games, openButtonRef, coverMap, screenshotsMap }) => {
+const GamesView = ({ games, openButtonRef }) => {
   const {
     search,
     opened,
@@ -22,6 +22,8 @@ const GamesView = ({ games, openButtonRef, coverMap, screenshotsMap }) => {
     gameToEdit,
     setGameToEdit,
     handleCloseModal,
+    coverMap,
+    screenshotsMap
   } = useGame();
   const [withRelease, setWithRelease] = useState(true);
   const [selectedPlatforms, setSelectedPlatforms] = useState(() => {
@@ -218,7 +220,6 @@ const GamesView = ({ games, openButtonRef, coverMap, screenshotsMap }) => {
     <>
       <FeaturedGames
         games={games}
-        coverMap={coverMap}
       />
 
       <div className="w-full flex justify-center mt-6">
@@ -351,7 +352,6 @@ const GamesView = ({ games, openButtonRef, coverMap, screenshotsMap }) => {
                 setGameToEdit={setGameToEdit}
                 setIsModalOpen={setIsModalOpen}
                 coverImage={coverMap ? coverMap[game.igdb_id] : []}
-                screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
               />
             ))}
           </div>

@@ -14,8 +14,6 @@ const Home = () => {
   const [viewGames, setViewGames] = useState(true);
   const openButtonRef = useRef(null);
   const [transitioning, setTransitioning] = useState(false);
-  const [coverMap, setCoverMap] = useState(null);
-  const [screenshotsMap, setScreenshotsMap] = useState(null);
   const {
     setSearch,
     opened, setOpened,
@@ -23,13 +21,14 @@ const Home = () => {
     edit, setEdit,
     setIsModalOpen,
     setFeaturedOpen,
+    coverMap, setCoverMap,
+    screenshotsMap, setScreenshotsMap
   } = useGame();
 
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        const gamesList = (await getGamesFromFirestore())
-          .filter(game => game.igdb_id && game.igdb_id !== "");
+        const gamesList = (await getGamesFromFirestore());
         setGames(gamesList);
       } catch (error) {
         console.error("Error fetching games:", error);
@@ -46,7 +45,7 @@ const Home = () => {
       setCoverMap(covers);
     };
     fetchCovers();
-  }, [games]);
+  }, [games, setCoverMap]);
 
   useEffect(() => {
     const fetchScreenshots = async () => {
@@ -56,7 +55,7 @@ const Home = () => {
       setScreenshotsMap(screenshots);
     };
     fetchScreenshots();
-  }, [games]);
+  }, [games, setScreenshotsMap]);
 
   const handleViewSwitch = (toGames) => {
     if (viewGames === toGames) return;

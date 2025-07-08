@@ -1,10 +1,14 @@
 import { Timestamp } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import FeaturedGame from "./FeaturedGame";
+import { useGame } from "../../contexts/GameContext";
 
-const FeaturedGames = ({ games, coverMap }) => {
+const FeaturedGames = ({ games }) => {
   const [showAll, setShowAll] = useState(false);
   const [columns, setColumns] = useState(3);
+  const {
+    coverMap
+  } = useGame();
 
   const releaseMessage = releaseDate => {
     const today = new Date();

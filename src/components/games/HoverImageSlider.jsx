@@ -33,6 +33,7 @@ function HoverImageSlider({ images, bounds, isVisible, onClose }) {
       setShouldRender(true);
       setIsFadingOut(false);
       setIsFadingIn(false);
+      setIndex(0);
       requestAnimationFrame(() => {
         setIsFadingIn(true);
       });
@@ -150,24 +151,40 @@ function HoverImageSlider({ images, bounds, isVisible, onClose }) {
                 e.stopPropagation();
                 setIndex((prev) => (prev + 1) % images.length);
                 restartInterval();
-              }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white text-black p-1 rounded-full pointer-events-auto z-20"
-            >
-              <FaChevronRight size={20} />
-            </button>
-          </>
-        )}
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white text-black p-1 rounded-full pointer-events-auto z-20"
+              >
+                <FaChevronRight size={20} />
+              </button>
+              </>
+            )}
 
-        {images.length > 1 && (
-          <button
-            onClick={(e) => {
+            {images.length > 1 && (
+              <button
+              onClick={(e) => {
               e.stopPropagation();
               setIsPaused((prev) => !prev);
             }}
-            className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/70 hover:bg-white text-black p-1 rounded-full z-20"
+            className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/70 hover:bg-white text-black p-1 rounded-full z-20"
           >
             {isPaused ? <IoPlayOutline size={14} /> : <IoPauseOutline size={14} />}
           </button>
+        )}
+
+        {images.length > 1 && (
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+            {images.map((_, i) => (
+              <span
+                key={i}
+                className={`block size-1 rounded-full transition-all duration-200
+                  ${i === index
+                    ? "bg-white scale-125 shadow"
+                    : "bg-white/40"
+                  }`}
+                style={{ boxShadow: i === index ? "0 0 4px 2px rgba(255,255,255,0.6)" : undefined }}
+              />
+            ))}
+          </div>
         )}
       </div>
     </>,
