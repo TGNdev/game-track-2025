@@ -1,50 +1,76 @@
+import { getCachedValue, setCachedValue } from "./cache";
+
 export const getGameCovers = async (gameIds) => {
-    const query = `fields id, cover.image_id; where id = (${gameIds.join(",")}); limit ${gameIds.length};`;
-    const res = await fetch("/api/igdb", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ query }),
-    });
-
-    const data = await res.json();
     const coverMap = {};
+    const uncachedIds = [];
 
-    data.forEach((game) => {
-        if (game.cover) {
-            coverMap[game.id] = `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`;
+    for (const id of gameIds) {
+        const cached = getCachedValue(`cover_${id}`);
+        if (cached) {
+            console.log("Using cache !");
+            coverMap[id] = cached;
+        } else {
+            uncachedIds.push(id);
         }
-    });
+    }
+
+    if (uncachedIds.length > 0) {
+        const query = `fields id, cover.image_id; where id = (${uncachedIds.join(",")}); limit ${uncachedIds.length};`;
+
+        const res = await fetch("/api/igdb", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query }),
+        });
+
+        const data = await res.json();
+
+        data.forEach((game) => {
+            if (game.cover) {
+                const url = `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`;
+                coverMap[game.id] = url;
+                setCachedValue(`cover_${game.id}`, url);
+            }
+        });
+    }
 
     return coverMap;
 };
 
 export const getGameScreenshots = async (gameIds) => {
-    const query = `fields id, screenshots.image_id; where id = (${gameIds.join(",")}); limit ${gameIds.length};`;
+    const screenshotMap = {};
+    const uncachedIds = [];
 
-    const res = await fetch("/api/igdb", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ query }),
-    });
-
-    if (!res.ok) {
-        throw new Error("Failed to fetch screenshots");
+    for (const id of gameIds) {
+        const cached = getCachedValue(`screenshots_${id}`);
+        if (cached) {
+            screenshotMap[id] = cached;
+        } else {
+            uncachedIds.push(id);
+        }
     }
 
-    const data = await res.json();
-    const screenshotMap = {};
+    if (uncachedIds.length > 0) {
+        const query = `fields id, screenshots.image_id; where id = (${uncachedIds.join(",")}); limit ${uncachedIds.length};`;
 
-    data.forEach((game) => {
-        if (game.screenshots && game.screenshots.length > 0) {
-            screenshotMap[game.id] = game.screenshots.map(
-                (screenshot) => `https://images.igdb.com/igdb/image/upload/t_720p/${screenshot.image_id}.jpg`
-            );
-        }
-    });
+        const res = await fetch("/api/igdb", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query }),
+        });
+
+        const data = await res.json();
+
+        data.forEach((game) => {
+            if (game.screenshots?.length > 0) {
+                const urls = game.screenshots.map(
+                    (s) => `https://images.igdb.com/igdb/image/upload/t_720p/${s.image_id}.jpg`
+                );
+                screenshotMap[game.id] = urls;
+                setCachedValue(`screenshots_${game.id}`, urls);
+            }
+        });
+    }
 
     return screenshotMap;
-}
+};

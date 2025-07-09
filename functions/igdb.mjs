@@ -1,4 +1,3 @@
-let cache = {};
 let igdbToken = {
   access_token: null,
   expires_at: 0,
@@ -40,14 +39,6 @@ export async function handler(event) {
     const { query } = JSON.parse(event.body || "{}");
     if (!query) return { statusCode: 400, body: "Missing query" };
 
-    const cacheKey = query.trim();
-    if (cache[cacheKey]) {
-      return {
-        statusCode: 200,
-        body: JSON.stringify(cache[cacheKey]),
-      };
-    }
-
     const token = await getToken();
 
     const res = await fetch("https://api.igdb.com/v4/games", {
@@ -68,7 +59,6 @@ export async function handler(event) {
     }
 
     const data = await res.json();
-    cache[cacheKey] = data;
 
     return {
       statusCode: 200,

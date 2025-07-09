@@ -76,7 +76,7 @@ function GameCell({ game, coverImage, screenshots }) {
     <td className="p-3 sticky left-0 bg-white z-20 w-80">
       <div className="relative flex items-center text-left gap-8">
         {/* Tags */}
-        <div className="absolute -top-4 left-0 z-30">
+        <div className="absolute -top-1 left-0 z-30">
           {activeTags.map((tag, index) => (
             <div
               key={tag.key}

@@ -48,7 +48,7 @@ const NomineeList = ({ award, getGameById, coverMap }) => {
                       <img
                         src={cover}
                         alt={game.name}
-                        className="object-cover h-52 w-full rounded"
+                        className="object-cover h-auto w-full rounded"
                       />
                     )}
                     <div className="flex-1 flex items-center justify-center py-2">
@@ -71,7 +71,7 @@ const NomineeList = ({ award, getGameById, coverMap }) => {
             return (
               <div
                 key={award.gameId}
-                className="w-96 h-auto flex-shrink-0 bg-white rounded-xl shadow-sm border text-center flex flex-col items-center border-gray-200"
+                className="w-auto h-auto flex-shrink-0 bg-white rounded-xl shadow-sm border text-center flex flex-col items-center border-gray-200"
                 id="winner"
               >
                 {game.cover && (
