@@ -15,7 +15,7 @@ const Drawer = () => {
       {/* Open Drawer Button */}
       {!open && (
         <button
-          className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-white rounded-full shadow-md hover:shadow-lg hover:bg-gray-100 transition duration-150 ease-in-out fixed top-4 right-4 z-50 sm:static"
+          className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md hover:scale-110 transition duration-150 ease-in-out fixed top-4 right-4 z-50 sm:static"
           onClick={() => setOpen(true)}
           aria-label="Open navigation drawer"
         >
@@ -47,10 +47,10 @@ const Drawer = () => {
         </button>
         {/* Navigation Content */}
         <nav className="mt-16 flex flex-col gap-4 px-6 text-slate-700">
-          <Link to="/" className="hover:text-blue-500 transition">Home</Link>
-          <Link to="/leaks-rumours" className="hover:text-blue-600 transition">Leaks & Rumours</Link>
-          <Link to="/hall-of-fame" className="hover:text-blue-600 transition">Hall Of Fame</Link>
-          <Link to="/game-awards-history" className="hover:text-blue-600 transition">Game Awards History</Link>
+          <Link to="/" className="hover:text-primary">Home</Link>
+          <Link to="/leaks-rumours" className="hover:text-primary">Leaks & Rumours</Link>
+          <Link to="/hall-of-fame" className="hover:text-primary">Hall Of Fame</Link>
+          <Link to="/game-awards-history" className="hover:text-primary">Game Awards History</Link>
           <div className="border my-6"></div>
           <button
             className="text-left hover:scale-105 rounded-md text-white py-1.5 px-2 border bg-gradient-primary w-fit transition"

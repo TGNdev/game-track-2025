@@ -64,4 +64,7 @@ a>div {
   .bg-gradient-tertiary {
     @apply bg-gradient-to-br from-[#ffd788] to-[#ff9e43] text-white shadow-lg;
   }
+  .text-primary {
+    @apply bg-gradient-to-br from-[#75a1ff] to-[#9131ff] bg-clip-text text-transparent;
+  }
 }

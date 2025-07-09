@@ -21,17 +21,17 @@ const FeaturedGames = ({ games }) => {
 
     if (diffDays === 0) {
       text += "today !";
-      classes += "bg-green-200 text-green-700"
+      classes += "bg-gradient-secondary"
     }
 
     if (diffDays === 1) {
       text += "tomorrow";
-      classes += "bg-amber-200 text-amber-700"
+      classes += "bg-gradient-tertiary"
     }
 
     if (diffDays > 1) {
       text += `in ${diffDays} days`;
-      classes += "bg-amber-200 text-amber-700"
+      classes += "bg-gradient-tertiary"
     }
 
     return <span className={`${classes}`}>

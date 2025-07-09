@@ -133,7 +133,7 @@ const RedditFeed = () => {
                   className="relative bg-white rounded-2xl shadow-md hover:shadow-lg transition p-4 border border-gray-200"
                 >
                   <div
-                    className="absolute -top-2 -left-2 -rotate-6 text-white py-0.5 px-2 text-sm rounded-md"
+                    className="absolute -top-2 -left-2 -rotate-6 text-white py-0.5 px-2 text-sm rounded-md shadow-lg"
                     style={{ backgroundColor: post.link_flair_background_color }}
                   >
                     {post.link_flair_text}
@@ -142,7 +142,7 @@ const RedditFeed = () => {
                     href={post.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline sm:text-lg font-semibold"
+                    className="text-primary hover:underline sm:text-lg font-semibold"
                   >
                     {highlightMatch(he.decode(post.title), search)}
                   </a>

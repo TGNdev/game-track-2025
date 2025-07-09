@@ -161,11 +161,11 @@ const Hof = () => {
 
                         <div className="flex flex-row justify-between text-base text-gray-700">
                           <div>
-                            <span className="text-blue-600">Critics:</span>{" "}
+                            <span className="text-primary">Critics:</span>{" "}
                             <span className="font-semibold">{game.ratings.critics}</span>
                           </div>
                           <div>
-                            <span className="text-blue-600">Players:</span>{" "}
+                            <span className="text-primary">Players:</span>{" "}
                             <span className="font-semibold">{game.ratings.players}</span>
                           </div>
                         </div>
