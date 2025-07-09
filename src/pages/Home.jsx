@@ -14,7 +14,6 @@ const Home = () => {
   const [viewGames, setViewGames] = useState(true);
   const openButtonRef = useRef(null);
   const [transitioning, setTransitioning] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const {
     setSearch,
     opened, setOpened,
@@ -23,23 +22,24 @@ const Home = () => {
     setIsModalOpen,
     setFeaturedOpen,
     setCoverMap,
-    setScreenshotsMap
+    setScreenshotsMap,
+    setLoading
   } = useGame();
 
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        setIsLoading(true);
+        setLoading(true);
         const gamesList = (await getGamesFromFirestore());
         setGames(gamesList);
       } catch (error) {
         console.error("Error fetching games:", error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
     fetchGames();
-  }, []);
+  }, [setLoading]);
 
   useEffect(() => {
     const fetchCovers = async () => {
@@ -81,7 +81,7 @@ const Home = () => {
             <div>
               <button
                 type="button"
-                className={`${opened ? "animate-pulse bg-amber-400" : "bg-blue-500"} text-sm hover:scale-110 transition text-white px-2 py-1 rounded-md sm:hidden`}
+                className={`${opened ? "animate-pulse bg-amber-400" : "bg-gradient-primary"} text-sm hover:scale-110 transition text-white px-2 py-1 rounded-md sm:hidden`}
                 onClick={() => {
                   setOpened(prev => !prev);
                   setFeaturedOpen(null);
@@ -124,7 +124,7 @@ const Home = () => {
                 {isLogged && (
                   <button
                     onClick={logout}
-                    className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-blue-500 text-white rounded-md hover:scale-110 transition"
+                    className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-primary text-white rounded-md hover:scale-110 transition"
                   >
                     <FaSignOutAlt className="block sm:hidden" />
                     <div className="hidden sm:block">Logout</div>
@@ -134,7 +134,7 @@ const Home = () => {
             ) : (
               <button
                 ref={openButtonRef}
-                className="text-sm sm:w-fit sm:py-2 px-2.5 sm:flex flex-row items-center bg-blue-500 text-white rounded-md hover:scale-110 transition"
+                className="text-sm sm:w-fit sm:py-2 px-2.5 sm:flex flex-row items-center bg-gradient-primary text-white rounded-md hover:scale-110 transition"
                 onClick={() => setIsModalOpen(true)}
               >
                 <div className="">I am an admin</div>
@@ -145,14 +145,14 @@ const Home = () => {
         <div className="w-full flex justify-center">
           <div className="flex flex-row w-full gap-4 items-center justify-center">
             <button
-              className={`${viewGames && "bg-blue-500 text-white"} disabled:opacity-80 disabled:hover:bg-blue-500 hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
+              className={`${viewGames && "bg-gradient-primary text-white"} disabled:opacity-80 disabled:hover:bg-gradient-primary hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
               onClick={() => handleViewSwitch(true)}
               disabled={viewGames}
             >
               Games
             </button>
             <button
-              className={`${!viewGames && "bg-blue-500 text-white"} disabled:opacity-80 disabled:hover:bg-blue-500 hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
+              className={`${!viewGames && "bg-gradient-primary text-white"} disabled:opacity-80 disabled:hover:bg-gradient-primary hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
               onClick={() => handleViewSwitch(false)}
               disabled={!viewGames}
             >
@@ -165,7 +165,6 @@ const Home = () => {
             <GamesView
               games={games}
               openButtonRef={openButtonRef}
-              isLoading={isLoading}
             />
           ) : (
             <EventsView />

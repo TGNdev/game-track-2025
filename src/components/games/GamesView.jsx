@@ -9,7 +9,7 @@ import { FaPlus, FaFilter } from "react-icons/fa";
 import { useGame } from "../../contexts/GameContext";
 import FeaturedGames from "./FeaturedGames";
 
-const GamesView = ({ games, openButtonRef, isLoading }) => {
+const GamesView = ({ games, openButtonRef }) => {
   const {
     search,
     opened,
@@ -23,7 +23,8 @@ const GamesView = ({ games, openButtonRef, isLoading }) => {
     setGameToEdit,
     handleCloseModal,
     coverMap,
-    screenshotsMap
+    screenshotsMap,
+    loading
   } = useGame();
   const [withRelease, setWithRelease] = useState(true);
   const [selectedPlatforms, setSelectedPlatforms] = useState(() => {
@@ -216,16 +217,25 @@ const GamesView = ({ games, openButtonRef, isLoading }) => {
 
   const modalRef = useOutsideClick(handleCloseModal, [openButtonRef]);
 
-  if (isLoading) {
+  if (loading) {
     return (
       <>
-        <FeaturedGames games={games} isLoading={isLoading} />
+        <FeaturedGames games={games} />
         <div className="w-full flex flex-col items-center mt-8">
-          {[...Array(6)].map((_, i) => (
+          {[...Array(1)].map((_, i) => (
             <div
               key={i}
               className="w-full max-w-2xl h-20 bg-gray-200 animate-pulse rounded-lg mb-4"
-            />
+            >
+              <div className="flex items-center justify-center h-full w-full">
+                <img
+                  src="loading.gif"
+                  alt="Loading..."
+                  className="size-12"
+                  style={{ pointerEvents: "none" }}
+                />
+              </div>
+            </div>
           ))}
         </div>
       </>
@@ -234,22 +244,19 @@ const GamesView = ({ games, openButtonRef, isLoading }) => {
 
   return (
     <>
-      <FeaturedGames
-        games={games}
-        isLoading={isLoading}
-      />
+      <FeaturedGames games={games} />
 
       <div className="w-full flex justify-center mt-6">
         <div className="flex flex-row w-full gap-4 items-center justify-center">
           <button
-            className={`${withRelease && "bg-blue-500 text-white"} disabled:opacity-80 disabled:hover:bg-blue-500 hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
+            className={`${withRelease && "bg-gradient-primary text-white"} disabled:opacity-80 disabled:hover:bg-gradient-primary hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
             onClick={() => setWithRelease(true)}
             disabled={withRelease}
           >
             With release date
           </button>
           <button
-            className={`${!withRelease && "bg-blue-500 text-white"} disabled:opacity-80 disabled:hover:bg-blue-500 hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
+            className={`${!withRelease && "bg-gradient-primary text-white"} disabled:opacity-80 disabled:hover:bg-gradient-primary hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
             onClick={() => setWithRelease(false)}
             disabled={!withRelease}
           >
@@ -262,7 +269,7 @@ const GamesView = ({ games, openButtonRef, isLoading }) => {
         {/* Toggle Button */}
         <div className="flex justify-center mt-4">
           <button
-            className="flex items-center text-sm gap-2 px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-500 transition"
+            className="flex items-center text-sm gap-2 px-3 py-1.5 bg-gradient-primary text-white rounded-md hover:bg-gradient-primary transition"
             onClick={() => setFiltersVisible(prev => !prev)}
           >
             <FaFilter />
@@ -278,7 +285,7 @@ const GamesView = ({ games, openButtonRef, isLoading }) => {
             <div className="flex flex-wrap justify-center gap-2 md:justify-start">
               <button
                 className={`px-3 py-1 rounded-full border text-sm ${showThisYearOnly
-                  ? "bg-blue-500 text-white"
+                  ? "bg-gradient-primary text-white"
                   : "bg-white text-black"
                   }`}
                 onClick={() => setShowThisYearOnly(prev => !prev)}
@@ -292,7 +299,7 @@ const GamesView = ({ games, openButtonRef, isLoading }) => {
                 <button
                   key={platform}
                   className={`px-3 py-1 rounded-full border text-sm ${selectedPlatforms.includes(platform)
-                    ? "bg-blue-500 text-white"
+                    ? "bg-gradient-primary text-white"
                     : "bg-white text-black"
                     }`}
                   onClick={() => {
@@ -311,7 +318,7 @@ const GamesView = ({ games, openButtonRef, isLoading }) => {
             <div className="flex flex-wrap justify-center gap-2 md:justify-start">
               <button
                 className={`px-3 py-1 rounded-full border text-sm ${showOnlyUpcoming === true
-                  ? "bg-blue-500 text-white"
+                  ? "bg-gradient-primary text-white"
                   : "bg-white text-black"
                   }`}
                 onClick={() => setShowOnlyUpcoming(true)}
@@ -320,7 +327,7 @@ const GamesView = ({ games, openButtonRef, isLoading }) => {
               </button>
               <button
                 className={`px-3 py-1 rounded-full border text-sm ${showOnlyUpcoming === false
-                  ? "bg-blue-500 text-white"
+                  ? "bg-gradient-primary text-white"
                   : "bg-white text-black"
                   }`}
                 onClick={() => setShowOnlyUpcoming(false)}
@@ -329,7 +336,7 @@ const GamesView = ({ games, openButtonRef, isLoading }) => {
               </button>
               <button
                 className={`px-3 py-1 rounded-full border text-sm ${showOnlyUpcoming === null
-                  ? "bg-blue-500 text-white"
+                  ? "bg-gradient-primary text-white"
                   : "bg-white text-black"
                   }`}
                 onClick={() => setShowOnlyUpcoming(null)}

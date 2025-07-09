@@ -202,7 +202,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
               />
               <button
                 type="button"
-                className="px-3 py-1.5 min-w-fit bg-blue-500 rounded-md text-white"
+                className="px-3 py-1.5 min-w-fit bg-gradient-primary rounded-md text-white"
                 onClick={() => setReleaseTba(prev => !prev)}
               >
                 TBA
@@ -220,7 +220,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
                   key={tag}
                   onClick={() => handleTagToggle(tag)}
                   className={`px-3 py-1 rounded-full border text-sm hover:bg-blue-100 transition ${
-                    form.tags[tag] ? "bg-blue-500 text-white hover:bg-blue-400" : ""
+                    form.tags[tag] ? "bg-gradient-primary text-white hover:bg-blue-400" : ""
                   }`}
                 >
                   {tagsLabels[tag]}
@@ -357,7 +357,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
                 key={platform}
                 onClick={() => handlePlatformToggle(platform)}
                 className={`px-3 py-1 rounded-full border text-sm hover:bg-blue-100 transition ${
-                  form.platforms[platform] ? "bg-blue-500 text-white hover:bg-blue-400" : ""
+                  form.platforms[platform] ? "bg-gradient-primary text-white hover:bg-blue-400" : ""
                 }`}
               >
                 {platformLabels[platform]}
@@ -417,7 +417,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
           {hasChanges && (
             <button
               type="submit"
-              className="rounded-md border px-3 py-1.5 bg-blue-500 text-white"
+              className="rounded-md border px-3 py-1.5 bg-gradient-primary text-white"
             >
               Save changes
             </button>

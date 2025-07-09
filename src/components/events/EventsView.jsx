@@ -107,7 +107,7 @@ const EventsView = () => {
             {currentWeekStart.getTime() !== todayWeekStart.getTime() && (
               <button
                 onClick={() => setCurrentWeekStart(todayWeekStart)}
-                className="p-2 bg-blue-500 text-white rounded-md text-sm sm:text-base hover:scale-110 transition"
+                className="p-2 bg-gradient-primary text-white rounded-md text-sm sm:text-base hover:scale-110 transition"
               >
                 Today
               </button>
@@ -115,7 +115,7 @@ const EventsView = () => {
             {firstFutureWeekStart && currentWeekStart.getTime() !== firstFutureWeekStart.getTime() && (
               <button
                 onClick={() => setCurrentWeekStart(firstFutureWeekStart)}
-                className="p-2 bg-blue-500 text-white rounded-md text-sm sm:text-base hover:scale-110 transition"
+                className="p-2 bg-gradient-primary text-white rounded-md text-sm sm:text-base hover:scale-110 transition"
               >
                 Next Event
               </button>
@@ -132,7 +132,7 @@ const EventsView = () => {
         <div className="flex flex-row gap-2 text-xs sm:text-base">
           <button
             onClick={() => shiftWeek(-1)}
-            className="p-2 bg-blue-500 text-white rounded-md hover:scale-110 transition"
+            className="p-2 bg-gradient-primary text-white rounded-md hover:scale-110 transition"
             aria-label="Previous week"
           >
             <FaArrowLeft />
@@ -140,7 +140,7 @@ const EventsView = () => {
 
           <button
             onClick={() => shiftWeek(1)}
-            className="p-2 bg-blue-500 text-white rounded-md hover:scale-110 transition"
+            className="p-2 bg-gradient-primary text-white rounded-md hover:scale-110 transition"
             aria-label="Next week"
           >
             <FaArrowRight />

@@ -53,3 +53,9 @@ a>div {
     --angle: 360deg;
   }
 }
+
+@layer utilities {
+  .bg-gradient-primary {
+    @apply bg-gradient-to-br from-[#5a8eff] to-[#b069ff] text-white;
+  }
+}

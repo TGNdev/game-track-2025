@@ -3,6 +3,7 @@ import HoverImageSlider from "./HoverImageSlider";
 import { useGame } from "../../contexts/GameContext";
 import he from "he";
 import { highlightMatch } from "../../js/utils";
+import CoverSkeleton from "../skeletons/CoverSkeleton";
 
 function GameCell({ game, coverImage, screenshots }) {
   const tagRefs = useRef([]);
@@ -30,7 +31,7 @@ function GameCell({ game, coverImage, screenshots }) {
       .map((tag) => ({
         key: tag,
         label: tagsLabels[tag] || tag,
-        color: "bg-blue-500",
+        color: "bg-gradient-primary",
       })),
   ];
 
@@ -98,21 +99,18 @@ function GameCell({ game, coverImage, screenshots }) {
           onMouseEnter={handleMouseEnter}
           className="relative w-24 h-32 overflow-visible shrink-0"
         >
+          {!coverLoaded && (
+            <CoverSkeleton />
+          )}
+
           {coverImage && (
-            <>
-              {!coverLoaded && (
-                <div className="absolute w-full h-full bg-gray-200 rounded animate-pulse" />
-              )}
-              <img
-                src={coverImage}
-                loading="lazy"
-                alt={`${game.name} cover`}
-                className={`absolute w-full h-full object-cover rounded shadow-md transition-opacity duration-300
-                  ${coverLoaded ? "opacity-100" : "opacity-0"
-                }`}
-                onLoad={() => setCoverLoaded(true)}
-              />
-            </>
+            <img
+              src={coverImage}
+              loading="lazy"
+              alt={`${game.name} cover`}
+              className="absolute w-full h-full object-cover rounded shadow-md transition-opacity duration-300"
+              onLoad={() => setCoverLoaded(true)}
+            />
           )}
         </div>
 

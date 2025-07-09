@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useGame } from "../../contexts/GameContext";
+import CoverSkeleton from "../skeletons/CoverSkeleton";
 
 const FeaturedGame = ({ featured, cover }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -7,24 +8,21 @@ const FeaturedGame = ({ featured, cover }) => {
     setFeaturedOpen,
   } = useGame();
 
-
   return (
     <div className="flex flex-row gap-3 bg-white rounded-lg border shadow-lg">
       <div className="relative h-full w-32" style={{ maxHeight: "180px" }}>
+        {!imgLoaded && (
+          <CoverSkeleton />
+        )}
         {cover && (
-          <>
-            {!imgLoaded && (
-              <div className="absolute w-full h-full bg-gray-200 rounded animate-pulse" />
-            )}
-            <img
-              src={cover}
-              alt={featured.name}
-              className={`h-full w-32 object-cover rounded-lg transition-opacity duration-300 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
-              style={{ maxHeight: "180px" }}
-              loading="lazy"
-              onLoad={() => setImgLoaded(true)}
-            />
-          </>
+          <img
+            src={cover}
+            alt={featured.name}
+            className="h-full w-32 object-cover rounded-lg transition-opacity duration-300"
+            style={{ maxHeight: "180px" }}
+            loading="lazy"
+            onLoad={() => setImgLoaded(true)}
+          />
         )}
       </div>
       <div className="flex flex-col h-full justify-between gap-4 relative z-10 flex-1 py-5 px-2">
@@ -55,7 +53,7 @@ const FeaturedGame = ({ featured, cover }) => {
                 setFeaturedOpen(featured.id);
               }
             }}
-            className="self-start bg-blue-500 text-white text-sm px-3 py-1.5 rounded-md hover:scale-105 transition hidden sm:block"
+            className="self-start bg-gradient-primary text-white text-sm px-3 py-1.5 rounded-md hover:scale-105 transition hidden sm:block"
           >
             View Game
           </button>
@@ -67,7 +65,7 @@ const FeaturedGame = ({ featured, cover }) => {
                 setFeaturedOpen(featured.id);
               }
             }}
-            className="self-start bg-blue-500 text-white text-sm px-3 py-1.5 rounded-md hover:scale-105 transition block sm:hidden"
+            className="self-start bg-gradient-primary text-white text-sm px-3 py-1.5 rounded-md hover:scale-105 transition block sm:hidden"
           >
             View Game
           </button>

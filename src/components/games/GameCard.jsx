@@ -82,7 +82,7 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
             {enabledTags.map((tag, idx) => (
               <span
                 key={idx}
-                className="whitespace-nowrap text-xs bg-blue-500 text-white px-1.5 py-0.5 font-semibold"
+                className="whitespace-nowrap text-xs bg-gradient-primary text-white px-1.5 py-0.5 font-semibold"
                 title={tag}
               >
                 {tagsLabels[tag]}

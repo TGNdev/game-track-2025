@@ -53,7 +53,7 @@ const Drawer = () => {
           <Link to="/game-awards-history" className="hover:text-blue-600 transition">Game Awards History</Link>
           <div className="border my-6"></div>
           <button
-            className="text-left hover:scale-105 rounded-md text-white py-1.5 px-2 border bg-blue-500 w-fit transition"
+            className="text-left hover:scale-105 rounded-md text-white py-1.5 px-2 border bg-gradient-primary w-fit transition"
             onClick={() => {
               setOpen(false);
               logout();

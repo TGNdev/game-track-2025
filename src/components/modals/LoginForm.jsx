@@ -43,7 +43,7 @@ const LoginForm = ({ onSuccess, onClose }) => {
         <div className="flex justify-between items-center">
           <button
             type="submit"
-            className="bg-blue-500 text-white py-1.5 px-3 rounded hover:scale-105 transition"
+            className="bg-gradient-primary text-white py-1.5 px-3 rounded hover:scale-105 transition"
           >
             I am an admin
           </button>

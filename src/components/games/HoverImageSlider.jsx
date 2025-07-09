@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
 import { IoPauseOutline, IoPlayOutline } from "react-icons/io5";
+import ScreenshotSkeleton from "../skeletons/ScreenshotSkeleton";
 
 function HoverImageSlider({ images, bounds, isVisible, onClose }) {
   const [index, setIndex] = useState(0);
@@ -120,7 +121,7 @@ function HoverImageSlider({ images, bounds, isVisible, onClose }) {
         {images.map((img, i) => (
           <div key={i} className="absolute top-0 left-0 w-full h-full">
             {!loadedImages[i] && (
-              <div className="w-full h-full bg-gray-300 animate-pulse absolute top-0 left-0 z-0" />
+              <ScreenshotSkeleton />
             )}
             <img
               src={img}

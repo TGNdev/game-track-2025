@@ -21,6 +21,7 @@ export const GameProvider = ({ children }) => {
   const [gameToEdit, setGameToEdit] = useState(null);
   const [coverMap, setCoverMap] = useState({});
   const [screenshotsMap, setScreenshotsMap] = useState({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -56,7 +57,7 @@ export const GameProvider = ({ children }) => {
       case "xbox":
         return <XboxIcon className={`${base} bg-green-500`} fill="white" />;
       case "ps":
-        return <PsIcon className={`${base} bg-blue-500`} fill="white" />;
+        return <PsIcon className={`${base} bg-gradient-primary`} fill="white" />;
       case "pc":
         return <PcIcon className={`${base} bg-slate-400`} fill="white" />;
       case "switch":
@@ -108,8 +109,10 @@ export const GameProvider = ({ children }) => {
       setCoverMap,
       screenshotsMap,
       setScreenshotsMap,
+      loading,
+      setLoading
     };
-  }, [viewGames, search, opened, isLogged, edit, isModalOpen, featuredOpen, gameToEdit, coverMap, screenshotsMap]);
+  }, [viewGames, search, opened, isLogged, edit, isModalOpen, featuredOpen, gameToEdit, coverMap, screenshotsMap, loading]);
 
   return (
     <GameContext.Provider value={value}>

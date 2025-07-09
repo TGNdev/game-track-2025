@@ -3,11 +3,12 @@ import { useState, useEffect } from "react";
 import FeaturedGame from "./FeaturedGame";
 import { useGame } from "../../contexts/GameContext";
 
-const FeaturedGames = ({ games, isLoading }) => {
+const FeaturedGames = ({ games }) => {
   const [showAll, setShowAll] = useState(false);
   const [columns, setColumns] = useState(3);
   const {
-    coverMap
+    coverMap,
+    loading
   } = useGame();
 
   const releaseMessage = releaseDate => {
@@ -82,7 +83,7 @@ const FeaturedGames = ({ games, isLoading }) => {
   const firstRow = featuredGames.slice(0, columns);
   const otherRows = featuredGames.slice(columns);
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="w-full border rounded-xl p-4">
         <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between mb-4">
