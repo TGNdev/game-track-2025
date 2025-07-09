@@ -23,7 +23,7 @@ function GameCell({ game, coverImage, screenshots }) {
     {
       key: "_release",
       label: isReleased(game.release_date) ? "Released" : "Coming soon",
-      color: isReleased(game.release_date) ? "bg-green-500" : "bg-amber-400",
+      color: isReleased(game.release_date) ? "bg-gradient-secondary" : "bg-gradient-tertiary",
     },
     ...Object.keys(game.tags || {})
       .filter((tag) => game.tags[tag])

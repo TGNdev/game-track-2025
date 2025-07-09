@@ -57,7 +57,7 @@ export const GameProvider = ({ children }) => {
       case "xbox":
         return <XboxIcon className={`${base} bg-green-500`} fill="white" />;
       case "ps":
-        return <PsIcon className={`${base} bg-gradient-primary`} fill="white" />;
+        return <PsIcon className={`${base} bg-blue-500`} fill="white" />;
       case "pc":
         return <PcIcon className={`${base} bg-slate-400`} fill="white" />;
       case "switch":

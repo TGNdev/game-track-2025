@@ -226,16 +226,7 @@ const GamesView = ({ games, openButtonRef }) => {
             <div
               key={i}
               className="w-full max-w-2xl h-20 bg-gray-200 animate-pulse rounded-lg mb-4"
-            >
-              <div className="flex items-center justify-center h-full w-full">
-                <img
-                  src="loading.gif"
-                  alt="Loading..."
-                  className="size-12"
-                  style={{ pointerEvents: "none" }}
-                />
-              </div>
-            </div>
+            />
           ))}
         </div>
       </>
@@ -249,14 +240,14 @@ const GamesView = ({ games, openButtonRef }) => {
       <div className="w-full flex justify-center mt-6">
         <div className="flex flex-row w-full gap-4 items-center justify-center">
           <button
-            className={`${withRelease && "bg-gradient-primary text-white"} disabled:opacity-80 disabled:hover:bg-gradient-primary hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
+            className={`${withRelease && "bg-gradient-primary text-white"} hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
             onClick={() => setWithRelease(true)}
             disabled={withRelease}
           >
             With release date
           </button>
           <button
-            className={`${!withRelease && "bg-gradient-primary text-white"} disabled:opacity-80 disabled:hover:bg-gradient-primary hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
+            className={`${!withRelease && "bg-gradient-primary text-white"} hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
             onClick={() => setWithRelease(false)}
             disabled={!withRelease}
           >

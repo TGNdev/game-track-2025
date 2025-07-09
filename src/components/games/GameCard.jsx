@@ -61,11 +61,11 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
         <div className="flex flex-row">
           {/* Released badge */}
           {isReleased(game.release_date) ? (
-            <div className="bg-green-500 text-white text-xs font-bold px-1.5 py-0.5 z-20">
+            <div className="bg-gradient-secondary text-white text-xs font-bold px-1.5 py-0.5 z-20">
               Released
             </div>
           ) : (
-            <div className="bg-amber-400 text-white text-xs font-bold px-1.5 py-0.5 z-20">
+            <div className="bg-gradient-tertiary text-white text-xs font-bold px-1.5 py-0.5 z-20">
               Coming soon
             </div>
           )}
@@ -111,10 +111,10 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
             )}
 
             {/* Right: Content */}
-            <div className="flex flex-1 flex-col gap-6 p-4">
+            <div className="flex flex-1 flex-col gap-6 px-4">
               {/* Developers */}
               <div className="flex flex-col gap-1 w-fit text-sm pt-2">
-                <div className="font-semibold">Developers :</div>
+                <div className="font-semibold">Made by</div>
                 {game.developers.map((dev, idx) => (
                   <a
                     target="_blank"
@@ -130,7 +130,7 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
 
               {/* Editors */}
               <div className="flex flex-col gap-1 w-fit text-sm pt-2">
-                <div className="font-semibold">Editors :</div>
+                <div className="font-semibold">Edited by</div>
                 {game.editors.map((edit, idx) => (
                   <a
                     target="_blank"
@@ -206,12 +206,11 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
                   className="text-center"
                 >
                   <div className="text-xs hover:scale-110 transition">
-                    <span className="font-normal">Details on</span>{" "}
                     <span className="font-bold">OpenCritic</span>
                   </div>
                 </a>
               ) : (
-                <div className="text-center text-xs">Edit to add link</div>
+                <div className="text-center text-xs">Edit link</div>
               )}
             </div>
           </div>

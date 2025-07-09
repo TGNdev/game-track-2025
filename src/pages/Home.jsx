@@ -95,7 +95,7 @@ const Home = () => {
                 {!edit && (
                   <button
                     ref={openButtonRef}
-                    className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-green-500 text-white rounded-md hover:scale-110 transition"
+                    className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-secondary text-white rounded-md hover:scale-110 transition"
                     onClick={() => setIsModalOpen(true)}
                   >
                     <FaPlus className="block sm:hidden" />
@@ -103,7 +103,7 @@ const Home = () => {
                   </button>
                 )}
                 <button
-                  className={`${edit && "animate-pulse"} size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-amber-400 text-white rounded-md hover:scale-110 transition`}
+                  className={`${edit && "animate-pulse"} size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-tertiary text-white rounded-md hover:scale-110 transition`}
                   onClick={(e) => {
                     e.stopPropagation();
                     setEdit(prev => !prev)
