@@ -32,6 +32,7 @@ const GamesView = ({ games, openButtonRef }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const [withRelease, setWithRelease] = useState(true);
+  const isFirstRender = useRef(true);
   const [selectedPlatforms, setSelectedPlatforms] = useState(() => {
     const saved = localStorage.getItem('gameFilters');
     return saved ? JSON.parse(saved).selectedPlatforms || [] : [];
@@ -223,6 +224,11 @@ const GamesView = ({ games, openButtonRef }) => {
   }, [search, selectedPlatforms, showOnlyUpcoming, showThisYearOnly, withRelease]);
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     window.scrollTo({
       top: document.body.scrollHeight,
       behavior: 'smooth',
@@ -291,6 +297,7 @@ const GamesView = ({ games, openButtonRef }) => {
           <div className="flex flex-col gap-4 items-center md:flex-row md:items-center md:justify-center md:flex-wrap w-full">
             <div className="flex flex-wrap justify-center gap-2 md:justify-start">
               <button
+                disabled={!filtersVisible}
                 className={`px-3 py-1 rounded-full border text-sm ${showThisYearOnly
                   ? "bg-gradient-primary text-white"
                   : "bg-white text-black"
@@ -305,6 +312,7 @@ const GamesView = ({ games, openButtonRef }) => {
               {allPlatforms.map(platform => (
                 <button
                   key={platform}
+                  disabled={!filtersVisible}
                   className={`px-3 py-1 rounded-full border text-sm ${selectedPlatforms.includes(platform)
                     ? "bg-gradient-primary text-white"
                     : "bg-white text-black"
@@ -324,6 +332,7 @@ const GamesView = ({ games, openButtonRef }) => {
             {/* Release Status Filter */}
             <div className="flex flex-wrap justify-center gap-2 md:justify-start">
               <button
+                disabled={!filtersVisible}
                 className={`px-3 py-1 rounded-full border text-sm ${showOnlyUpcoming === true
                   ? "bg-gradient-primary text-white"
                   : "bg-white text-black"
@@ -333,6 +342,7 @@ const GamesView = ({ games, openButtonRef }) => {
                 Upcoming only
               </button>
               <button
+                disabled={!filtersVisible}
                 className={`px-3 py-1 rounded-full border text-sm ${showOnlyUpcoming === false
                   ? "bg-gradient-primary text-white"
                   : "bg-white text-black"
@@ -342,6 +352,7 @@ const GamesView = ({ games, openButtonRef }) => {
                 Already released
               </button>
               <button
+                disabled={!filtersVisible}
                 className={`px-3 py-1 rounded-full border text-sm ${showOnlyUpcoming === null
                   ? "bg-gradient-primary text-white"
                   : "bg-white text-black"
@@ -354,6 +365,7 @@ const GamesView = ({ games, openButtonRef }) => {
             {/* Reset */}
             <div className="flex justify-center md:justify-start">
               <button
+                disabled={!filtersVisible}
                 className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md text-sm"
                 onClick={() => {
                   setSelectedPlatforms([]);
