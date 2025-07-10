@@ -17,7 +17,7 @@ const FeaturedGames = ({ games }) => {
     const diffTime = release - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     var text = "Releases ";
-    var classes = "px-2 py-1 sm:px-4 text-sm sm:text-base rounded-full font-semibold text-center ";
+    var classes = "px-2 py-1 sm:px-4 text-sm sm:text-base rounded-full text-center ";
 
     if (diffDays === 0) {
       text += "today !";
@@ -100,10 +100,10 @@ const FeaturedGames = ({ games }) => {
   }
 
   return (
-    <div className="w-full border rounded-xl p-4">
+    <div className="w-full border rounded-xl p-4 shadow-md">
       <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between mb-4">
-        <div className="text-2xl font-semibold italic text-center sm:text-left">
-          {games.length > 1 ? "Next Releases" : "Next Release"}
+        <div className="text-2xl font-bold text-primary text-center sm:text-left">
+          {featuredGames.length > 1 ? "Next Releases" : "Next Release"}
         </div>
         <div className="sm:ml-auto">
           {firstRow.length > 0 && releaseMessage(firstRow[0].release_date)}

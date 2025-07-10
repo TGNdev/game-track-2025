@@ -56,13 +56,13 @@ a>div {
 
 @layer utilities {
   .bg-gradient-primary {
-    @apply bg-gradient-to-br from-[#5a8eff] to-[#b069ff] text-white shadow-lg;
+    @apply bg-gradient-to-br from-[#5a8eff] to-[#b069ff] text-white shadow-lg font-bold;
   }
   .bg-gradient-secondary {
-    @apply bg-gradient-to-br from-[#7bffbb] to-[#00b718] text-white shadow-lg;
+    @apply bg-gradient-to-br from-[#7bffbb] to-[#00b718] text-white shadow-lg font-bold;
   }
   .bg-gradient-tertiary {
-    @apply bg-gradient-to-br from-[#ffd788] to-[#ff9e43] text-white shadow-lg;
+    @apply bg-gradient-to-br from-[#ffd788] to-[#ff9e43] text-white shadow-lg font-bold;
   }
   .text-primary {
     @apply bg-gradient-to-br from-[#75a1ff] to-[#9131ff] bg-clip-text text-transparent;

@@ -45,7 +45,7 @@ const GameRow = ({ game, edit, setGameToEdit, setIsModalOpen, coverImage, screen
         <div className="flex flex-col divide-y">
           {game.developers.map((developer) => (
             <a target="_blank" rel="noreferrer" href={developer.link} key={developer.name}>
-              <div className="hover:scale-110 transition text-sm">
+              <div className="hover:scale-110 transition text-sm py-1">
                 {highlightMatch(he.decode(developer.name), search)}
               </div>
             </a>
@@ -57,7 +57,7 @@ const GameRow = ({ game, edit, setGameToEdit, setIsModalOpen, coverImage, screen
         <div className="flex flex-col divide-y">
           {game.editors.map((editor) => (
             <a target="_blank" rel="noreferrer" href={editor.link} key={editor.name}>
-              <div className="hover:scale-110 transition text-sm">
+              <div className="hover:scale-110 transition text-sm py-1">
                 {highlightMatch(he.decode(editor.name), search)}
               </div>
             </a>

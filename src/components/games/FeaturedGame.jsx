@@ -9,7 +9,7 @@ const FeaturedGame = ({ featured, cover }) => {
   } = useGame();
 
   return (
-    <div className="flex flex-row gap-3 bg-white rounded-lg border shadow-lg">
+    <div className="flex flex-row gap-3 bg-white rounded-lg border">
       <div className="relative h-full w-32" style={{ maxHeight: "180px" }}>
         {!imgLoaded && (
           <CoverSkeleton />
