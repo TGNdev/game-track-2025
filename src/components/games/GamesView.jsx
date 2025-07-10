@@ -256,7 +256,7 @@ const GamesView = ({ games, openButtonRef }) => {
         </div>
       </div>
 
-      <div className="w-full flex flex-col items-end gap-4">
+      <div className="w-full flex flex-col items-end">
         {/* Toggle Button */}
         <div className="flex justify-center mt-4">
           <button
@@ -269,7 +269,7 @@ const GamesView = ({ games, openButtonRef }) => {
         </div>
         {/* Filters */}
         <div
-          className={`overflow-hidden transition-all duration-500 ease-in-out w-full ${filtersVisible ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+          className={`overflow-hidden transition-all duration-500 ease-in-out w-full py-4 ${filtersVisible ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
             }`}
         >
           <div className="flex flex-col gap-4 items-center md:flex-row md:items-center md:justify-center md:flex-wrap w-full">
