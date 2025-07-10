@@ -38,6 +38,9 @@ function HoverImageSlider({ images, bounds, isVisible, onClose }) {
       requestAnimationFrame(() => {
         setIsFadingIn(true);
       });
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
     }
   }, [isVisible]);
 

@@ -8,6 +8,9 @@ import { Timestamp } from "firebase/firestore";
 import { FaPlus, FaFilter } from "react-icons/fa";
 import { useGame } from "../../contexts/GameContext";
 import FeaturedGames from "./FeaturedGames";
+import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
+import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
+import { getPaginationRange } from "../../js/utils";
 
 const GamesView = ({ games, openButtonRef }) => {
   const {
@@ -26,6 +29,8 @@ const GamesView = ({ games, openButtonRef }) => {
     screenshotsMap,
     loading
   } = useGame();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
   const [withRelease, setWithRelease] = useState(true);
   const [selectedPlatforms, setSelectedPlatforms] = useState(() => {
     const saved = localStorage.getItem('gameFilters');
@@ -213,6 +218,11 @@ const GamesView = ({ games, openButtonRef }) => {
     return ref;
   };
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedPlatforms, showOnlyUpcoming, showThisYearOnly, withRelease]);
+
+
   const isSmallScreen = useMediaQuery('(max-width: 639px)');
 
   const modalRef = useOutsideClick(handleCloseModal, [openButtonRef]);
@@ -356,19 +366,54 @@ const GamesView = ({ games, openButtonRef }) => {
       {isSmallScreen ? (
         <div className="overflow-y-auto min-w-full sm:hidden pb-8 mt-4">
           <div className="flex flex-col gap-5">
-            {filtered.map(game => (
-              <GameCard
-                key={game.id}
-                game={game}
-                edit={edit}
-                opened={opened}
-                forceOpen={featuredOpen === game.id}
-                setForceOpen={() => setFeaturedOpen(null)}
-                setGameToEdit={setGameToEdit}
-                setIsModalOpen={setIsModalOpen}
-                coverImage={coverMap ? coverMap[game.igdb_id] : []}
-              />
-            ))}
+            {filtered
+              .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+              .map(game => (
+                <GameCard
+                  key={game.id}
+                  game={game}
+                  edit={edit}
+                  opened={opened}
+                  forceOpen={featuredOpen === game.id}
+                  setForceOpen={() => setFeaturedOpen(null)}
+                  setGameToEdit={setGameToEdit}
+                  setIsModalOpen={setIsModalOpen}
+                  coverImage={coverMap ? coverMap[game.igdb_id] : []}
+                />
+              ))}
+          </div>
+          <div className="flex justify-center items-center gap-3 mt-4 sm:hidden">
+            <button
+              className="px-3 py-1 bg-gradient-primary rounded disabled:opacity-50"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(1)}
+            >
+              <MdKeyboardDoubleArrowLeft />
+            </button>
+            <button
+              className="px-3 py-1 border rounded text-sm disabled:opacity-50"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
+            >
+              <FaChevronLeft />
+            </button>
+            <span className="text-sm">
+              {currentPage} / {Math.ceil(filtered.length / itemsPerPage)}
+            </span>
+            <button
+              className="px-3 py-1 border rounded text-sm disabled:opacity-50"
+              disabled={currentPage === Math.ceil(filtered.length / itemsPerPage)}
+              onClick={() => setCurrentPage(currentPage + 1)}
+            >
+              <FaChevronRight />
+            </button>
+            <button
+              className="px-3 py-1 bg-gradient-primary rounded text-sm flex disabled:opacity-50"
+              disabled={currentPage === Math.ceil(filtered.length / itemsPerPage)}
+              onClick={() => setCurrentPage(Math.ceil(filtered.length / itemsPerPage))}
+            >
+              <MdKeyboardDoubleArrowRight />
+            </button>
           </div>
         </div>
       ) : (
@@ -395,20 +440,62 @@ const GamesView = ({ games, openButtonRef }) => {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map(game => (
-                  <GameRow
-                    key={game.id}
-                    game={game}
-                    edit={edit}
-                    setGameToEdit={setGameToEdit}
-                    setIsModalOpen={setIsModalOpen}
-                    coverImage={coverMap ? coverMap[game.igdb_id] : []}
-                    screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
-                  />
-                ))}
+                {filtered
+                  .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                  .map(game => (
+                    <GameRow
+                      key={game.id}
+                      game={game}
+                      edit={edit}
+                      setGameToEdit={setGameToEdit}
+                      setIsModalOpen={setIsModalOpen}
+                      coverImage={coverMap ? coverMap[game.igdb_id] : []}
+                      screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
+                    />
+                  ))}
               </tbody>
             </table>
           </div>
+          {filtered.length > itemsPerPage && (
+            <div className="flex justify-center mt-6 gap-2 flex-wrap">
+              <button
+                className="px-3 py-1 bg-gradient-primary rounded disabled:opacity-50"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <FaChevronLeft />
+              </button>
+
+              {getPaginationRange(filtered.length, itemsPerPage, currentPage).map((page, i) =>
+                page === '...' ? (
+                  <span key={i} className="px-3 py-1">
+                    ...
+                  </span>
+                ) : (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3 py-1 border rounded ${currentPage === page ? 'bg-gradient-primary text-white' : ''
+                      }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+
+              <button
+                className="px-3 py-1 bg-gradient-primary rounded disabled:opacity-50"
+                onClick={() =>
+                  setCurrentPage(prev =>
+                    Math.min(prev + 1, Math.ceil(filtered.length / itemsPerPage))
+                  )
+                }
+                disabled={currentPage === Math.ceil(filtered.length / itemsPerPage)}
+              >
+                <FaChevronRight />
+              </button>
+            </div>
+          )}
         </div>
       )}
 
