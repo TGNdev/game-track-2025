@@ -7,7 +7,6 @@ export const getGameCovers = async (gameIds) => {
     for (const id of gameIds) {
         const cached = getCachedValue(`cover_${id}`);
         if (cached) {
-            console.log("Using cache !");
             coverMap[id] = cached;
         } else {
             uncachedIds.push(id);

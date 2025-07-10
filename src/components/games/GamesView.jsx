@@ -222,6 +222,12 @@ const GamesView = ({ games, openButtonRef }) => {
     setCurrentPage(1);
   }, [search, selectedPlatforms, showOnlyUpcoming, showThisYearOnly, withRelease]);
 
+  useEffect(() => {
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: 'smooth',
+    });
+  }, [currentPage]);
 
   const isSmallScreen = useMediaQuery('(max-width: 639px)');
 
