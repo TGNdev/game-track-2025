@@ -256,10 +256,10 @@ const GamesView = ({ games, openButtonRef }) => {
   }
 
   return (
-    <>
+    <div className="w-full flex flex-col gap-6 pb-4">
       <FeaturedGames games={games} />
 
-      <div className="w-full flex justify-center mt-6">
+      <div className="w-full flex justify-center">
         <div className="flex flex-row w-full gap-4 items-center justify-center">
           <button
             className={`${withRelease && "bg-gradient-primary text-white"} hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
@@ -280,7 +280,7 @@ const GamesView = ({ games, openButtonRef }) => {
 
       <div className="w-full flex flex-col items-end">
         {/* Toggle Button */}
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center">
           <button
             className="flex items-center text-sm gap-2 px-3 py-1.5 bg-gradient-primary text-white rounded-md hover:bg-gradient-primary transition"
             onClick={() => setFiltersVisible(prev => !prev)}
@@ -291,7 +291,7 @@ const GamesView = ({ games, openButtonRef }) => {
         </div>
         {/* Filters */}
         <div
-          className={`overflow-hidden transition-all duration-500 ease-in-out w-full py-4 ${filtersVisible ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+          className={`overflow-hidden transition-all duration-500 ease-in-out w-full ${filtersVisible ? "max-h-[1000px] opacity-100 py-4" : "max-h-0 opacity-0"
             }`}
         >
           <div className="flex flex-col gap-4 items-center md:flex-row md:items-center md:justify-center md:flex-wrap w-full">
@@ -382,7 +382,7 @@ const GamesView = ({ games, openButtonRef }) => {
       </div>
 
       {isSmallScreen ? (
-        <div className="overflow-y-auto min-w-full sm:hidden pb-8 mt-4">
+        <div className="overflow-y-auto min-w-full sm:hidden pb-8">
           <div className="flex flex-col gap-5">
             {filtered
               .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
@@ -435,7 +435,7 @@ const GamesView = ({ games, openButtonRef }) => {
           </div>
         </div>
       ) : (
-        <div className="flex-col max-w-full overflow-x-auto hidden sm:flex mt-4">
+        <div className="flex-col max-w-full overflow-x-auto hidden sm:flex">
           <div className="relative">
             <table className="w-full border-collapse min-w-[900px]">
               <thead className="border-b">
@@ -552,7 +552,7 @@ const GamesView = ({ games, openButtonRef }) => {
           </div>
         </div>
       )}
-    </>
+    </div>
   )
 }
 
