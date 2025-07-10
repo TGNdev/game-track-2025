@@ -13,15 +13,13 @@ const Drawer = () => {
   return (
     <>
       {/* Open Drawer Button */}
-      {!open && (
-        <button
-          className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md hover:scale-110 transition duration-150 ease-in-out fixed top-4 right-4 z-50 sm:static"
-          onClick={() => setOpen(true)}
-          aria-label="Open navigation drawer"
-        >
-          <FiMenu className="size-5" />
-        </button>
-      )}
+      <button
+        className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md hover:scale-110 transition duration-150 ease-in-out fixed top-4 right-4 z-50 sm:static"
+        onClick={() => setOpen(true)}
+        aria-label="Open navigation drawer"
+      >
+        <FiMenu className="size-5" />
+      </button>
 
       {/* Overlay */}
       <div
@@ -51,6 +49,7 @@ const Drawer = () => {
           <Link to="/leaks-rumours" className="hover:text-primary">Leaks & Rumours</Link>
           <Link to="/hall-of-fame" className="hover:text-primary">Hall Of Fame</Link>
           <Link to="/game-awards-history" className="hover:text-primary">Game Awards History</Link>
+          <Link to="/release-calendar" className="hover:text-primary">Release Calendar</Link>
           <div className="border my-6"></div>
           <button
             className="text-left hover:scale-105 rounded-md text-white py-1.5 px-2 border bg-gradient-primary w-fit transition"
