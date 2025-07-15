@@ -25,6 +25,7 @@ export const GameProvider = ({ children }) => {
   const [gameToSee, setGameToSee] = useState(null);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
+  const [openSearch, setOpenSearch] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -119,9 +120,27 @@ export const GameProvider = ({ children }) => {
       itemsPerPage,
       setItemsPerPage,
       currentPage,
-      setCurrentPage
+      setCurrentPage,
+      openSearch,
+      setOpenSearch
     };
-  }, [viewGames, search, opened, isLogged, edit, isModalOpen, featuredOpen, gameToEdit, coverMap, screenshotsMap, loading, gameToSee, itemsPerPage, currentPage]);
+  }, [
+    viewGames,
+    search,
+    opened,
+    isLogged,
+    edit,
+    isModalOpen,
+    featuredOpen,
+    gameToEdit,
+    coverMap,
+    screenshotsMap,
+    loading,
+    gameToSee,
+    itemsPerPage,
+    currentPage,
+    openSearch
+  ]);
 
   return (
     <GameContext.Provider value={value}>

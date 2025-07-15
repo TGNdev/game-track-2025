@@ -6,6 +6,8 @@ const FeaturedGame = ({ featured, cover }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
   const {
     setFeaturedOpen,
+    setSearch,
+    setOpenSearch,
   } = useGame();
 
   return (
@@ -47,25 +49,11 @@ const FeaturedGame = ({ featured, cover }) => {
         <div className="flex flex-row items-center justify-between">
           <button
             onClick={() => {
-              const element = document.getElementById(`game-${featured.id}`);
-              if (element) {
-                element.scrollIntoView({ behavior: "smooth", block: "center" });
-                setFeaturedOpen(featured.id);
-              }
+              setOpenSearch(true);
+              setSearch(featured.name);
+              setFeaturedOpen(featured.id);
             }}
-            className="self-start bg-gradient-primary text-white text-sm px-3 py-1.5 rounded-md hover:scale-105 transition hidden sm:block"
-          >
-            View Game
-          </button>
-          <button
-            onClick={() => {
-              const element = document.getElementById(`gamecard-${featured.id}`);
-              if (element) {
-                element.scrollIntoView({ behavior: "smooth", block: "center" });
-                setFeaturedOpen(featured.id);
-              }
-            }}
-            className="self-start bg-gradient-primary text-white text-sm px-3 py-1.5 rounded-md hover:scale-105 transition block sm:hidden"
+            className="self-start bg-gradient-primary text-white text-sm px-3 py-1.5 rounded-md hover:scale-105 transition"
           >
             View Game
           </button>

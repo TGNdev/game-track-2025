@@ -1,21 +1,20 @@
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { useGame } from "../../contexts/GameContext";
 import { FiX } from "react-icons/fi";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 
 const Search = () => {
-  const [open, setOpen] = useState(false);
   const {
     search, setSearch,
+    openSearch, setOpenSearch
   } = useGame();
 
   return (
     <>
-      {!open ? (
+      {!openSearch ? (
         <button
           className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md transition duration-150 ease-in-out top-4 right-16 sm:right-4 z-50 sm:static fixed"
-          onClick={() => setOpen(true)}
+          onClick={() => setOpenSearch(true)}
           aria-label="Open search"
         >
           <FaMagnifyingGlass className="size-4" />
@@ -25,7 +24,7 @@ const Search = () => {
           <button
             className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md transition duration-150 ease-in-out fixed top-4 right-16 sm:right-4 z-50 sm:static"
             onClick={() => {
-              setOpen(false);
+              setOpenSearch(false);
               setSearch("");
             }}
             aria-label="Close search"
