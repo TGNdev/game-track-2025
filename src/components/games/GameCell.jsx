@@ -98,15 +98,11 @@ function GameCell({ game, coverImage, screenshots }) {
           )}
         </div>
 
-        <button
-          onClick={() => {
-            setGameToSee(game)
-          }}
-        >
+        <a target="_blank" rel="noreferrer" href={game.link}>
           <div className="hover:scale-105 transition text-base font-semibold text-black text-left">
             {highlightMatch(he.decode(game.name), search)}
           </div>
-        </button>
+        </a>
       </div>
 
       {hoverBounds && screenshots && (
