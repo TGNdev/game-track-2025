@@ -37,7 +37,7 @@ const Drawer = () => {
       >
         {/* Close Button */}
         <button
-          className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition"
+          className="absolute top-4 right-4 p-2 rounded-full bg-gradient-primary transition hover:scale-110 z-10"
           onClick={() => setOpen(false)}
           aria-label="Close navigation drawer"
         >
