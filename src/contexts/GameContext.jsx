@@ -22,6 +22,9 @@ export const GameProvider = ({ children }) => {
   const [coverMap, setCoverMap] = useState({});
   const [screenshotsMap, setScreenshotsMap] = useState({});
   const [loading, setLoading] = useState(false);
+  const [gameToSee, setGameToSee] = useState(null);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -110,9 +113,15 @@ export const GameProvider = ({ children }) => {
       screenshotsMap,
       setScreenshotsMap,
       loading,
-      setLoading
+      setLoading,
+      gameToSee,
+      setGameToSee,
+      itemsPerPage,
+      setItemsPerPage,
+      currentPage,
+      setCurrentPage
     };
-  }, [viewGames, search, opened, isLogged, edit, isModalOpen, featuredOpen, gameToEdit, coverMap, screenshotsMap, loading]);
+  }, [viewGames, search, opened, isLogged, edit, isModalOpen, featuredOpen, gameToEdit, coverMap, screenshotsMap, loading, gameToSee, itemsPerPage, currentPage]);
 
   return (
     <GameContext.Provider value={value}>

@@ -14,7 +14,7 @@ const Header = () => {
   }
 
   return (
-    <div className="sticky top-0 bg-white z-50 flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-6 py-4">
+    <div className="sticky top-0 bg-white z-30 flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-6 py-4">
       <Link to="/">
         <div className="flex flex-row gap-2 items-center">
           <img src="logo.png" alt="Game Track Logo" className="size-6" />

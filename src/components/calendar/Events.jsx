@@ -4,7 +4,7 @@ import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { useGame } from '../../contexts/GameContext';
 import { highlightMatch } from '../../js/utils';
 
-const EventsView = () => {
+const Events = () => {
   const [allEvents, setAllEvents] = useState([]);
   const [currentWeekStart, setCurrentWeekStart] = useState(null);
   const [todayWeekStart] = useState(getStartOfWeek(new Date()));
@@ -85,7 +85,7 @@ const EventsView = () => {
   const sortedDays = Object.keys(groupedByDay).sort((a, b) => new Date(a) - new Date(b));
 
   return (
-    <div className="w-full sm:w-4/5 mx-auto flex flex-col justify-between">
+    <>
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
         <div className='flex flex-row justify-between w-full gap-3'>
           <div className='flex flex-row gap-2 items-center'>
@@ -187,7 +187,7 @@ const EventsView = () => {
           </div>
         ))
       )}
-    </div>
+    </>
   );
 
   function shiftWeek(offset) {
@@ -255,4 +255,4 @@ function formatWeekRange(startDate) {
   return `${startStr} – ${endStr}${yearSuffix ? `, ${yearSuffix}` : ''}`;
 }
 
-export default EventsView;
+export default Events;

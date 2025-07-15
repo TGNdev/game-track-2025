@@ -17,6 +17,7 @@ function GameCell({ game, coverImage, screenshots }) {
     search,
     tagsLabels,
     isReleased,
+    setGameToSee,
   } = useGame();
 
   const activeTags = [
@@ -55,23 +56,6 @@ function GameCell({ game, coverImage, screenshots }) {
     setHoverBounds({ top: rect.top, left: rect.left });
     requestAnimationFrame(() => setIsVisible(true));
   };
-
-  useEffect(() => {
-    if (!hoverBounds) return;
-
-    const handleScroll = () => {
-      setIsVisible(false);
-      clearTimeout(unmountTimeoutRef.current);
-      unmountTimeoutRef.current = setTimeout(() => {
-        setHoverBounds(null);
-      }, 200);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [hoverBounds]);
 
   return (
     <td className="p-3 sticky left-0 bg-white z-20 w-80">
@@ -114,11 +98,15 @@ function GameCell({ game, coverImage, screenshots }) {
           )}
         </div>
 
-        <a target="_blank" rel="noreferrer" href={game.link}>
-          <div className="hover:scale-105 transition text-base font-semibold text-black">
+        <button
+          onClick={() => {
+            setGameToSee(game)
+          }}
+        >
+          <div className="hover:scale-105 transition text-base font-semibold text-black text-left">
             {highlightMatch(he.decode(game.name), search)}
           </div>
-        </a>
+        </button>
       </div>
 
       {hoverBounds && screenshots && (

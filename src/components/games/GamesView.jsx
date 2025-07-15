@@ -27,10 +27,11 @@ const GamesView = ({ games, openButtonRef }) => {
     handleCloseModal,
     coverMap,
     screenshotsMap,
-    loading
+    loading,
+    itemsPerPage,
+    currentPage,
+    setCurrentPage
   } = useGame();
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
   const [withRelease, setWithRelease] = useState(true);
   const isFirstRender = useRef(true);
   const [selectedPlatforms, setSelectedPlatforms] = useState(() => {
@@ -218,10 +219,6 @@ const GamesView = ({ games, openButtonRef }) => {
 
     return ref;
   };
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [search, selectedPlatforms, showOnlyUpcoming, showThisYearOnly, withRelease]);
 
   useEffect(() => {
     if (isFirstRender.current) {

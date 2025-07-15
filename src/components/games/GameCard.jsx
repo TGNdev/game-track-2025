@@ -12,6 +12,7 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
     tagsLabels,
     getPlatformsSvg,
     isReleased,
+    setGameToSee,
   } = useGame();
   const enabledTags = Object.keys(game.tags || {})
     .filter(t => game.tags && game.tags[t])
@@ -107,6 +108,14 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
                   className="h-full object-cover"
                 />
                 <div className="absolute top-0 right-0 h-full w-7 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+                <button
+                  className="bg-gradient-primary absolute bottom-4 left-9 w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base transition hover:scale-110"
+                  onClick={() => {
+                    setGameToSee(game);
+                  }}
+                >
+                  See more
+                </button>
               </div>
             )}
 

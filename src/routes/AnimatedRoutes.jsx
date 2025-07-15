@@ -6,6 +6,7 @@ import RedditFeed from "../pages/RedditFeed";
 import PageFade from "../components/shared/PageFade";
 import Hof from "../pages/Hof";
 import AwardsHistory from "../pages/AwardsHistory";
+import ReleaseCalendar from "../pages/ReleaseCalendar";
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -58,6 +59,14 @@ const AnimatedRoutes = () => {
           element={
             <PageFade>
               <AwardsHistory />
+            </PageFade>
+          }
+        />
+        <Route
+          path="/release-calendar"
+          element={
+            <PageFade>
+              <ReleaseCalendar />
             </PageFade>
           }
         />

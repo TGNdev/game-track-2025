@@ -49,7 +49,7 @@ const Drawer = () => {
           <Link to="/leaks-rumours" className="hover:text-primary">Leaks & Rumours</Link>
           <Link to="/hall-of-fame" className="hover:text-primary">Hall Of Fame</Link>
           <Link to="/game-awards-history" className="hover:text-primary">Game Awards History</Link>
-          <Link to="/release-calendar" className="hover:text-primary">Release Calendar</Link>
+          <Link to="/release-calendar" className="hover:text-primary">Releases & Events Calendar</Link>
           <div className="border my-6"></div>
           <button
             className="text-left hover:scale-105 rounded-md text-white py-1.5 px-2 border bg-gradient-primary w-fit transition"
