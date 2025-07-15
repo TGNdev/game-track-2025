@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { getGamesFromFirestore } from "../../js/firebase";
 import GamePreviewModal from "../games/GamePreviewModal";
 import { getGameCovers } from "../../js/igdb";
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 const Games = () => {
   const [games, setGames] = useState([]);
@@ -147,7 +148,7 @@ const Games = () => {
             {initialMonthRef.current && isoMonth(currentMonthStart) !== isoMonth(initialMonthRef.current) && (
               <button
                 onClick={() => setCurrentMonthStart(initialMonthRef.current)}
-                className="px-3 py-1 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600"
+                className="bg-gradient-primary rounded-md px-2 py-1 flex hover:scale-110 transition"
               >
                 Today
               </button>
@@ -155,7 +156,7 @@ const Games = () => {
             {firstFutureMonthStart && isoMonth(currentMonthStart) !== isoMonth(firstFutureMonthStart) && (
               <button
                 onClick={() => setCurrentMonthStart(firstFutureMonthStart)}
-                className="px-3 py-1 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600"
+                className="bg-gradient-primary rounded-md px-2 py-1 flex hover:scale-110 transition"
               >
                 Next Release
               </button>
@@ -170,18 +171,18 @@ const Games = () => {
           onClick={() => shiftMonth(-1)}
           className="text-sm px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
         >
-          ← Previous
+          <FaArrowLeft />
         </button>
 
         <h2 className="text-xl font-bold">
-          {monthStart.toLocaleString("default", { month: "long" })} {monthStart.getFullYear()}
+          {monthStart.toLocaleString("en-US", { month: "long" })} {monthStart.getFullYear()}
         </h2>
 
         <button
           onClick={() => shiftMonth(1)}
           className="text-sm px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
         >
-          Next →
+          <FaArrowRight />
         </button>
       </div>
 
@@ -193,7 +194,7 @@ const Games = () => {
       </div>
 
       {/* Calendar weeks */}
-      <div className="space-y-1">
+      <div>
         {weeks.map((week, idx) => (
           <div key={idx} className="flex flex-row">
             {week.map((day) => {

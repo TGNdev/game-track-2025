@@ -1,12 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
+import { useGame } from "../../contexts/GameContext";
 
 function GamePreviewModal({ game, bounds, isVisible, onClose }) {
   const [isFadingIn, setIsFadingIn] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [shouldRender, setShouldRender] = useState(isVisible);
   const containerRef = useRef(null);
+  const {
+    getPlatformsSvg,
+  } = useGame();
 
   const width = 240;
   const height = 320;
@@ -101,7 +105,17 @@ function GamePreviewModal({ game, bounds, isVisible, onClose }) {
         </div>
         <div className="p-3">
           <h3 className="font-semibold text-base mb-1">{game.name}</h3>
-          <p className="text-sm text-gray-600">{game.platform}</p>
+          <div className="flex flex-row gap-2 justify-center flex-wrap">
+            {Object.keys(game.platforms)
+              .filter((platform) => game.platforms[platform])
+              .sort()
+              .map((platform) => (
+                <div key={platform}>{getPlatformsSvg(platform)}</div>
+              ))}
+            {Object.values(game.platforms).every((value) => !value) && (
+              <span className="text-sm">TBA</span>
+            )}
+          </div>
         </div>
       </div>
     </>,

@@ -15,16 +15,18 @@ const ReleaseCalendar = () => {
         <div className="w-full flex justify-center">
           <div className="flex flex-row w-full gap-4 items-center justify-center">
             <button
-              className={`${seeGames && "bg-gradient-primary text-white"} disabled:opacity-80 disabled:hover:bg-gradient-primary hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
+              className={`w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base
+                ${seeGames ? 'bg-gradient-primary text-white' : 'hover:bg-slate-200'}`}
               onClick={() => setView('games')}
-              disabled={!seeGames}
+              disabled={seeGames}
             >
               Games
             </button>
             <button
-              className={`${seeEvents && "bg-gradient-primary text-white"} disabled:opacity-80 disabled:hover:bg-gradient-primary hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
+              className={`w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base
+                ${seeEvents ? 'bg-gradient-primary text-white' : 'hover:bg-slate-200'}`}
               onClick={() => setView('events')}
-              disabled={!seeEvents}
+              disabled={seeEvents}
             >
               Events
             </button>
