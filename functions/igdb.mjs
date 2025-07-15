@@ -36,34 +36,62 @@ const getToken = async () => {
 
 export async function handler(event) {
   try {
-    const { query } = JSON.parse(event.body || "{}");
-    if (!query) return { statusCode: 400, body: "Missing query" };
+    const body = typeof event.body === "string" ? JSON.parse(event.body) : event.body || {};
+    const { destination } = body;
 
-    const token = await getToken();
+    if (destination === "igdb") {
+      const { query } = body;
+      if (!query) return { statusCode: 400, body: "Missing query" };
 
-    const res = await fetch("https://api.igdb.com/v4/games", {
-      method: "POST",
-      headers: {
-        "Client-ID": process.env.REACT_APP_IGDB_CLIENT,
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "text/plain",
-      },
-      body: query,
-    });
+      const token = await getToken();
 
-    if (!res.ok) {
+      const res = await fetch("https://api.igdb.com/v4/games", {
+        method: "POST",
+        headers: {
+          "Client-ID": process.env.REACT_APP_IGDB_CLIENT,
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "text/plain",
+        },
+        body: query,
+      });
+
+      if (!res.ok) {
+        return {
+          statusCode: res.status,
+          body: await res.text(),
+        };
+      }
+
+      const data = await res.json();
+
       return {
-        statusCode: res.status,
-        body: await res.text(),
+        statusCode: 200,
+        body: JSON.stringify(data),
+      };
+    } else if (destination === "reddit") {
+      const { limit } = body;
+      const safeLimit = Math.min(limit || 100, 100);
+      const timestamp = Date.now();
+
+      const redditUrl = `https://www.reddit.com/r/GamingLeaksAndRumours/new.json?limit=${safeLimit}&_=${timestamp}`;
+
+      console.log("Fetching Reddit URL:", redditUrl);
+
+      const res = await fetch(redditUrl);
+
+      if (!res.ok) {
+        return {
+          statusCode: res.status,
+          body: await res.text(),
+        };
+      }
+
+      const json = await res.json();
+      return {
+        statusCode: 200,
+        body: JSON.stringify(json.data.children.map((child) => child.data)),
       };
     }
-
-    const data = await res.json();
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify(data),
-    };
   } catch (err) {
     return {
       statusCode: 500,

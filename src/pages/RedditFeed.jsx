@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { GameProvider, useGame } from "../contexts/GameContext";
 import Layout from "../components/shared/Layout";
 import he from 'he';
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { highlightMatch } from "../js/utils";
+import { getRedditPosts } from "../js/igdb";
+import { PostSkeleton } from "../components/skeletons/PostSkeleton";
 
 const RedditFeed = () => {
   const [posts, setPosts] = useState([]);
@@ -37,15 +38,8 @@ const RedditFeed = () => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        const corsProxy = "https://corsproxy.io/?";
-        const safeLimit = Math.min(postLimit, 100); // Cap at 100
-        const timestamp = Date.now(); // Cache buster
-        const redditUrl = encodeURIComponent(
-          `https://www.reddit.com/r/GamingLeaksAndRumours/new.json?limit=${safeLimit}&_=${timestamp}`
-        );
-        const res = await fetch(`${corsProxy}${redditUrl}`);
-        const json = await res.json();
-        const rawPosts = json.data.children.map((child) => child.data);
+        const safeLimit = Math.min(postLimit, 100);
+        const rawPosts = await getRedditPosts(safeLimit);
         const filteredPosts = rawPosts.filter((post) => !post.stickied);
         setPosts(filteredPosts);
       } catch (err) {
@@ -83,8 +77,8 @@ const RedditFeed = () => {
   return (
     <Layout>
       <GameProvider>
-        <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-8">
-          <h2 className="text-2xl font-bold text-center">Leaks & Rumours</h2>
+        <div className="max-w-4xl mx-auto px-4 py-6 flex flex-col gap-8">
+          <h2 className="text-2xl font-bold text-center text-primary">Leaks & Rumours</h2>
           {/* Controls */}
           <div className="flex flex-wrap justify-between items-center gap-4">
             <div className="flex flex-row items-center gap-1">
@@ -118,38 +112,37 @@ const RedditFeed = () => {
               <p className="text-sm">posts</p>
             </div>
           </div>
-          {loading ? (
-            <div className="flex flex-col items-center justify-center mt-10">
-              <AiOutlineLoading3Quarters className="animate-spin text-blue-500 mb-3" size={36} />
-              <div className="text-center text-lg text-gray-700">
-                Loading posts...
-              </div>
+          {!loading ? (
+            <div className="space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <PostSkeleton />
+              ))}
             </div>
           ) : (
             <div className="space-y-4">
               {visiblePosts.map((post) => (
-                <div
+                <a
                   key={post.id}
-                  className="relative bg-white rounded-2xl shadow-md hover:shadow-lg transition p-4 border border-gray-200"
+                  href={post.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block relative bg-white rounded-2xl shadow-lg hover:scale-105 transition border border-gray-200 p-4"
                 >
-                  <div
-                    className="absolute -top-2 -left-2 -rotate-6 text-white py-0.5 px-2 text-sm rounded-md shadow-lg"
-                    style={{ backgroundColor: post.link_flair_background_color }}
-                  >
-                    {post.link_flair_text}
-                  </div>
-                  <a
-                    href={post.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary hover:underline sm:text-lg font-semibold"
-                  >
+                  {post.link_flair_text && (
+                    <div
+                      className="absolute -top-2 -left-2 -rotate-6 text-white py-0.5 px-2 text-sm rounded-md shadow-lg"
+                      style={{ backgroundColor: post.link_flair_background_color }}
+                    >
+                      {post.link_flair_text}
+                    </div>
+                  )}
+                  <p className="text-primary hover:underline sm:text-lg font-semibold">
                     {highlightMatch(he.decode(post.title), search)}
-                  </a>
+                  </p>
                   <p className="sm:text-sm text-xs text-gray-500 mt-2">
                     {formatDate(post.created_utc)}
                   </p>
-                </div>
+                </a>
               ))}
             </div>
           )}

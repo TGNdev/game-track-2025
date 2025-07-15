@@ -19,7 +19,10 @@ export const getGameCovers = async (gameIds) => {
         const res = await fetch("/api/igdb", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query }),
+            body: JSON.stringify({
+                query,
+                destination: "igdb",
+            }),
         });
 
         const data = await res.json();
@@ -55,7 +58,10 @@ export const getGameScreenshots = async (gameIds) => {
         const res = await fetch("/api/igdb", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query }),
+            body: JSON.stringify({
+                query,
+                destination: "igdb",
+            }),
         });
 
         const data = await res.json();
@@ -73,3 +79,18 @@ export const getGameScreenshots = async (gameIds) => {
 
     return screenshotMap;
 };
+
+export const getRedditPosts = async (limit) => {
+    const res = await fetch("/api/igdb", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            limit,
+            destination: "reddit",
+        }),
+    });
+
+    const data = await res.json();
+
+    return data;
+}
