@@ -17,7 +17,7 @@ const AwardSelector = ({ year, onSelectAward }) => {
           <button
             key={idx}
             onClick={() => onSelectAward(award)}
-            className="size-24 sm:size-40 flex items-center justify-center border-2 p-4 rounded-md hover:bg-gray-100 hover:scale-105 transition-all"
+            className="size-24 sm:size-40 flex items-center justify-center border-primary p-4 rounded-md hover:scale-105 transition"
           >
             <span className="text-sm sm:text-lg font-medium">{award.title}</span>
           </button>

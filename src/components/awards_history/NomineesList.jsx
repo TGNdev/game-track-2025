@@ -20,10 +20,9 @@ const NomineeList = ({ award, getGameById, coverMap }) => {
             return (
               <div
                 key={idx}
-                className={`w-72 h-auto flex-shrink-0 ${nominee.isWinner
-                  ? ''
-                  : 'bg-white rounded-xl shadow-sm border text-center flex flex-col items-center border-gray-200 opacity-65'
-                  }`}
+                className={`w-72 h-auto flex-shrink-0 ${!nominee.isWinner && 
+                  'bg-white rounded-xl shadow-sm border text-center flex flex-col items-center border-gray-200 opacity-65'
+                }`}
                 id={nominee.isWinner ? 'winner' : ''}
               >
                 {nominee.role ? (
@@ -38,7 +37,7 @@ const NomineeList = ({ award, getGameById, coverMap }) => {
                     <img
                       src={nominee.role.actor.image}
                       alt={nominee.role.actor.name}
-                      className="object-cover h-72 w-full rounded"
+                      className="object-cover h-72 w-full rounded-t-lg"
                     />
                     <div className="text-sm text-gray-500 my-2">{game.name}</div>
                   </>
@@ -48,7 +47,7 @@ const NomineeList = ({ award, getGameById, coverMap }) => {
                       <img
                         src={cover}
                         alt={game.name}
-                        className="object-cover h-auto w-full rounded"
+                        className="object-cover h-auto w-full rounded-t-lg"
                       />
                     )}
                     <div className="flex-1 flex items-center justify-center py-2">
