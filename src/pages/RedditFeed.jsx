@@ -115,7 +115,7 @@ const RedditFeed = () => {
           {loading ? (
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
-                <PostSkeleton />
+                <PostSkeleton key={i} />
               ))}
             </div>
           ) : (
