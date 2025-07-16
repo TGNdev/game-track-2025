@@ -112,7 +112,7 @@ const RedditFeed = () => {
               <p className="text-sm">posts</p>
             </div>
           </div>
-          {!loading ? (
+          {loading ? (
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
                 <PostSkeleton />
