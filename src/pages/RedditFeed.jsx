@@ -77,7 +77,7 @@ const RedditFeed = () => {
   return (
     <Layout>
       <GameProvider>
-        <div className="max-w-4xl mx-auto px-4 py-6 flex flex-col gap-8">
+        <div className="max-w-5xl mx-auto py-6 flex flex-col gap-8">
           <h2 className="text-2xl font-bold text-center text-primary">Leaks & Rumours</h2>
           {/* Controls */}
           <div className="flex flex-wrap justify-between items-center gap-4">

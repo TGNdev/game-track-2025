@@ -53,7 +53,7 @@ const Hof = () => {
 
   return (
     <Layout>
-      <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-4">
+      <div className="max-w-5xl mx-auto py-6 flex flex-col gap-4">
         <div className="text-center">
           <h2 className="text-2xl font-bold">Game Track's Hall Of Fame</h2>
           <p className="text-sm italic text-slate-500">

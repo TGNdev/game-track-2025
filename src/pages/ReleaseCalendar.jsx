@@ -10,7 +10,7 @@ const ReleaseCalendar = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-8">
+      <div className="max-w-5xl mx-auto flex flex-col gap-8">
         <h2 className="text-2xl font-bold text-center">Calendars</h2>
         <div className="w-full flex justify-center">
           <div className="flex flex-row w-full gap-4 items-center justify-center">

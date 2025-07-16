@@ -4,14 +4,15 @@ import GamesView from "../components/games/GamesView"
 import { useGame } from "../contexts/GameContext";
 import Layout from "../components/shared/Layout";
 import { getGamesFromFirestore } from "../js/firebase";
-import { getGameCovers, getGameScreenshots } from "../js/igdb";
+import { getGameCovers, getGameScreenshots, getGameTimeToBeat } from "../js/igdb";
 
 const Home = () => {
   const {
     games, setGames,
     setCoverMap,
     setScreenshotsMap,
-    setLoading
+    setLoading,
+    setTimesToBeat
   } = useGame();
 
   useEffect(() => {
@@ -48,6 +49,16 @@ const Home = () => {
     };
     fetchScreenshots();
   }, [games, setScreenshotsMap]);
+
+  useEffect(() => {
+    const fetchTimesToBeat = async () => {
+      if (games.length === 0) return;
+      const gameIds = games.map((g) => g.igdb_id);
+      const timesToBeat = await getGameTimeToBeat(gameIds);
+      setTimesToBeat(timesToBeat);
+    };
+    fetchTimesToBeat();
+  }, [games, setTimesToBeat]);
 
   return (
     <Layout>

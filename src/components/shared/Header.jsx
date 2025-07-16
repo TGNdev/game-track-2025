@@ -32,7 +32,7 @@ const Header = () => {
   }
 
   return (
-    <div className="sticky top-0 bg-white z-30 flex flex-col items-start justify-between w-full gap-6 py-4">
+    <div className="sticky top-0 bg-white z-30 flex flex-col items-start justify-between w-full gap-6 py-4 px-6 shadow-md">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full">
         <Link to="/">
           <div className="flex flex-row gap-2 items-center">

@@ -100,7 +100,7 @@ const FeaturedGames = ({ games }) => {
   }
 
   return (
-    <div className="w-full border rounded-xl p-4 shadow-md">
+    <div className="w-full border rounded-xl p-4 shadow-md mt-6">
       <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between mb-4">
         <div className="text-2xl font-bold text-primary text-center sm:text-left">
           {featuredGames.length > 1 ? "Next Releases" : "Next Release"}
