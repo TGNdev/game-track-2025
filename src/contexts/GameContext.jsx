@@ -22,6 +22,7 @@ export const GameProvider = ({ children }) => {
   const [gameToEdit, setGameToEdit] = useState(null);
   const [coverMap, setCoverMap] = useState({});
   const [screenshotsMap, setScreenshotsMap] = useState({});
+  const [timesToBeat, setTimesToBeat] = useState({});
   const [loading, setLoading] = useState(false);
   const [gameToSee, setGameToSee] = useState(null);
   const [itemsPerPage, setItemsPerPage] = useState(20);
@@ -129,6 +130,8 @@ export const GameProvider = ({ children }) => {
       openSearch,
       setOpenSearch,
       openButtonRef,
+      timesToBeat,
+      setTimesToBeat
     };
   }, [
     games,
@@ -146,7 +149,8 @@ export const GameProvider = ({ children }) => {
     gameToSee,
     itemsPerPage,
     currentPage,
-    openSearch
+    openSearch,
+    timesToBeat
   ]);
 
   return (

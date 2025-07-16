@@ -40,12 +40,13 @@ export async function handler(event) {
     const { destination } = body;
 
     if (destination === "igdb") {
-      const { query } = body;
+      const { query, endpoint } = body;
       if (!query) return { statusCode: 400, body: "Missing query" };
+      if (!endpoint) return { statusCode: 400, body: "Missing endpoint" };
 
       const token = await getToken();
 
-      const res = await fetch("https://api.igdb.com/v4/games", {
+      const res = await fetch(`https://api.igdb.com/v4/${endpoint}`, {
         method: "POST",
         headers: {
           "Client-ID": process.env.REACT_APP_IGDB_CLIENT,

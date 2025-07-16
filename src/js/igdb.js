@@ -1,3 +1,4 @@
+import { i } from "framer-motion/client";
 import { getCachedValue, setCachedValue } from "./cache";
 
 export const getGameCovers = async (gameIds) => {
@@ -5,7 +6,7 @@ export const getGameCovers = async (gameIds) => {
     const uncachedIds = [];
 
     for (const id of gameIds) {
-        const cached = getCachedValue(`cover_${id}`);
+        const cached = getCachedValue(id, "cover");
         if (cached) {
             coverMap[id] = cached;
         } else {
@@ -22,6 +23,7 @@ export const getGameCovers = async (gameIds) => {
             body: JSON.stringify({
                 query,
                 destination: "igdb",
+                endpoint: "games",
             }),
         });
 
@@ -31,7 +33,7 @@ export const getGameCovers = async (gameIds) => {
             if (game.cover) {
                 const url = `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`;
                 coverMap[game.id] = url;
-                setCachedValue(`cover_${game.id}`, url);
+                setCachedValue(game.id, "cover", url);
             }
         });
     }
@@ -44,7 +46,7 @@ export const getGameScreenshots = async (gameIds) => {
     const uncachedIds = [];
 
     for (const id of gameIds) {
-        const cached = getCachedValue(`screenshots_${id}`);
+        const cached = getCachedValue(id, "screenshots");
         if (cached) {
             screenshotMap[id] = cached;
         } else {
@@ -61,6 +63,7 @@ export const getGameScreenshots = async (gameIds) => {
             body: JSON.stringify({
                 query,
                 destination: "igdb",
+                endpoint: "games",
             }),
         });
 
@@ -72,13 +75,64 @@ export const getGameScreenshots = async (gameIds) => {
                     (s) => `https://images.igdb.com/igdb/image/upload/t_screenshot_big/${s.image_id}.jpg`
                 );
                 screenshotMap[game.id] = urls;
-                setCachedValue(`screenshots_${game.id}`, urls);
+                setCachedValue(game.id, "screenshots", urls);
             }
         });
     }
 
     return screenshotMap;
 };
+
+export const getGameTimeToBeat = async (gameIds) => {
+    const timeToBeatMap = {};
+    const uncachedIds = [];
+
+    for (const id of gameIds) {
+        const cached = getCachedValue(id, "time_to_beat");
+        if (cached) {
+            timeToBeatMap[id] = cached;
+        } else {
+            uncachedIds.push(id);
+        }
+    }
+
+    if (uncachedIds.length > 0) {
+        const query = `fields game_id, completely, hastily, normally; where game_id = (${uncachedIds.join(",")}); limit ${uncachedIds.length};`;
+
+        const res = await fetch("/api/igdb", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                query,
+                destination: "igdb",
+                endpoint: "game_time_to_beats",
+            }),
+        });
+
+        const data = await res.json();
+
+        data.forEach((entry) => {
+            if (
+                entry &&
+                (entry.completely !== undefined ||
+                    entry.hastily !== undefined ||
+                    entry.normally !== undefined)
+            ) {
+                const timeToBeat = {
+                    completely: entry.completely,
+                    hastily: entry.hastily,
+                    normally: entry.normally,
+                };
+
+                timeToBeatMap[entry.game_id] = timeToBeat;
+                setCachedValue(entry.game_id, "time_to_beat", timeToBeat);
+            }
+        });
+    }
+
+    return timeToBeatMap;
+};
+
 
 export const getRedditPosts = async (limit) => {
     const res = await fetch("/api/igdb", {

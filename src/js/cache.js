@@ -1,23 +1,46 @@
 const TTL = 1000 * 60 * 60 * 24 * 10;
 
-export const getCachedValue = (key) => {
-  const item = localStorage.getItem(key);
+export const getCachedValue = (id, field) => {
+  const item = localStorage.getItem(id);
   if (!item) return null;
 
   try {
-    const { value, expiresAt } = JSON.parse(item);
+    const { data, expiresAt } = JSON.parse(item);
     if (Date.now() > expiresAt) {
-      localStorage.removeItem(key);
+      localStorage.removeItem(id);
       return null;
     }
-    return value;
+    return data[field] ?? null;
   } catch {
-    localStorage.removeItem(key);
+    localStorage.removeItem(id);
     return null;
   }
 };
 
-export const setCachedValue = (key, value) => {
+export const setCachedValue = (id, field, value) => {
+  const item = localStorage.getItem(id);
   const expiresAt = Date.now() + TTL;
-  localStorage.setItem(key, JSON.stringify({ value, expiresAt }));
+
+  let data = {};
+  try {
+    if (item) {
+      const parsed = JSON.parse(item);
+
+      if (parsed.expiresAt > Date.now()) {
+        data = parsed.data || {};
+      }
+    }
+  } catch {
+    // fallback to empty data
+  }
+
+  data[field] = value;
+
+  localStorage.setItem(
+    id,
+    JSON.stringify({
+      data,
+      expiresAt
+    })
+  );
 };
