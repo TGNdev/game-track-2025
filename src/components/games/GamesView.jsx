@@ -227,7 +227,7 @@ const GamesView = () => {
     }
 
     if (firstItemRef.current) {
-      const headerHeight = 200;
+      const headerHeight = 325;
       const top = firstItemRef.current.getBoundingClientRect().top + window.scrollY - headerHeight;
 
       window.scrollTo({ top, behavior: 'smooth', });
@@ -255,7 +255,7 @@ const GamesView = () => {
   }
 
   return (
-    <div className="w-full flex flex-col gap-6 pb-4">
+    <div className="px-6 w-full flex flex-col gap-6 pb-4">
       <FeaturedGames games={games} />
 
       <div className="w-full flex justify-center">
@@ -431,42 +431,47 @@ const GamesView = () => {
           </div>
         </div>
       ) : (
-        <div className="flex-col max-w-full overflow-x-auto hidden sm:flex">
-          <div className="relative">
-            <table className="w-full border-collapse min-w-[900px]">
-              <thead className="border-b">
-                <tr>
-                  <th className="p-3 sticky left-0 bg-white z-10">Name</th>
-                  <th className="p-3">Release Date</th>
-                  <th className="p-3">Developers</th>
-                  <th className="p-3">Editors</th>
-                  <th className="p-3">Platforms</th>
-                  <th className="p-3 flex flex-col">
-                    <div>Ratings</div>
-                    <div className="flex flex-row gap-x-3 justify-center">
-                      <div className="text-xs opacity-50">Critics</div>
-                      <div className="text-xs opacity-50">Players</div>
-                    </div>
-                  </th>
-                  {edit && (
-                    <th className="p-3 sticky right-0 bg-white z-10">Edit actions</th>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {filtered
-                  .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                  .map((game, index) => (
-                    <GameRow
-                      ref={index === 0 ? firstItemRef : null}
-                      key={game.id}
-                      game={game}
-                      coverImage={coverMap ? coverMap[game.igdb_id] : []}
-                      screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
-                    />
-                  ))}
-              </tbody>
-            </table>
+        <>
+          <div className="flex-col max-w-full overflow-x-auto hidden sm:flex">
+            <div className="relative">
+              <table className="w-full border-collapse min-w-[900px]">
+                <thead className="border-b">
+                  <tr>
+                    <th className="p-3 sticky left-0 bg-white z-10 flex flex-col items-center">
+                      <div>Name</div>
+                      <div className="text-xs opacity-50">Click to open details</div>
+                    </th>
+                    <th className="p-3">Release Date</th>
+                    <th className="p-3">Developers</th>
+                    <th className="p-3">Editors</th>
+                    <th className="p-3">Platforms</th>
+                    <th className="p-3 flex flex-col">
+                      <div>Ratings</div>
+                      <div className="flex flex-row gap-x-3 justify-center">
+                        <div className="text-xs opacity-50">Critics</div>
+                        <div className="text-xs opacity-50">Players</div>
+                      </div>
+                    </th>
+                    {edit && (
+                      <th className="p-3 sticky right-0 bg-white z-10">Edit actions</th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered
+                    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                    .map((game, index) => (
+                      <GameRow
+                        ref={index === 0 ? firstItemRef : null}
+                        key={game.id}
+                        game={game}
+                        coverImage={coverMap ? coverMap[game.igdb_id] : []}
+                        screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
+                      />
+                    ))}
+                </tbody>
+              </table>
+            </div>
           </div>
           {filtered.length > itemsPerPage && (
             <div className="flex justify-center mt-6 gap-2 flex-wrap">
@@ -508,7 +513,7 @@ const GamesView = () => {
               </button>
             </div>
           )}
-        </div>
+        </>
       )}
 
       {isModalOpen && (
