@@ -5,7 +5,7 @@ import { useGame } from "../../contexts/GameContext";
 import he from "he";
 import { highlightMatch } from "../../js/utils";
 
-const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen, setGameToEdit, coverImage }) => {
+const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
   const [isOpen, setIsOpen] = useState(false);
   const {
     search,
@@ -13,6 +13,10 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
     getPlatformsSvg,
     isReleased,
     setGameToSee,
+    opened,
+    edit,
+    setIsModalOpen,
+    setGameToEdit
   } = useGame();
   const enabledTags = Object.keys(game.tags || {})
     .filter(t => game.tags && game.tags[t])
@@ -26,8 +30,9 @@ const GameCard = ({ game, edit, opened, forceOpen, setForceOpen, setIsModalOpen,
 
   return (
     <div
+      ref={ref}
       id={`gamecard-${game.id}`}
-      className={`${forceOpen ? "" : ""} bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 relative`}
+      className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 relative"
     >
       <button
         className="w-full flex justify-between items-center px-7 pt-7 pb-3 text-left bg-slate-100 hover:bg-slate-200 transition"

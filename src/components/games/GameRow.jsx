@@ -15,14 +15,20 @@ const getRatingStyle = (rating) => {
   return `${baseClasses} bg-green-600`;
 };
 
-const GameRow = ({ game, edit, setGameToEdit, setIsModalOpen, coverImage, screenshots }) => {
+const GameRow = ({ ref, game, coverImage, screenshots }) => {
   const {
     search,
     getPlatformsSvg,
+    edit,
+    setGameToEdit,
+    setIsModalOpen
   } = useGame();
 
   return (
-    <tr id={`game-${game.id}`} className="text-center relative text-sm">
+    <tr
+      ref={ref}
+      id={`game-${game.id}`} className="text-center relative text-sm"
+    >
       <GameCell
         game={game}
         coverImage={coverImage}

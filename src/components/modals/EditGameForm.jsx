@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { editGameFromFirestore } from "../../js/firebase";
 import { Timestamp } from "firebase/firestore";
@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import SuggestionDropdown from "./SuggestionDropdown";
 import isEqual from "lodash.isequal";
 import Modal from "./Modal";
+import { useGame } from "../../contexts/GameContext";
 
 const platformOptions = ["pc", "ps", "xbox", "switch", "switch_2"];
 const tagsOptions = ["dlc", "remake", "remaster", "port"];
@@ -48,6 +49,9 @@ const EditGameForm = ({ game, games, onSuccess }) => {
   const [suggestionTarget, setSuggestionTarget] = useState(null);
   const [releaseTba, setReleaseTba] = useState(typeof game.release_date === "string");
   const navigate = useNavigate();
+  const {
+    setGames
+  } = useGame();
 
   useEffect(() => {
     const devSet = new Map();
@@ -150,6 +154,15 @@ const EditGameForm = ({ game, games, onSuccess }) => {
         tags: form.tags,
         cover: form.cover,
       });
+
+      const updatedGame = {
+        ...form,
+        id: game.id,
+      }
+
+      setGames(prevGames =>
+        prevGames.map(g => (g.id === game.id ? updatedGame : g))
+      );
 
       toast.success("Game updated successfully!");
       if (onSuccess) onSuccess();

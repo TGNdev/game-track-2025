@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { auth } from "../js/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { toast } from "react-toastify";
@@ -11,6 +11,7 @@ import { ReactComponent as Switch2Icon } from "../assets/icons/switch_2.svg";
 const GameContext = createContext();
 
 export const GameProvider = ({ children }) => {
+  const [games, setGames] = useState([]);
   const [viewGames, setViewGames] = useState(true);
   const [search, setSearch] = useState("");
   const [opened, setOpened] = useState(false);
@@ -26,6 +27,8 @@ export const GameProvider = ({ children }) => {
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [openSearch, setOpenSearch] = useState(false);
+
+  const openButtonRef = useRef(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -88,6 +91,8 @@ export const GameProvider = ({ children }) => {
     };
 
     return {
+      games,
+      setGames,
       viewGames,
       setViewGames,
       search,
@@ -122,9 +127,11 @@ export const GameProvider = ({ children }) => {
       currentPage,
       setCurrentPage,
       openSearch,
-      setOpenSearch
+      setOpenSearch,
+      openButtonRef,
     };
   }, [
+    games,
     viewGames,
     search,
     opened,

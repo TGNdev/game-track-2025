@@ -12,28 +12,28 @@ import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
 import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { getPaginationRange } from "../../js/utils";
 
-const GamesView = ({ games, openButtonRef }) => {
+const GamesView = () => {
   const {
+    games,
     search,
-    opened,
     isLogged,
     edit,
     isModalOpen,
-    setIsModalOpen,
     featuredOpen,
     setFeaturedOpen,
     gameToEdit,
-    setGameToEdit,
     handleCloseModal,
     coverMap,
     screenshotsMap,
     loading,
     itemsPerPage,
     currentPage,
-    setCurrentPage
+    setCurrentPage,
+    openButtonRef
   } = useGame();
   const [withRelease, setWithRelease] = useState(true);
   const isFirstRender = useRef(true);
+  const firstItemRef = useRef(null);
   const [selectedPlatforms, setSelectedPlatforms] = useState(() => {
     const saved = localStorage.getItem('gameFilters');
     return saved ? JSON.parse(saved).selectedPlatforms || [] : [];
@@ -226,10 +226,12 @@ const GamesView = ({ games, openButtonRef }) => {
       return;
     }
 
-    window.scrollTo({
-      top: document.body.scrollHeight,
-      behavior: 'smooth',
-    });
+    if (firstItemRef.current) {
+      const headerHeight = 200;
+      const top = firstItemRef.current.getBoundingClientRect().top + window.scrollY - headerHeight;
+
+      window.scrollTo({ top, behavior: 'smooth', });
+    }
   }, [currentPage]);
 
   const isSmallScreen = useMediaQuery('(max-width: 639px)');
@@ -383,16 +385,13 @@ const GamesView = ({ games, openButtonRef }) => {
           <div className="flex flex-col gap-5">
             {filtered
               .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-              .map(game => (
+              .map((game, index) => (
                 <GameCard
                   key={game.id}
+                  ref={index === 0 ? firstItemRef : null}
                   game={game}
-                  edit={edit}
-                  opened={opened}
                   forceOpen={featuredOpen === game.id}
                   setForceOpen={() => setFeaturedOpen(null)}
-                  setGameToEdit={setGameToEdit}
-                  setIsModalOpen={setIsModalOpen}
                   coverImage={coverMap ? coverMap[game.igdb_id] : []}
                 />
               ))}
@@ -457,13 +456,11 @@ const GamesView = ({ games, openButtonRef }) => {
               <tbody>
                 {filtered
                   .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                  .map(game => (
+                  .map((game, index) => (
                     <GameRow
+                      ref={index === 0 ? firstItemRef : null}
                       key={game.id}
                       game={game}
-                      edit={edit}
-                      setGameToEdit={setGameToEdit}
-                      setIsModalOpen={setIsModalOpen}
                       coverImage={coverMap ? coverMap[game.igdb_id] : []}
                       screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
                     />
