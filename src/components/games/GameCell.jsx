@@ -5,7 +5,7 @@ import he from "he";
 import { highlightMatch } from "../../js/utils";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
 
-function GameCell({ game, coverImage, screenshots }) {
+function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
   const tagRefs = useRef([]);
   const imgRef = useRef(null);
   const [tagLefts, setTagLefts] = useState([]);
@@ -97,11 +97,13 @@ function GameCell({ game, coverImage, screenshots }) {
           )}
         </div>
 
-        <a target="_blank" rel="noreferrer" href={game.link}>
+        <button
+          onClick={toggleDrawer}
+        >
           <div className="hover:scale-105 transition text-base font-semibold text-black text-left">
             {highlightMatch(he.decode(game.name), search)}
           </div>
-        </a>
+        </button>
       </div>
 
       {hoverBounds && screenshots && (

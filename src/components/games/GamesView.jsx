@@ -29,7 +29,8 @@ const GamesView = () => {
     itemsPerPage,
     currentPage,
     setCurrentPage,
-    openButtonRef
+    openButtonRef,
+    timesToBeat,
   } = useGame();
   const [withRelease, setWithRelease] = useState(true);
   const isFirstRender = useRef(true);
@@ -467,6 +468,7 @@ const GamesView = () => {
                         game={game}
                         coverImage={coverMap ? coverMap[game.igdb_id] : []}
                         screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
+                        times={timesToBeat ? timesToBeat[game.igdb_id] : []}
                       />
                     ))}
                 </tbody>

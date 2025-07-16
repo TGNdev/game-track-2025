@@ -68,7 +68,7 @@ const AwardsHistory = () => {
 
   return (
     <Layout>
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto mt-6">
         <h2 className="text-2xl font-bold text-center mb-4">Game Awards History</h2>
         <Breadcrumbs />
 
