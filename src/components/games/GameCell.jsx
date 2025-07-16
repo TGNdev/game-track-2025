@@ -17,7 +17,6 @@ function GameCell({ game, coverImage, screenshots }) {
     search,
     tagsLabels,
     isReleased,
-    setGameToSee,
   } = useGame();
 
   const activeTags = [

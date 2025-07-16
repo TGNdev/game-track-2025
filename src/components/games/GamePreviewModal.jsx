@@ -48,19 +48,15 @@ function GamePreviewModal({ game, bounds, isVisible, onClose }) {
     setAdjustedPosition({ top, left });
   }, [bounds]);
 
-  const handleClose = () => {
-    setIsFadingOut(true);
-    setIsFadingIn(false);
-    setTimeout(() => {
-      onClose();
-      setShouldRender(false);
-    }, 300);
-  };
-
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
-        handleClose();
+        setIsFadingOut(true);
+        setIsFadingIn(false);
+        setTimeout(() => {
+          onClose();
+          setShouldRender(false);
+        }, 300);
       }
     };
 
@@ -71,7 +67,7 @@ function GamePreviewModal({ game, bounds, isVisible, onClose }) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isVisible]);
+  }, [isVisible, onClose]);
 
   if (!game || !shouldRender) return null;
 

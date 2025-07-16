@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FiX } from "react-icons/fi";
 import { useGame } from "../../contexts/GameContext";
-import { format } from "date-fns";
 import { Timestamp } from "firebase/firestore";
 
 const GameDetailsDrawer = () => {
