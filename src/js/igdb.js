@@ -1,4 +1,3 @@
-import { i } from "framer-motion/client";
 import { getCachedValue, setCachedValue } from "./cache";
 
 export const getGameCovers = async (gameIds) => {
