@@ -76,9 +76,11 @@ export async function handler(event) {
 
       const redditUrl = `https://www.reddit.com/r/GamingLeaksAndRumours/new.json?limit=${safeLimit}&_=${timestamp}`;
 
-      console.log("Fetching Reddit URL:", redditUrl);
-
-      const res = await fetch(redditUrl);
+      const res = await fetch(redditUrl, {
+        headers: {
+          "Accept": "application/json"
+        }
+      });
 
       if (!res.ok) {
         return {
