@@ -26,7 +26,7 @@ const FeaturedGames = ({ games }) => {
 
     if (diffDays === 1) {
       text += "tomorrow";
-      classes += "bg-gradient-tertiary"
+      classes += "bg-gradient-primary"
     }
 
     if (diffDays > 1) {
