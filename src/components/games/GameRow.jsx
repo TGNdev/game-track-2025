@@ -21,7 +21,6 @@ const getRatingStyle = (rating) => {
 
 const GameRow = ({ ref, game, coverImage, screenshots, times }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
   const {
     search,
     getPlatformsSvg,
