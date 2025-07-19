@@ -46,7 +46,7 @@ const Drawer = () => {
         {/* Navigation Content */}
         <nav className="mt-16 flex flex-col gap-4 px-6 text-slate-700">
           <Link to="/" className="hover:text-primary">Home</Link>
-          <Link to="/leaks-rumours" className="hover:text-primary">Leaks & Rumours</Link>
+          {/* <Link to="/leaks-rumours" className="hover:text-primary">Leaks & Rumours</Link> */}
           <Link to="/hall-of-fame" className="hover:text-primary">Hall Of Fame</Link>
           <Link to="/game-awards-history" className="hover:text-primary">Game Awards History</Link>
           <Link to="/release-calendar" className="hover:text-primary">Releases & Events Calendar</Link>
