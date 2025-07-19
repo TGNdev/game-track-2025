@@ -33,6 +33,7 @@ const AddGameForm = ({ games, onSuccess }) => {
     ratings: { critics: 0, players: 0, link: "" },
     tags: tagsOptions.reduce((acc, tag) => ({ ...acc, [tag]: false }), {}),
     cover: null,
+    igdb_id: "",
   });
   const [form, setForm] = useState(getInitialFormState());
   const [errors, setErrors] = useState({});
@@ -118,7 +119,8 @@ const AddGameForm = ({ games, onSuccess }) => {
     if (form.editors.some(ed => !ed.name || !ed.link)) {
       errs.editors = "All editors must have a name and a link";
     }
-    if (!form.releaseDate) errs.releaseDate = "Release date is required"
+    if (!form.releaseDate) errs.releaseDate = "Release date is required";
+    if (!form.igdb_id) errs.igdb_id = "IGDB game ID is required";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -144,6 +146,7 @@ const AddGameForm = ({ games, onSuccess }) => {
         ratings: form.ratings,
         tags: form.tags,
         cover: null,
+        igdb_id: form.igdb_id,
       });
 
       toast.success("Game added successfully!");
@@ -219,9 +222,8 @@ const AddGameForm = ({ games, onSuccess }) => {
                   type="button"
                   key={tag}
                   onClick={() => handleTagToggle(tag)}
-                  className={`px-3 py-1 rounded-full border text-sm hover:bg-blue-100 transition ${
-                    form.tags[tag] ? "bg-gradient-primary text-white hover:bg-blue-400" : ""
-                  }`}
+                  className={`px-3 py-1 rounded-full border text-sm hover:bg-blue-100 transition ${form.tags[tag] ? "bg-gradient-primary text-white hover:bg-blue-400" : ""
+                    }`}
                 >
                   {tagsLabels[tag]}
                 </button>
@@ -356,9 +358,8 @@ const AddGameForm = ({ games, onSuccess }) => {
                 type="button"
                 key={platform}
                 onClick={() => handlePlatformToggle(platform)}
-                className={`px-3 py-1 rounded-full border text-sm hover:bg-blue-100 transition ${
-                  form.platforms[platform] ? "bg-gradient-primary text-white hover:bg-blue-400" : ""
-                }`}
+                className={`px-3 py-1 rounded-full border text-sm hover:bg-blue-100 transition ${form.platforms[platform] ? "bg-gradient-primary text-white hover:bg-blue-400" : ""
+                  }`}
               >
                 {platformLabels[platform]}
               </button>
@@ -408,9 +409,21 @@ const AddGameForm = ({ games, onSuccess }) => {
                 value={form.ratings.link}
                 onChange={handleChange}
                 className="px-3 py-2 rounded border"
-                />
+              />
             </div>
           </div>
+        </div>
+
+        <div className="flex flex-col">
+          <label className="block text-sm mb-2 font-semibold">IGDB game ID</label>
+          <input
+            className="px-4 py-2 rounded border"
+            name="igdb_id"
+            value={form.igdb_id}
+            placeholder="something like 345678"
+            onChange={handleChange}
+          />
+          {errors.igdb_id && <span className="text-red-500 text-sm">{errors.igdb_id}</span>}
         </div>
 
         <div className="flex flex-row gap-3">
