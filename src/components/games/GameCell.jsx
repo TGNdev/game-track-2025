@@ -17,6 +17,7 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
     search,
     tagsLabels,
     isReleased,
+    hasWonAward,
   } = useGame();
 
   const activeTags = [
@@ -25,6 +26,11 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
       label: isReleased(game.release_date) ? "Released" : "Coming soon",
       color: isReleased(game.release_date) ? "bg-gradient-secondary" : "bg-gradient-tertiary",
     },
+    ...(hasWonAward(game.id) ? [{
+      key: "_award",
+      label: "Game Award Winner",
+      color: "bg-gradient-tertiary",
+    }] : []),
     ...Object.keys(game.tags || {})
       .filter((tag) => game.tags[tag])
       .sort((a, b) => a.localeCompare(b))

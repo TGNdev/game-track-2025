@@ -162,7 +162,7 @@ const GameRow = ({ ref, game, coverImage, screenshots, times }) => {
                   {times ? (
                     <div className="flex flex-col gap-2 w-1/2">
                       <TimesDisclaimer />
-                      <div className="flex gap-4 justify-around items-center">
+                      <div className="flex gap-4 items-center">
                         {Object.entries(times).map(([label, seconds]) => {
                           const hours = (seconds / 3600).toFixed(1);
                           const title = label.charAt(0).toUpperCase() + label.slice(1);

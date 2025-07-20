@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { auth } from "../js/firebase";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { auth, getTgaFromFirestore } from "../js/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { toast } from "react-toastify";
 import { ReactComponent as XboxIcon } from "../assets/icons/xbox.svg";
@@ -9,6 +9,8 @@ import { ReactComponent as SwitchIcon } from "../assets/icons/switch.svg";
 import { ReactComponent as Switch2Icon } from "../assets/icons/switch_2.svg";
 
 const GameContext = createContext();
+const AWARD_WINNERS_CACHE_KEY = "tgaAwardWinners";
+const TTL = 1000 * 60 * 60 * 24 * 10; // 10 days
 
 export const GameProvider = ({ children }) => {
   const [games, setGames] = useState([]);
@@ -28,6 +30,7 @@ export const GameProvider = ({ children }) => {
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [openSearch, setOpenSearch] = useState(false);
+  const [awardWinners, setAwardWinners] = useState(new Set());
 
   const openButtonRef = useRef(null);
 
@@ -39,6 +42,19 @@ export const GameProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const fetchWinners = async () => {
+      const winners = await loadAwardWinners();
+      setAwardWinners(winners);
+    };
+
+    fetchWinners();
+  }, []);
+
+  const hasWonAward = useCallback(
+    (gameId) => awardWinners.has(gameId),
+    [awardWinners]
+  );
   const logout = async () => {
     try {
       await signOut(auth);
@@ -81,6 +97,44 @@ export const GameProvider = ({ children }) => {
     const today = new Date();
     const releaseDate = new Date(date.seconds * 1000);
     return releaseDate < today;
+  };
+
+  const loadAwardWinners = async () => {
+    try {
+      const cache = localStorage.getItem(AWARD_WINNERS_CACHE_KEY);
+      if (cache) {
+        const { data, expiresAt } = JSON.parse(cache);
+        if (Date.now() < expiresAt) {
+          return new Set(data); // cached Set of gameIds
+        }
+      }
+
+      const tgaList = await getTgaFromFirestore();
+      const winnersSet = new Set();
+
+      for (const year of tgaList) {
+        for (const award of year.awards || []) {
+          for (const nominee of award.nominees || []) {
+            if (nominee.isWinner && nominee.gameId) {
+              winnersSet.add(nominee.gameId);
+            }
+          }
+        }
+      }
+
+      localStorage.setItem(
+        AWARD_WINNERS_CACHE_KEY,
+        JSON.stringify({
+          data: Array.from(winnersSet),
+          expiresAt: Date.now() + TTL,
+        })
+      );
+
+      return winnersSet;
+    } catch (e) {
+      console.error("Failed to load TGA award winners:", e);
+      return new Set();
+    }
   };
 
   const value = useMemo(() => {
@@ -131,7 +185,10 @@ export const GameProvider = ({ children }) => {
       setOpenSearch,
       openButtonRef,
       timesToBeat,
-      setTimesToBeat
+      setTimesToBeat,
+      awardWinners,
+      setAwardWinners,
+      hasWonAward,
     };
   }, [
     games,
@@ -150,7 +207,9 @@ export const GameProvider = ({ children }) => {
     itemsPerPage,
     currentPage,
     openSearch,
-    timesToBeat
+    timesToBeat,
+    awardWinners,
+    hasWonAward
   ]);
 
   return (
