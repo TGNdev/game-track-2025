@@ -39,7 +39,7 @@ const Search = () => {
             animate={{ width: "100%", opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="px-4 rounded-lg border w-full focus:shadow-lg focus:outline-none"
+            className="px-4 rounded-lg border w-full focus:shadow-lg focus:outline-none h-10 mt-4 sm:mt-0"
             type="text"
             placeholder="Type to search..."
             value={search}

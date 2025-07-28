@@ -44,7 +44,7 @@ const Header = ({ onDrawerOpen }) => {
           {canSearch && <Search />}
           <button
             onClick={onDrawerOpen}
-            className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md hover:scale-110 transition duration-150 ease-in-out sm:static"
+            className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md transition duration-150 ease-in-out top-4 right-4 sm:right-4 z-50 sm:static fixed"
             aria-label="Open navigation drawer"
           >
             <FiMenu className="size-5 text-white" />
