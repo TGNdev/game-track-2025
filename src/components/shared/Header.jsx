@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 import Search from "./Search";
-import Drawer from "./Drawer";
 import { useGame } from "../../contexts/GameContext";
 import { FaPlus, FaSignOutAlt } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
+import { FiMenu } from "react-icons/fi";
 
-const Header = () => {
+const Header = ({ onDrawerOpen }) => {
   const {
     opened, setOpened,
     setFeaturedOpen,
@@ -32,7 +32,7 @@ const Header = () => {
   }
 
   return (
-    <div className="sticky top-0 bg-white z-30 flex flex-col items-start justify-between w-full gap-6 py-4 px-6 shadow-md">
+    <div className="sticky top-0 bg-white/50 backdrop-blur-md z-30 isolation-isolate flex flex-col items-start justify-between w-full gap-6 py-4 px-6 shadow-md">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full">
         <Link to="/">
           <div className="flex flex-row gap-2 items-center">
@@ -41,10 +41,14 @@ const Header = () => {
           </div>
         </Link>
         <div className="flex flex-row w-full sm:w-2/3 justify-end gap-5">
-          {canSearch && (
-            <Search />
-          )}
-          <Drawer />
+          {canSearch && <Search />}
+          <button
+            onClick={onDrawerOpen}
+            className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md hover:scale-110 transition duration-150 ease-in-out sm:static"
+            aria-label="Open navigation drawer"
+          >
+            <FiMenu className="size-5 text-white" />
+          </button>
         </div>
       </div>
 

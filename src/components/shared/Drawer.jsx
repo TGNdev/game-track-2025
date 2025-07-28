@@ -1,10 +1,8 @@
-import React, { useState } from "react";
-import { FiMenu, FiX } from "react-icons/fi";
+import { FiX } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useGame } from "../../contexts/GameContext";
 
-const Drawer = () => {
-  const [open, setOpen] = useState(false);
+const Drawer = ({ open, setOpen }) => {
   const {
     logout,
     isLogged
@@ -12,15 +10,6 @@ const Drawer = () => {
 
   return (
     <>
-      {/* Open Drawer Button */}
-      <button
-        className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md hover:scale-110 transition duration-150 ease-in-out fixed top-4 right-4 z-50 sm:static"
-        onClick={() => setOpen(true)}
-        aria-label="Open navigation drawer"
-      >
-        <FiMenu className="size-5" />
-      </button>
-
       {/* Overlay */}
       <div
         className={`fixed inset-0 bg-black bg-opacity-30 z-40 transition-opacity duration-300 ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
