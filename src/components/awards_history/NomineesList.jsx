@@ -60,6 +60,26 @@ const NomineeList = ({ award, getGameById, coverMap }) => {
               </div>
             );
           })
+        ) : award.description ? (
+          (() => {
+            return (
+              <div className='flex flex-col gap-6 items-center justify-center'>
+                <p className='text-center italic font-light'>{award.description}</p>
+                <div
+                  key={award.name}
+                  className="w-auto h-auto flex-shrink-0 bg-white rounded-xl shadow-sm border text-center flex flex-col items-center border-gray-200"
+                  id="winner"
+                >
+                  <img
+                    src={award.image}
+                    alt={award.name}
+                    className="object-cover h-96 rounded-lg"
+                  />
+                  <div className="text-xl font-medium my-2">{award.name}</div>
+                </div>
+              </div>
+            );
+          })()
         ) : (
           (() => {
             const game = getGameById(award.gameId);
