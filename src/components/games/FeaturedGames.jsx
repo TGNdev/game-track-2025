@@ -11,13 +11,24 @@ const FeaturedGames = ({ games }) => {
     loading
   } = useGame();
 
+  const formatReleaseDate = (releaseDate) => {
+    if (releaseDate instanceof Timestamp) {
+      const date = new Date(releaseDate.seconds * 1000);
+      return date.toLocaleDateString('en-US', { 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    }
+    return '';
+  };
+
   const releaseMessage = releaseDate => {
     const today = new Date();
     const release = new Date(releaseDate.seconds * 1000);
     const diffTime = release - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     var text = "Releases ";
-    var classes = "px-2 py-1 sm:px-4 text-sm sm:text-base rounded-full text-center ";
+    var classes = "px-2 py-1 sm:px-4 text-sm sm:text-base rounded-full text-center flex flex-col ";
 
     if (diffDays === 0) {
       text += "today !";
@@ -34,9 +45,10 @@ const FeaturedGames = ({ games }) => {
       classes += "bg-gradient-tertiary"
     }
 
-    return <span className={`${classes}`}>
-      {text}
-    </span>
+    return <div className={`${classes}`}>
+      <p>{text}</p>
+      <p className="italic text-xs font-normal">{formatReleaseDate(releaseDate)}</p>
+    </div>
   };
 
   const featuredGames = (() => {
