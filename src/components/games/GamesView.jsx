@@ -11,6 +11,7 @@ import FeaturedGames from "./FeaturedGames";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
 import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { getPaginationRange } from "../../js/utils";
+import FilterButton from "../shared/FilterButton";
 
 const GamesView = () => {
   const {
@@ -53,7 +54,7 @@ const GamesView = () => {
       const {
         selectedPlatforms = [],
         showOnlyUpcoming = null,
-        showThisYearOnly = false,
+        showThisYearOnly = true,
       } = JSON.parse(saved);
       return (selectedPlatforms.length > 0 || showOnlyUpcoming !== null || showThisYearOnly);
     }
@@ -260,21 +261,23 @@ const GamesView = () => {
       <FeaturedGames games={games} />
 
       <div className="w-full flex justify-center">
-        <div className="flex flex-row w-full gap-4 items-center justify-center">
-          <button
-            className={`${withRelease && "bg-gradient-primary text-white"} hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
-            onClick={() => setWithRelease(true)}
-            disabled={withRelease}
-          >
-            With release date
-          </button>
-          <button
-            className={`${!withRelease && "bg-gradient-primary text-white"} hover:bg-slate-200 w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base transition`}
-            onClick={() => setWithRelease(false)}
-            disabled={!withRelease}
-          >
-            Without release date
-          </button>
+        <div className="border-primary rounded-xl">
+          <div className="flex flex-row gap-4 items-center justify-center p-2 rounded-md">
+            <button
+              className={`${withRelease && "bg-gradient-primary text-white"} disabled:scale-100 hover:scale-105 w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base transition`}
+              onClick={() => setWithRelease(true)}
+              disabled={withRelease}
+            >
+              With release date
+            </button>
+            <button
+              className={`${!withRelease && "bg-gradient-primary text-white"} disabled:scale-100 hover:scale-105 w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base transition`}
+              onClick={() => setWithRelease(false)}
+              disabled={!withRelease}
+            >
+              Without release date
+            </button>
+          </div>
         </div>
       </div>
 
@@ -295,28 +298,21 @@ const GamesView = () => {
             }`}
         >
           <div className="flex flex-col gap-4 items-center md:flex-row md:items-center md:justify-center md:flex-wrap w-full">
-            <div className="flex flex-wrap justify-center gap-2 md:justify-start">
-              <button
-                disabled={!filtersVisible}
-                className={`px-3 py-1 rounded-full border text-sm ${showThisYearOnly
-                  ? "bg-gradient-primary text-white"
-                  : "bg-white text-black"
-                  }`}
+            <div className="flex justify-center gap-1 md:justify-start">
+              <FilterButton
+                isVisible={filtersVisible}
+                filterCondition={showThisYearOnly}
                 onClick={() => setShowThisYearOnly(prev => !prev)}
-              >
-                This year
-              </button>
+                text="This year"
+              />
             </div>
             {/* Platform Filter */}
-            <div className="flex flex-wrap justify-center gap-2 md:justify-start">
+            <div className="flex flex-wrap justify-center gap-1 md:justify-start">
               {allPlatforms.map(platform => (
-                <button
+                <FilterButton
                   key={platform}
-                  disabled={!filtersVisible}
-                  className={`px-3 py-1 rounded-full border text-sm ${selectedPlatforms.includes(platform)
-                    ? "bg-gradient-primary text-white"
-                    : "bg-white text-black"
-                    }`}
+                  isVisible={filtersVisible}
+                  filterCondition={selectedPlatforms.includes(platform)}
                   onClick={() => {
                     setSelectedPlatforms(prev =>
                       prev.includes(platform)
@@ -324,58 +320,44 @@ const GamesView = () => {
                         : [...prev, platform]
                     );
                   }}
-                >
-                  {platformLabels[platform.toLowerCase()] || platform}
-                </button>
+                  text={platformLabels[platform.toLowerCase()] || platform}
+                />
               ))}
             </div>
             {/* Release Status Filter */}
-            <div className="flex flex-wrap justify-center gap-2 md:justify-start">
-              <button
-                disabled={!filtersVisible}
-                className={`px-3 py-1 rounded-full border text-sm ${showOnlyUpcoming === true
-                  ? "bg-gradient-primary text-white"
-                  : "bg-white text-black"
-                  }`}
+            <div className="flex flex-wrap justify-center gap-1 md:justify-start">
+              <FilterButton
+                isVisible={filtersVisible}
+                filterCondition={showOnlyUpcoming === true}
                 onClick={() => setShowOnlyUpcoming(true)}
-              >
-                Upcoming only
-              </button>
-              <button
-                disabled={!filtersVisible}
-                className={`px-3 py-1 rounded-full border text-sm ${showOnlyUpcoming === false
-                  ? "bg-gradient-primary text-white"
-                  : "bg-white text-black"
-                  }`}
+                text="Upcoming only"
+              />
+              <FilterButton
+                isVisible={filtersVisible}
+                filterCondition={showOnlyUpcoming === false}
                 onClick={() => setShowOnlyUpcoming(false)}
-              >
-                Already released
-              </button>
-              <button
-                disabled={!filtersVisible}
-                className={`px-3 py-1 rounded-full border text-sm ${showOnlyUpcoming === null
-                  ? "bg-gradient-primary text-white"
-                  : "bg-white text-black"
-                  }`}
+                text="Already released"
+              />
+              <FilterButton
+                isVisible={filtersVisible}
+                filterCondition={showOnlyUpcoming === null}
                 onClick={() => setShowOnlyUpcoming(null)}
-              >
-                All
-              </button>
+                text="All"
+              />
             </div>
             {/* Reset */}
-            <div className="flex justify-center md:justify-start">
-              <button
-                disabled={!filtersVisible}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md text-sm"
+            <div className="flex justify-center gap-1 md:justify-start">
+              <FilterButton
+                isVisible={filtersVisible}
+                extraClasses="rounded-md bg-gradient-primary"
                 onClick={() => {
                   setSelectedPlatforms([]);
                   setShowOnlyUpcoming(null);
                   setShowThisYearOnly(false);
                   localStorage.removeItem('gameFilters');
                 }}
-              >
-                Reset filters
-              </button>
+                text="Reset filters"
+              />
             </div>
           </div>
         </div>
@@ -435,10 +417,10 @@ const GamesView = () => {
         <>
           <div className="flex-col max-w-full overflow-x-auto hidden sm:flex">
             <div className="relative">
-              <table className="w-full border-collapse min-w-[900px]">
+              <table className="w-full border-collapse min-w-[1200px]">
                 <thead className="border-b">
                   <tr>
-                    <th className="p-3 sticky left-0 bg-white z-10 flex flex-col items-center">
+                    <th className="p-3 sticky left-0 bg-sticky-column z-10 flex flex-col items-center">
                       <div>Name</div>
                       <div className="text-xs opacity-50">Click to open details</div>
                     </th>
@@ -454,7 +436,7 @@ const GamesView = () => {
                       </div>
                     </th>
                     {edit && (
-                      <th className="p-3 sticky right-0 bg-white z-10">Edit actions</th>
+                      <th className="p-3 sticky right-0 bg-sticky-column z-10">Edit actions</th>
                     )}
                   </tr>
                 </thead>
@@ -494,8 +476,9 @@ const GamesView = () => {
                   <button
                     key={i}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-1 border rounded ${currentPage === page ? 'bg-gradient-primary text-white' : ''
+                    className={`size-9 rounded ${currentPage === page ? 'bg-gradient-primary' : 'border-primary'
                       }`}
+                    disabled={currentPage === page}
                   >
                     {page}
                   </button>
@@ -519,10 +502,10 @@ const GamesView = () => {
       )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 backdrop-blur-sm z-50 flex items-center justify-center">
           <div
             ref={modalRef}
-            className="bg-white p-6 rounded-lg w-full max-w-2xl relative max-h-[75%] overflow-auto transition"
+            className="bg-background border-primary rounded-lg w-full max-w-2xl relative max-h-[75%] overflow-auto transition"
           >
             <button
               onClick={handleCloseModal}
