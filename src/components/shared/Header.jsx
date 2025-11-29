@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Search from "./Search";
 import { useGame } from "../../contexts/GameContext";
@@ -6,6 +7,22 @@ import { AiFillEdit } from "react-icons/ai";
 import { FiMenu } from "react-icons/fi";
 
 const Header = ({ onDrawerOpen }) => {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY || window.pageYOffset;
+      setIsScrolled(scrollPosition > 10);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    // Check initial scroll position
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   const {
     opened, setOpened,
     setFeaturedOpen,
@@ -32,12 +49,12 @@ const Header = ({ onDrawerOpen }) => {
   }
 
   return (
-    <div className="sticky top-0 bg-white/50 backdrop-blur-md z-30 isolation-isolate flex flex-col items-start justify-between w-full gap-6 py-4 px-6 shadow-md">
+    <div className={`sticky top-0 z-30 isolation-isolate flex flex-col items-start justify-between w-full gap-6 py-4 px-6 transition-all duration-300 ${isScrolled ? "backdrop-blur-md shadow-md" : ""}`}>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full">
         <Link to="/">
           <div className="flex flex-row gap-2 items-center">
             <img src="logo.png" alt="Game Track Logo" className="size-6" />
-            <h1 className="text-xl font-bold">{process.env.REACT_APP_TITLE}</h1>
+            <h1 className="text-xl font-bold text-white">{process.env.REACT_APP_TITLE}</h1>
           </div>
         </Link>
         <div className="flex flex-row w-full sm:w-2/3 justify-end gap-5">
