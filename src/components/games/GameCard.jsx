@@ -12,7 +12,6 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
     tagsLabels,
     getPlatformsSvg,
     isReleased,
-    setGameToSee,
     opened,
     edit,
     setIsModalOpen,
