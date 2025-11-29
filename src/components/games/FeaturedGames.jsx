@@ -14,9 +14,9 @@ const FeaturedGames = ({ games }) => {
   const formatReleaseDate = (releaseDate) => {
     if (releaseDate instanceof Timestamp) {
       const date = new Date(releaseDate.seconds * 1000);
-      return date.toLocaleDateString('en-US', { 
-        month: 'long', 
-        day: 'numeric' 
+      return date.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric'
       });
     }
     return '';
@@ -112,27 +112,18 @@ const FeaturedGames = ({ games }) => {
   }
 
   return (
-    <div className="w-full border rounded-xl p-4 shadow-md mt-6">
-      <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between mb-4">
-        <div className="text-2xl font-bold text-primary text-center sm:text-left">
-          {featuredGames.length > 1 ? "Next Releases" : "Next Release"}
+    <div className="w-full rounded-xl mt-6 shadow-lg">
+      <div className="p-4">
+        <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between mb-4">
+          <div className="text-2xl font-bold text-primary text-center sm:text-left">
+            {featuredGames.length > 1 ? "Next Releases" : "Next Release"}
+          </div>
+          <div className="sm:ml-auto">
+            {firstRow.length > 0 && releaseMessage(firstRow[0].release_date)}
+          </div>
         </div>
-        <div className="sm:ml-auto">
-          {firstRow.length > 0 && releaseMessage(firstRow[0].release_date)}
-        </div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-        {firstRow.map(featured => (
-          <FeaturedGame
-            key={featured.id}
-            featured={featured}
-            cover={coverMap ? coverMap[featured.igdb_id] : []}
-          />
-        ))}
-      </div>
-      {showAll && (
-        <div className="w-full max-h-[400px] overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-4">
-          {otherRows.map(featured => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+          {firstRow.map(featured => (
             <FeaturedGame
               key={featured.id}
               featured={featured}
@@ -140,17 +131,35 @@ const FeaturedGames = ({ games }) => {
             />
           ))}
         </div>
-      )}
-      {otherRows.length > 0 && (
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={() => setShowAll(!showAll)}
-            className="bg-gray-200 text-gray-700 px-3 py-1.5 rounded hover:bg-gray-300 transition"
-          >
-            {showAll ? "Show Less" : `Show ${otherRows.length} more games`}
-          </button>
-        </div>
-      )}
+        {showAll && (
+          <div className="w-full max-h-[400px] overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-4">
+            {otherRows.map(featured => (
+              <FeaturedGame
+                key={featured.id}
+                featured={featured}
+                cover={coverMap ? coverMap[featured.igdb_id] : []}
+              />
+            ))}
+          </div>
+        )}
+        {otherRows.length > 0 && (
+          <div className="flex justify-center mt-4">
+            <div className="border-primary rounded-md hover:scale-105 transition">
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="px-3 py-1.5"
+              >
+                {showAll
+                  ? "Show Less"
+                  : otherRows.length === 1
+                    ? "Show 1 more game"
+                    : `Show ${otherRows.length} more games`
+                }
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

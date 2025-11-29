@@ -32,10 +32,10 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
     <div
       ref={ref}
       id={`gamecard-${game.id}`}
-      className="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 relative"
+      className="rounded overflow-hidden transition-all duration-300 relative border-primary"
     >
       <button
-        className="w-full flex justify-between items-center px-7 pt-7 pb-3 text-left bg-slate-100 hover:bg-slate-200 transition"
+        className="w-full flex justify-between items-center px-7 pt-7 pb-3 text-left hover:opacity-60 transition"
         onClick={() => {
           const closing = isOpen && forceOpen;
           setIsOpen(prev => !prev);
@@ -67,11 +67,11 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
         <div className="flex flex-row">
           {/* Released badge */}
           {isReleased(game.release_date) ? (
-            <div className="bg-gradient-secondary text-white text-xs font-bold px-1.5 py-0.5 z-20">
+            <div className="bg-gradient-secondary text-xs font-bold px-1.5 py-0.5 z-20">
               Released
             </div>
           ) : (
-            <div className="bg-gradient-tertiary text-white text-xs font-bold px-1.5 py-0.5 z-20">
+            <div className="bg-gradient-tertiary text-xs font-bold px-1.5 py-0.5 z-20">
               Coming soon
             </div>
           )}
@@ -88,7 +88,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
             {enabledTags.map((tag, idx) => (
               <span
                 key={idx}
-                className="whitespace-nowrap text-xs bg-gradient-primary text-white px-1.5 py-0.5 font-semibold"
+                className="whitespace-nowrap text-xs bg-gradient-primary px-1.5 py-0.5 font-semibold"
                 title={tag}
               >
                 {tagsLabels[tag]}
@@ -100,7 +100,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
 
       {/* Content drawer */}
       <div
-        className={`grid transition-all duration-500 ease-in-out overflow-hidden border-x ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        className={`grid transition-all duration-500 ease-in-out overflow-hidden ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
           }`}
       >
         <div className="min-h-0 relative z-10">
@@ -110,17 +110,8 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
                 <img
                   src={coverImage}
                   alt={game.name}
-                  className="h-full object-cover"
+                  className="h-full object-cover rounded-r-md"
                 />
-                <div className="absolute top-0 right-0 h-full w-7 bg-gradient-to-l from-white to-transparent pointer-events-none" />
-                <button
-                  className="bg-gradient-primary absolute bottom-4 left-9 w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base transition hover:scale-110"
-                  onClick={() => {
-                    setGameToSee(game);
-                  }}
-                >
-                  See more
-                </button>
               </div>
             )}
 

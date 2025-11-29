@@ -20,7 +20,7 @@ const Drawer = ({ open, setOpen }) => {
 
       {/* Drawer */}
       <aside
-        className={`fixed top-0 right-0 h-full w-64 sm:w-96 bg-white text-lg shadow-lg z-50 transform transition-transform duration-300 ${open ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 right-0 h-full w-64 sm:w-96 bg-background text-lg shadow-lg z-50 transform transition-transform duration-300 ${open ? "translate-x-0" : "translate-x-full"
           }`}
         aria-label="Navigation drawer"
       >
@@ -33,15 +33,15 @@ const Drawer = ({ open, setOpen }) => {
           <FiX size={24} />
         </button>
         {/* Navigation Content */}
-        <nav className="mt-16 flex flex-col gap-4 px-6 text-slate-700">
-          <Link to="/" className="hover:text-primary">Home</Link>
+        <nav className="mt-16 flex flex-col gap-4 px-6">
+          <Link to="/" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Home</Link>
           {/* <Link to="/leaks-rumours" className="hover:text-primary">Leaks & Rumours</Link> */}
-          <Link to="/hall-of-fame" className="hover:text-primary">Hall Of Fame</Link>
-          <Link to="/game-awards-history" className="hover:text-primary">Game Awards History</Link>
-          <Link to="/release-calendar" className="hover:text-primary">Releases & Events Calendar</Link>
-          <div className="border my-6"></div>
+          <Link to="/hall-of-fame" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Hall Of Fame</Link>
+          <Link to="/game-awards-history" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Game Awards History</Link>
+          <Link to="/release-calendar" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Releases & Events Calendar</Link>
+          <div className="border-primary my-6"></div>
           <button
-            className="text-left hover:scale-105 rounded-md text-white py-1.5 px-2 border bg-gradient-primary w-fit transition"
+            className="text-left hover:scale-105 rounded-md text-white py-1.5 px-2 bg-gradient-primary w-fit transition"
             onClick={() => {
               setOpen(false);
               logout();

@@ -11,7 +11,7 @@ const FeaturedGame = ({ featured, cover }) => {
   } = useGame();
 
   return (
-    <div className="flex flex-row gap-3 bg-white rounded-lg border">
+    <div className="flex flex-row gap-3 rounded-lg border-primary">
       <div className="relative h-full w-32" style={{ maxHeight: "180px" }}>
         {!imgLoaded && (
           <CoverSkeleton />
@@ -27,11 +27,11 @@ const FeaturedGame = ({ featured, cover }) => {
           />
         )}
       </div>
-      <div className="flex flex-col h-full justify-between gap-4 relative z-10 flex-1 py-5 px-2">
+      <div className="flex flex-col h-full justify-between gap-4 relative z-10 flex-1 py-4 px-2">
         <div className="flex flex-row items-center justify-between w-full">
           <div className="flex flex-col">
-            <h2 className="text-lg font-bold">{featured.name}</h2>
-            <div className="flex flex-row gap-1 text-sm text-slate-500 flex-wrap">
+            <h2 className="text-xl font-bold">{featured.name}</h2>
+            <div className="flex flex-row gap-1 text-sm flex-wrap">
               <div>By</div>
               {featured.developers.map((dev, index) => (
                 <div key={`featured-${dev.name}`} className="font-semibold">

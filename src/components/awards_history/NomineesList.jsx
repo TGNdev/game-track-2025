@@ -21,7 +21,7 @@ const NomineeList = ({ award, getGameById, coverMap }) => {
               <div
                 key={idx}
                 className={`w-72 h-auto flex-shrink-0 ${!nominee.isWinner && 
-                  'bg-white rounded-xl shadow-sm border text-center flex flex-col items-center border-gray-200 opacity-40'
+                  'rounded-xl shadow-sm  border-primary text-center flex flex-col items-center opacity-40'
                 }`}
                 id={nominee.isWinner ? 'winner' : ''}
               >
@@ -29,8 +29,8 @@ const NomineeList = ({ award, getGameById, coverMap }) => {
                   <>
                     <div className='mb-2'>
                       <div className="text-xl font-medium mt-2">{nominee.role.actor.name}</div>
-                      <div className="text-lg text-gray-500">
-                        <span className='text-base italic'>as </span>
+                      <div className="text-lg">
+                        <span className='text-sm italic'>as </span>
                         {nominee.role.as.name}
                       </div>
                     </div>
@@ -39,7 +39,7 @@ const NomineeList = ({ award, getGameById, coverMap }) => {
                       alt={nominee.role.actor.name}
                       className="object-cover h-72 w-full rounded-t-lg"
                     />
-                    <div className="text-sm text-gray-500 my-2 italic">{game.name}</div>
+                    <div className="text-sm my-2 italic">{game.name}</div>
                   </>
                 ) : game ? (
                   <>
@@ -67,7 +67,7 @@ const NomineeList = ({ award, getGameById, coverMap }) => {
                 <p className='text-center italic font-light'>{award.description}</p>
                 <div
                   key={award.name}
-                  className="w-auto h-auto flex-shrink-0 bg-white rounded-xl shadow-sm border text-center flex flex-col items-center border-gray-200"
+                  className="w-auto h-auto flex-shrink-0 bg-background rounded-xl shadow-sm text-center flex flex-col items-center"
                   id="winner"
                 >
                   <img
@@ -90,7 +90,7 @@ const NomineeList = ({ award, getGameById, coverMap }) => {
             return (
               <div
                 key={award.gameId}
-                className="w-auto h-auto flex-shrink-0 bg-white rounded-xl shadow-sm border text-center flex flex-col items-center border-gray-200"
+                className="w-auto h-auto flex-shrink-0 bg-background rounded-xl shadow-sm text-center flex flex-col items-center"
                 id="winner"
               >
                 {game.cover && (
