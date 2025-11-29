@@ -109,19 +109,19 @@ const GameRow = ({ ref, game, coverImage, screenshots, times }) => {
             </div>
             {game.ratings.link ? (
               <a target="_blank" rel="noreferrer" href={game.ratings.link}>
-                <div className="text-xs text-slate-500 hover:scale-110 transition">
+                <div className="text-xs hover:scale-110 transition">
                   <span className="font-normal">Details on </span>
                   <span className="font-bold">OpenCritic</span>
                 </div>
               </a>
             ) : (
-              <div className="text-xs text-slate-500">Edit to add link</div>
+              <div className="text-xs">Edit to add link</div>
             )}
           </div>
         </td>
 
         {edit && (
-          <td className="p-3 sticky right-0 bg-white z-20">
+          <td className="p-3 sticky right-0 bg-sticky-column z-20">
             <div className="flex flex-row gap-3 justify-center items-center">
               <button
                 onClick={(e) => {

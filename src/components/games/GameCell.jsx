@@ -63,15 +63,15 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
   };
 
   return (
-    <td className="p-3 sticky left-0 bg-white z-20 w-80">
-      <div className="relative flex items-center text-left gap-8">
+    <td className="p-3 sticky left-0 bg-sticky-column z-20 w-80">
+      <div className="relative flex items-center text-left gap-8 border-r-2">
         {/* Tags */}
         <div className="absolute -top-1 left-0 z-30">
           {activeTags.map((tag, index) => (
             <div
               key={tag.key}
               ref={(el) => (tagRefs.current[index] = el)}
-              className={`absolute ${tag.color} text-white whitespace-nowrap text-xs font-bold px-2 py-1 rounded transform -rotate-12 shadow-lg`}
+              className={`absolute ${tag.color} whitespace-nowrap text-xs font-bold px-2 py-1 rounded transform -rotate-12 shadow-lg`}
               style={{
                 left: `${tagLefts[index] || 0}px`,
                 transformOrigin: "left top",
@@ -106,7 +106,7 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
         <button
           onClick={toggleDrawer}
         >
-          <div className="hover:scale-105 transition text-base font-semibold text-black text-left">
+          <div className="hover:scale-105 transition text-base font-semibold text-left">
             {highlightMatch(he.decode(game.name), search)}
           </div>
         </button>
