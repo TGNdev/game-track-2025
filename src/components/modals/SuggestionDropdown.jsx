@@ -45,7 +45,7 @@ const SuggestionDropdown = ({ suggestions, value, onSelect, anchorRef }) => {
   return (
     <div
       ref={dropdownRef}
-      className="absolute z-10 mt-1 w-full bg-white border rounded shadow-lg max-h-60 overflow-y-auto"
+      className="absolute z-10 mt-1 w-full bg-background border rounded shadow-lg max-h-60 overflow-y-auto"
     >
       {filtered.map((item, idx) => (
         <div
@@ -55,10 +55,10 @@ const SuggestionDropdown = ({ suggestions, value, onSelect, anchorRef }) => {
             onSelect(item);
             setVisible(false);
           }}
-          className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+          className="px-4 py-2 hover:bg-black/20 cursor-pointer"
         >
           <div className="font-medium">{item.name}</div>
-          <div className="text-xs text-gray-500">{item.link}</div>
+          <div className="text-xs">{item.link}</div>
         </div>
       ))}
     </div>
