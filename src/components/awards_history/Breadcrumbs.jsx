@@ -72,7 +72,7 @@ const Breadcrumbs = ({ tga = [] }) => {
             <button
               type="button"
               onClick={() => setIsYearsOpen(!isYearsOpen)}
-              className="bg-gradient-primary rounded px-3 py-1.5 text-white font-semibold hover:scale-105 transition"
+              className="bg-gradient-primary rounded px-2 py-1.5 text-white font-semibold hover:scale-105 transition"
             >
               <FaChevronDown className={`text-base transition-transform ${isYearsOpen ? "rotate-180" : ""}`} />
             </button>
