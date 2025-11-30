@@ -118,7 +118,7 @@ const FeaturedGames = ({ games }) => {
           <div className="text-2xl font-bold text-primary text-center sm:text-left">
             {featuredGames.length > 1 ? "Next Releases" : "Next Release"}
           </div>
-          <div className="sm:ml-auto">
+          <div className="sm:ml-auto font-semibold">
             {firstRow.length > 0 && releaseMessage(firstRow[0].release_date)}
           </div>
         </div>
