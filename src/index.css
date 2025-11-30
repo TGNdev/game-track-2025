@@ -37,7 +37,7 @@ a div {
   inherits: false;
 }
 #winner::after {
-  background: conic-gradient(from var(--angle), transparent 50%, #ffe203, #ff9a03, transparent);
+  background: conic-gradient(from var(--angle), transparent 50%, #ffe203, #ff8503, transparent);
   content: '';
   position: absolute;
   top: -10px;
@@ -51,7 +51,7 @@ a div {
   box-shadow:
     0 0 12px 6px #ffe20366,
     0 0 28px 12px #ff9a0355,
-    0 0 64px 32px #ffe20333;
+    0 0 80px 40px #ffe20388;
 }
 
 @keyframes spin {
