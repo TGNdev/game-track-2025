@@ -99,18 +99,18 @@ a div {
     background-image: var(--bg-background), linear-gradient(to bottom right, #5a8eff, #b069ff);
     background-origin: border-box;
     background-clip: content-box, border-box;
-    padding: 4px;
+    padding: 3.5px;
   }
   .border-gradient-secondary {
     background-image: linear-gradient(white, white), linear-gradient(to bottom right, #7bffbb, #00b718);
     background-origin: border-box;
     background-clip: content-box, border-box;
-    padding: 4px;
+    padding: 3.5px;
   }
   .border-gradient-tertiary {
     background-image: linear-gradient(white, white), linear-gradient(to bottom right, #ffd788, #ff9e43);
     background-origin: border-box;
     background-clip: content-box, border-box;
-    padding: 4px;
+    padding: 3.5px;
   }
 }
