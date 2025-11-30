@@ -91,6 +91,7 @@ const AwardsHistory = () => {
             onBackToAwards={() => navigate(`/game-awards-history/${selectedYearNumber}`)}
             onBackToYears={() => navigate("/game-awards-history")}
             coverMap={coverMap}
+            awardYear={selectedYearNumber}
           />
         )}
       </div>
