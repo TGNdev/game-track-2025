@@ -31,7 +31,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
     <div
       ref={ref}
       id={`gamecard-${game.id}`}
-      className="rounded overflow-hidden transition-all duration-300 relative border-primary"
+      className="rounded-md overflow-hidden transition-all duration-300 relative border-primary"
     >
       <button
         className="w-full flex justify-between items-center px-7 pt-7 pb-3 text-left hover:opacity-60 transition"
@@ -109,7 +109,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
                 <img
                   src={coverImage}
                   alt={game.name}
-                  className="h-full object-cover rounded-r-md"
+                  className="h-full object-cover rounded-tr-md"
                 />
               </div>
             )}
