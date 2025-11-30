@@ -13,7 +13,7 @@ const Search = () => {
     <>
       {!openSearch ? (
         <button
-          className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md transition duration-150 ease-in-out top-4 right-16 sm:right-4 z-50 sm:static fixed"
+          className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md transition duration-150 ease-in-out top-4 right-16 sm:right-4 z-50 sm:static fixed hover:scale-105"
           onClick={() => setOpenSearch(true)}
           aria-label="Open search"
         >
@@ -21,7 +21,7 @@ const Search = () => {
         </button>
       ) : (
         <button
-          className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md transition duration-150 ease-in-out fixed top-4 right-16 sm:right-4 sm:static"
+          className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md transition duration-150 ease-in-out fixed top-4 right-16 sm:right-4 sm:static hover:scale-105"
           onClick={() => {
             setOpenSearch(false);
             setSearch("");
@@ -33,20 +33,24 @@ const Search = () => {
       )}
       <AnimatePresence>
         {openSearch && (
-          <motion.input
+          <motion.div
             key="search-input"
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: "100%", opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="px-4 placeholder:pl-4 rounded-full w-full focus:shadow-lg focus:outline-none h-10 mt-4 sm:mt-0 bg-transparent border-primary"
-            type="text"
-            placeholder="Type to search..."
-            value={search}
-            name="search"
-            onChange={e => setSearch(e.target.value)}
-            autoFocus
-          />
+            className="rounded-full w-full h-10 mt-4 sm:mt-0 border-primary"
+          >
+            <input
+              className="px-4 bg-transparent h-full w-full focus:outline-none"
+              type="text"
+              placeholder="Search a game's name, developper(s) or editor(s)"
+              value={search}
+              name="search"
+              onChange={e => setSearch(e.target.value)}
+              autoFocus
+            />
+          </motion.div>
         )}
       </AnimatePresence>
     </>
