@@ -150,7 +150,7 @@ const GameRow = ({ ref, game, coverImage, screenshots, times }) => {
       <AnimatePresence>
         {isDrawerOpen && (
           <tr>
-            <td colSpan={edit ? 7 : 6} className="bg-gray-50">
+            <td colSpan={edit ? 7 : 6} className="bg-background">
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
@@ -186,7 +186,7 @@ const GameRow = ({ ref, game, coverImage, screenshots, times }) => {
                               <div className="text-xl font-bold">{hours}h</div>
 
                               {/* Popover on hover */}
-                              <div className="absolute bottom-full mb-2 w-48 text-xs bg-white text-gray-800 border border-gray-200 rounded-md shadow-lg p-2 z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition duration-200">
+                              <div className="absolute bottom-full mb-2 w-48 text-xs bg-white text-gray-800 border border-gray-200 rounded-md shadow-lg p-2 opacity-0 group-hover:opacity-100 pointer-events-none transition duration-200">
                                 {timeDescriptions[label]}
                               </div>
                             </div>
