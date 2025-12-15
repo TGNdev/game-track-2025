@@ -1,6 +1,6 @@
 const CoverSkeleton = () => {
   return (
-    <div className="absolute w-full h-full rounded animate-pulse z-10">
+    <div className="absolute w-full h-full rounded animate-pulse z-10 bg-background">
       <div className="flex items-center justify-center h-full w-full">
         <img
           src="loading.gif"
