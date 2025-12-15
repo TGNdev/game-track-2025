@@ -77,8 +77,8 @@ const RedditFeed = () => {
   return (
     <Layout>
       <GameProvider>
-        <div className="max-w-5xl mx-auto py-6 flex flex-col gap-8">
-          <h2 className="text-2xl font-bold text-center text-primary">Leaks & Rumours</h2>
+        <div className="w-3/4 mx-auto py-6 flex flex-col gap-8">
+          <h2 className="text-2xl font-bold text-center mb-4">Leaks & Rumours</h2>
           {/* Controls */}
           <div className="flex flex-wrap justify-between items-center gap-4">
             <div className="flex flex-row items-center gap-1">
@@ -86,7 +86,7 @@ const RedditFeed = () => {
               <select
                 value={selectedFlair}
                 onChange={(e) => setSelectedFlair(e.target.value)}
-                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-background"
               >
                 {flairs.map((flair) => (
                   <option key={flair} value={flair}>
@@ -101,7 +101,7 @@ const RedditFeed = () => {
               <select
                 value={postLimit}
                 onChange={(e) => setPostLimit(Number(e.target.value))}
-                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-background"
               >
                 {[25, 50, 75, 100].map((limit) => (
                   <option key={limit} value={limit}>
@@ -121,28 +121,32 @@ const RedditFeed = () => {
           ) : (
             <div className="space-y-4">
               {visiblePosts.map((post) => (
-                <a
+                <div
                   key={post.id}
-                  href={post.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block relative bg-white rounded-2xl shadow-lg hover:scale-105 transition border border-gray-200 p-4"
+                  className="block relative bg-background rounded-2xl shadow-lg hover:scale-105 transition border-primary"
                 >
-                  {post.link_flair_text && (
-                    <div
-                      className="absolute -top-2 -left-2 -rotate-6 text-white py-0.5 px-2 text-sm rounded-md shadow-lg"
-                      style={{ backgroundColor: post.link_flair_background_color }}
-                    >
-                      {post.link_flair_text}
-                    </div>
-                  )}
-                  <p className="text-primary hover:underline sm:text-lg font-semibold">
-                    {highlightMatch(he.decode(post.title), search)}
-                  </p>
-                  <p className="sm:text-sm text-xs text-gray-500 mt-2">
-                    {formatDate(post.created_utc)}
-                  </p>
-                </a>
+                  <a
+                    href={post.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-4"
+                  >
+                    {post.link_flair_text && (
+                      <div
+                        className="absolute -top-2 -left-2 -rotate-6 text-white py-0.5 px-2 text-sm rounded-md shadow-lg"
+                        style={{ backgroundColor: post.link_flair_background_color }}
+                      >
+                        {post.link_flair_text}
+                      </div>
+                    )}
+                    <p className="text-primary hover:underline sm:text-lg font-semibold">
+                      {highlightMatch(he.decode(post.title), search)}
+                    </p>
+                    <p className="sm:text-sm text-xs text-slate-300 mt-2">
+                      {formatDate(post.created_utc)}
+                    </p>
+                  </a>
+                </div>
               ))}
             </div>
           )}
