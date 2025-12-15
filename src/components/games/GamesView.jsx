@@ -5,7 +5,7 @@ import EditGameForm from "../modals/EditGameForm";
 import LoginForm from "../modals/LoginForm";
 import { useEffect, useRef, useState } from "react";
 import { Timestamp } from "firebase/firestore";
-import { FaPlus, FaFilter } from "react-icons/fa";
+import { FaFilter } from "react-icons/fa";
 import { useGame } from "../../contexts/GameContext";
 import FeaturedGames from "./FeaturedGames";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
@@ -30,7 +30,6 @@ const GamesView = () => {
     itemsPerPage,
     currentPage,
     setCurrentPage,
-    openButtonRef,
     timesToBeat,
   } = useGame();
   const [withRelease, setWithRelease] = useState(true);
@@ -60,6 +59,7 @@ const GamesView = () => {
     }
     return false;
   });
+  const [openRowId, setOpenRowId] = useState(null);
 
   function useMediaQuery(query) {
     const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
@@ -83,6 +83,10 @@ const GamesView = () => {
     };
     localStorage.setItem('gameFilters', JSON.stringify(filters));
   }, [selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly]);
+
+  useEffect(() => {
+    setOpenRowId(null);
+  }, [search, selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly]);
 
 
   const quarterWeight = { Q1: 1, Q2: 2, Q3: 3, Q4: 4 };
@@ -198,30 +202,6 @@ const GamesView = () => {
     }
   }, [isModalOpen]);
 
-  const useOutsideClick = (callback, exceptions = []) => {
-    const ref = useRef();
-
-    useEffect(() => {
-      const handleClick = (event) => {
-        const clickedInsideModal = ref.current && ref.current.contains(event.target);
-        const clickedException = exceptions.some(
-          exceptionRef => exceptionRef.current && exceptionRef.current.contains(event.target)
-        );
-
-        if (!clickedInsideModal && !clickedException) {
-          callback();
-        }
-      };
-
-      document.addEventListener('click', handleClick);
-      return () => {
-        document.removeEventListener('click', handleClick);
-      };
-    }, [callback, exceptions]);
-
-    return ref;
-  };
-
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -237,8 +217,6 @@ const GamesView = () => {
   }, [currentPage]);
 
   const isSmallScreen = useMediaQuery('(max-width: 639px)');
-
-  const modalRef = useOutsideClick(handleCloseModal, [openButtonRef]);
 
   if (loading) {
     return (
@@ -451,6 +429,8 @@ const GamesView = () => {
                         coverImage={coverMap ? coverMap[game.igdb_id] : []}
                         screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
                         times={timesToBeat ? timesToBeat[game.igdb_id] : []}
+                        isOpen={openRowId === game.id}
+                        onToggle={() => setOpenRowId(prev => prev === game.id ? null : game.id)}
                       />
                     ))}
                 </tbody>
@@ -502,39 +482,26 @@ const GamesView = () => {
       )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div
-            ref={modalRef}
-            className="bg-background border-primary rounded-lg w-full max-w-2xl relative max-h-[75%] overflow-auto transition"
-          >
-            <button
-              onClick={handleCloseModal}
-              className="absolute top-4 right-4 text-lg hover:scale-110 rotate-45 transition"
-            >
-              <FaPlus />
-            </button>
-            {isLogged ? (
-              edit ? (
-                <EditGameForm
-                  game={gameToEdit}
-                  games={games}
-                  onSuccess={handleCloseModal}
-                />
-              ) : (
-                <AddGameForm
-                  games={games}
-                  onClose={handleCloseModal}
-                  onSuccess={handleCloseModal}
-                />
-              )
-            ) : (
-              <LoginForm
-                onSuccess={handleCloseModal}
-                onClose={handleCloseModal}
-              />
-            )}
-          </div>
-        </div>
+        isLogged ? (
+          edit ? (
+            <EditGameForm
+              game={gameToEdit}
+              games={games}
+              onSuccess={handleCloseModal}
+            />
+          ) : (
+            <AddGameForm
+              games={games}
+              onClose={handleCloseModal}
+              onSuccess={handleCloseModal}
+            />
+          )
+        ) : (
+          <LoginForm
+            onSuccess={handleCloseModal}
+            onClose={handleCloseModal}
+          />
+        )
       )}
     </div>
   )

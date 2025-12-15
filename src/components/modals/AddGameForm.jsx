@@ -172,7 +172,7 @@ const AddGameForm = ({ games, onSuccess }) => {
           <div className="flex flex-col">
             <label className="block text-sm mb-2 font-semibold">Name</label>
             <input
-              className="px-4 py-2 rounded border"
+              className="px-4 py-2 rounded border bg-background"
               name="name"
               value={form.name}
               placeholder="with full notation (don't forget ':' or correct numbering such as 'VI' or '6')"
@@ -184,7 +184,7 @@ const AddGameForm = ({ games, onSuccess }) => {
           <div className="flex flex-col">
             <label className="block text-sm mb-2 font-semibold">Link</label>
             <input
-              className="px-4 py-2 rounded border"
+              className="px-4 py-2 rounded border bg-background"
               name="link"
               placeholder="Game website (or IGN page if no website)"
               value={form.link}
@@ -200,7 +200,7 @@ const AddGameForm = ({ games, onSuccess }) => {
                 type={`${releaseTba ? "text" : "date"}`}
                 placeholder={`${releaseTba && "'TBA 2026' or 'Q4 2025'"}`}
                 name="releaseDate"
-                className="px-4 py-2 rounded border w-full"
+                className="px-4 py-2 rounded border w-full bg-background"
                 value={form.releaseDate}
                 onChange={handleChange}
               />
@@ -241,7 +241,7 @@ const AddGameForm = ({ games, onSuccess }) => {
               <div className="relative w-full">
                 <input
                   placeholder="Name"
-                  className="px-3 py-1 rounded border w-full"
+                  className="px-3 py-1 rounded border w-full bg-background"
                   value={dev.name}
                   onFocus={() => {
                     if (!dev.name) setSuggestionTarget({ type: "developers", index: i, field: "name" });
@@ -265,7 +265,7 @@ const AddGameForm = ({ games, onSuccess }) => {
 
               <input
                 placeholder="Link"
-                className="px-3 py-1 rounded border w-full"
+                className="px-3 py-1 rounded border w-full bg-background"
                 value={dev.link}
                 onChange={(e) => updateEntry("developers", i, "link", e.target.value)}
               />
@@ -300,7 +300,7 @@ const AddGameForm = ({ games, onSuccess }) => {
               <div className="relative w-full">
                 <input
                   placeholder="Name"
-                  className="px-3 py-1 rounded border w-full"
+                  className="px-3 py-1 rounded border w-full bg-background"
                   value={ed.name}
                   onFocus={() => {
                     if (!ed.name) setSuggestionTarget({ type: "editors", index: i, field: "name" });
@@ -323,7 +323,7 @@ const AddGameForm = ({ games, onSuccess }) => {
               </div>
               <input
                 placeholder="Link"
-                className="px-3 py-1 rounded border w-full"
+                className="px-3 py-1 rounded border w-full bg-background"
                 value={ed.link}
                 onChange={(e) => updateEntry("editors", i, "link", e.target.value)}
               />
@@ -381,7 +381,7 @@ const AddGameForm = ({ games, onSuccess }) => {
                 placeholder="Critic Rating"
                 value={form.ratings.critics}
                 onChange={handleChange}
-                className="px-3 py-2 rounded border"
+                className="px-3 py-2 rounded border bg-background"
                 min={0}
                 max={100}
               />
@@ -395,7 +395,7 @@ const AddGameForm = ({ games, onSuccess }) => {
                 placeholder="Players Rating"
                 value={form.ratings.players}
                 onChange={handleChange}
-                className="px-3 py-2 rounded border"
+                className="px-3 py-2 rounded border bg-background"
                 min={0}
                 max={100}
               />
@@ -408,7 +408,7 @@ const AddGameForm = ({ games, onSuccess }) => {
                 type="text"
                 value={form.ratings.link}
                 onChange={handleChange}
-                className="px-3 py-2 rounded border"
+                className="px-3 py-2 rounded border bg-background"
               />
             </div>
           </div>
@@ -417,7 +417,7 @@ const AddGameForm = ({ games, onSuccess }) => {
         <div className="flex flex-col">
           <label className="block text-sm mb-2 font-semibold">IGDB game ID</label>
           <input
-            className="px-4 py-2 rounded border"
+            className="px-4 py-2 rounded border bg-background"
             name="igdb_id"
             value={form.igdb_id}
             placeholder="something like 345678"

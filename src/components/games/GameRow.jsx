@@ -6,9 +6,9 @@ import { useGame } from "../../contexts/GameContext";
 import he from "he";
 import { highlightMatch } from "../../js/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
 import TimesDisclaimer from "./TimesDisclaimer";
 import { FiInfo } from "react-icons/fi";
+import GameAwardsWon from "../modals/GameAwardsWon";
 
 const getRatingStyle = (rating) => {
   const baseClasses = "size-5 px-5 py-4 rounded-xl text-white hover:cursor-default text-sm flex items-center justify-center";
@@ -19,14 +19,18 @@ const getRatingStyle = (rating) => {
   return `${baseClasses} bg-green-600`;
 };
 
-const GameRow = ({ ref, game, coverImage, screenshots, times }) => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+const GameRow = ({ ref, game, coverImage, screenshots, times, isOpen, onToggle }) => {
   const {
     search,
     getPlatformsSvg,
     edit,
     setGameToEdit,
     setIsModalOpen,
+    hasWonAward,
+    showTimesDisclaimer,
+    setShowTimesDisclaimer,
+    setIsAwardsModalOpen,
+    isAwardsModalOpen,
   } = useGame();
 
   const timeDescriptions = {
@@ -45,7 +49,7 @@ const GameRow = ({ ref, game, coverImage, screenshots, times }) => {
           game={game}
           coverImage={coverImage}
           screenshots={screenshots}
-          toggleDrawer={() => setIsDrawerOpen((prev) => !prev)}
+          toggleDrawer={onToggle}
         />
 
         <td className="p-3">
@@ -148,7 +152,7 @@ const GameRow = ({ ref, game, coverImage, screenshots, times }) => {
         )}
       </tr>
       <AnimatePresence>
-        {isDrawerOpen && (
+        {isOpen && (
           <tr>
             <td colSpan={edit ? 7 : 6} className="bg-background">
               <motion.div
@@ -160,9 +164,20 @@ const GameRow = ({ ref, game, coverImage, screenshots, times }) => {
               >
                 <div className="p-6 flex flex-row justify-between">
                   {times ? (
-                    <div className="flex flex-col gap-2 w-1/2">
-                      <TimesDisclaimer />
-                      <div className="flex gap-4 items-center">
+                    <div className="flex flex-col gap-3 w-1/2">
+
+                      {showTimesDisclaimer ? (
+                        <TimesDisclaimer onClose={() => setShowTimesDisclaimer(false)} />
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setShowTimesDisclaimer(true)}
+                          className="self-start text-xs text-yellow-200 hover:text-yellow-100 underline"
+                        >
+                          Show estimated playtime disclaimer
+                        </button>
+                      )}
+                      <div className="flex gap-4 items-center flex-wrap">
                         {Object.entries(times).map(([label, seconds]) => {
                           const hours = (seconds / 3600).toFixed(1);
                           const title = label.charAt(0).toUpperCase() + label.slice(1);
@@ -197,6 +212,32 @@ const GameRow = ({ ref, game, coverImage, screenshots, times }) => {
                   ) : (
                     <div>No estimation playtimes reported on IGDB yet.</div>
                   )}
+
+                  <div className="flex flex-col gap-3 w-1/2 items-end justify-center">
+                    {hasWonAward && hasWonAward(game.id) ? (
+                      <>
+                        <div className="text-xs sm:text-sm text-right opacity-80">
+                          This game has won at least one category at The Game Awards.
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setIsAwardsModalOpen(true)}
+                          className="bg-gradient-primary text-sm px-3 py-1.5 rounded-md hover:scale-105 transition"
+                        >
+                          View all awards
+                        </button>
+                        <GameAwardsWon
+                          game={game}
+                          isOpen={isAwardsModalOpen} // Pass modal visibility state
+                          onClose={() => setIsAwardsModalOpen(false)} // Pass close handler
+                        />
+                      </>
+                    ) : (
+                      <div className="text-xs text-right opacity-60">
+                        No Game Awards wins recorded yet.
+                      </div>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             </td>

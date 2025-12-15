@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { auth, getTgaFromFirestore } from "../js/firebase";
+import { slugify } from "../js/utils";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { toast } from "react-toastify";
 import { ReactComponent as XboxIcon } from "../assets/icons/xbox.svg";
@@ -10,6 +11,7 @@ import { ReactComponent as Switch2Icon } from "../assets/icons/switch_2.svg";
 
 const GameContext = createContext();
 const AWARD_WINNERS_CACHE_KEY = "tgaAwardWinners";
+const AWARDS_PER_GAME_CACHE_KEY = "tgaAwardsPerGame";
 const TTL = 1000 * 60 * 60 * 24 * 10; // 10 days
 
 export const GameProvider = ({ children }) => {
@@ -31,6 +33,17 @@ export const GameProvider = ({ children }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [openSearch, setOpenSearch] = useState(false);
   const [awardWinners, setAwardWinners] = useState(new Set());
+  const [awardsPerGame, setAwardsPerGame] = useState({});
+  const [showTimesDisclaimer, setShowTimesDisclaimer] = useState(() => {
+    try {
+      const stored = localStorage.getItem("showTimesDisclaimer");
+      if (stored === null) return true;
+      return JSON.parse(stored);
+    } catch {
+      return true;
+    }
+  });
+  const [isAwardsModalOpen, setIsAwardsModalOpen] = useState(false);
 
   const openButtonRef = useRef(null);
 
@@ -43,13 +56,22 @@ export const GameProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const fetchWinners = async () => {
-      const winners = await loadAwardWinners();
+    const fetchAwardsData = async () => {
+      const { winners, perGame } = await loadAwardData();
       setAwardWinners(winners);
+      setAwardsPerGame(perGame);
     };
 
-    fetchWinners();
+    fetchAwardsData();
   }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("showTimesDisclaimer", JSON.stringify(showTimesDisclaimer));
+    } catch {
+      // ignore storage errors
+    }
+  }, [showTimesDisclaimer]);
 
   const hasWonAward = useCallback(
     (gameId) => awardWinners.has(gameId),
@@ -99,41 +121,79 @@ export const GameProvider = ({ children }) => {
     return releaseDate < today;
   };
 
-  const loadAwardWinners = async () => {
+  const loadAwardData = async () => {
     try {
-      const cache = localStorage.getItem(AWARD_WINNERS_CACHE_KEY);
-      if (cache) {
-        const { data, expiresAt } = JSON.parse(cache);
-        if (Date.now() < expiresAt) {
-          return new Set(data); // cached Set of gameIds
+      const winnersCache = localStorage.getItem(AWARD_WINNERS_CACHE_KEY);
+      const perGameCache = localStorage.getItem(AWARDS_PER_GAME_CACHE_KEY);
+
+      if (winnersCache && perGameCache) {
+        const { data: winnersData, expiresAt: winnersExpiresAt } = JSON.parse(winnersCache);
+        const { data: perGameData, expiresAt: perGameExpiresAt } = JSON.parse(perGameCache);
+
+        if (Date.now() < winnersExpiresAt && Date.now() < perGameExpiresAt) {
+          return {
+            winners: new Set(winnersData),
+            perGame: perGameData || {},
+          };
         }
       }
 
       const tgaList = await getTgaFromFirestore();
       const winnersSet = new Set();
+      const perGameMap = {};
 
       for (const year of tgaList) {
         for (const award of year.awards || []) {
-          for (const nominee of award.nominees || []) {
-            if (nominee.isWinner && nominee.gameId) {
-              winnersSet.add(nominee.gameId);
+          const baseAwardInfo = {
+            year: year.year,
+            title: award.title,
+            slug: slugify(award.title),
+          };
+
+          if (award.nominees && award.nominees.length > 0) {
+            for (const nominee of award.nominees) {
+              if (nominee.isWinner && nominee.gameId) {
+                winnersSet.add(nominee.gameId);
+                if (!perGameMap[nominee.gameId]) {
+                  perGameMap[nominee.gameId] = [];
+                }
+                perGameMap[nominee.gameId].push(baseAwardInfo);
+              }
             }
+          } else if (award.gameId) {
+            winnersSet.add(award.gameId);
+            if (!perGameMap[award.gameId]) {
+              perGameMap[award.gameId] = [];
+            }
+            perGameMap[award.gameId].push(baseAwardInfo);
           }
         }
       }
 
+      const payload = {
+        data: Array.from(winnersSet),
+        expiresAt: Date.now() + TTL,
+      };
+
+      localStorage.setItem(AWARD_WINNERS_CACHE_KEY, JSON.stringify(payload));
       localStorage.setItem(
-        AWARD_WINNERS_CACHE_KEY,
+        AWARDS_PER_GAME_CACHE_KEY,
         JSON.stringify({
-          data: Array.from(winnersSet),
+          data: perGameMap,
           expiresAt: Date.now() + TTL,
         })
       );
 
-      return winnersSet;
+      return {
+        winners: winnersSet,
+        perGame: perGameMap,
+      };
     } catch (e) {
-      console.error("Failed to load TGA award winners:", e);
-      return new Set();
+      console.error("Failed to load TGA award data:", e);
+      return {
+        winners: new Set(),
+        perGame: {},
+      };
     }
   };
 
@@ -189,6 +249,12 @@ export const GameProvider = ({ children }) => {
       awardWinners,
       setAwardWinners,
       hasWonAward,
+      awardsPerGame,
+      setAwardsPerGame,
+      showTimesDisclaimer,
+      setShowTimesDisclaimer,
+      setIsAwardsModalOpen,
+      isAwardsModalOpen,
     };
   }, [
     games,
@@ -209,7 +275,11 @@ export const GameProvider = ({ children }) => {
     openSearch,
     timesToBeat,
     awardWinners,
-    hasWonAward
+    hasWonAward,
+    awardsPerGame,
+    showTimesDisclaimer,
+    setIsAwardsModalOpen,
+    isAwardsModalOpen,
   ]);
 
   return (

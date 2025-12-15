@@ -29,14 +29,14 @@ const LoginForm = ({ onSuccess, onClose }) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter admin email"
-            className="border px-3 py-2 rounded w-full"
+            className="border px-3 py-2 rounded w-full bg-background"
           />
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter admin password"
-            className="border px-3 py-2 rounded w-full"
+            className="border px-3 py-2 rounded w-full bg-background"
           />
         </div>
         {error && <div className="text-red-500 text-sm">{error}</div>}
