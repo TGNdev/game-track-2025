@@ -122,7 +122,7 @@ const NomineeList = ({ award, getGameById, coverMap, awardYear }) => {
                   <img
                     src={cover}
                     alt={game.name}
-                    className="object-cover h-full rounded"
+                    className="object-cover h-96 rounded-lg"
                   />
                 )}
                 <div className="text-xl font-medium my-2">{game.name}</div>
