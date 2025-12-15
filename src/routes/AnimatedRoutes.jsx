@@ -22,14 +22,14 @@ const AnimatedRoutes = () => {
             </PageFade>
           }
         />
-        <Route
+        {/* <Route
           path="/leaks-rumours"
           element={
             <PageFade>
               <RedditFeed />
             </PageFade>
           }
-        />
+        /> */}
         <Route
           path="/hall-of-fame"
           element={

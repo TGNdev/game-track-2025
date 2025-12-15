@@ -35,7 +35,7 @@ const Drawer = ({ open, setOpen }) => {
         {/* Navigation Content */}
         <nav className="mt-16 flex flex-col gap-4 px-6">
           <Link to="/" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Home</Link>
-          <Link to="/leaks-rumours" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Leaks & Rumours</Link>
+          {/* <Link to="/leaks-rumours" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Leaks & Rumours</Link> */}
           {/* <Link to="/hall-of-fame" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Hall Of Fame</Link> */}
           <Link to="/game-awards-history" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Game Awards History</Link>
           {/* <Link to="/release-calendar" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Releases & Events Calendar</Link> */}
