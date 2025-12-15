@@ -118,7 +118,7 @@ const NomineeList = ({ award, getGameById, coverMap, awardYear }) => {
                 className="w-auto h-auto flex-shrink-0 bg-background rounded-xl shadow-sm text-center flex flex-col items-center"
                 id="winner"
               >
-                {game.cover && (
+                {cover && (
                   <img
                     src={cover}
                     alt={game.name}
