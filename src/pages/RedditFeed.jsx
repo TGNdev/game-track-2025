@@ -78,7 +78,10 @@ const RedditFeed = () => {
     <Layout>
       <GameProvider>
         <div className="w-3/4 mx-auto py-6 flex flex-col gap-8">
-          <h2 className="text-2xl font-bold text-center mb-4">Leaks & Rumours</h2>
+          <div className="text-center flex flex-col gap-3">
+            <h2 className="text-2xl font-bold">Leaks & Rumours</h2>
+            <p className="text-sm">This posts come from <span className="italic">r/GamingLeaksAndRumours</span>' Reddit feed.</p>
+          </div>
           {/* Controls */}
           <div className="flex flex-wrap justify-between items-center gap-4">
             <div className="flex flex-row items-center gap-1">
@@ -86,7 +89,7 @@ const RedditFeed = () => {
               <select
                 value={selectedFlair}
                 onChange={(e) => setSelectedFlair(e.target.value)}
-                className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-background"
+                className="border border-gray-300 rounded-md px-2 py-0.5 text-sm bg-background"
               >
                 {flairs.map((flair) => (
                   <option key={flair} value={flair}>
@@ -101,7 +104,7 @@ const RedditFeed = () => {
               <select
                 value={postLimit}
                 onChange={(e) => setPostLimit(Number(e.target.value))}
-                className="border border-gray-300 rounded-md px-2 py-1 text-sm bg-background"
+                className="border border-gray-300 rounded-md px-2 py-0.5 text-sm bg-background"
               >
                 {[25, 50, 75, 100].map((limit) => (
                   <option key={limit} value={limit}>
@@ -123,13 +126,13 @@ const RedditFeed = () => {
               {visiblePosts.map((post) => (
                 <div
                   key={post.id}
-                  className="block relative bg-background rounded-2xl shadow-lg hover:scale-105 transition border-primary"
+                  className="relative border-primary bg-background rounded-2xl shadow-lg hover:scale-105 transition"
                 >
                   <a
                     href={post.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-4"
+                    className="block p-4"
                   >
                     {post.link_flair_text && (
                       <div
@@ -139,7 +142,7 @@ const RedditFeed = () => {
                         {post.link_flair_text}
                       </div>
                     )}
-                    <p className="text-primary hover:underline sm:text-lg font-semibold">
+                    <p className="sm:text-lg font-semibold">
                       {highlightMatch(he.decode(post.title), search)}
                     </p>
                     <p className="sm:text-sm text-xs text-slate-300 mt-2">
