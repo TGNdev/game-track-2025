@@ -20,7 +20,7 @@ const FeaturedGame = ({ featured, cover }) => {
           <img
             src={cover}
             alt={featured.name}
-            className="h-full w-32 object-cover rounded-lg transition-opacity duration-300"
+            className="h-full w-32 object-cover rounded transition-opacity duration-300"
             style={{ maxHeight: "180px" }}
             loading="lazy"
             onLoad={() => setImgLoaded(true)}
