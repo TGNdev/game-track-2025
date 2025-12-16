@@ -1,18 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import { getGamesFromFirestore } from "../../js/firebase";
-import GamePreviewModal from "../games/GamePreviewModal";
-import { getGameCovers } from "../../js/igdb";
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { useGame } from "../../contexts/GameContext";
 
 const Games = () => {
   const [games, setGames] = useState([]);
   const [currentMonthStart, setCurrentMonthStart] = useState(getMonthStart(new Date()));
   const [firstFutureMonthStart, setFirstFutureMonthStart] = useState(null);
   const initialMonthRef = useRef(null);
-  const [previewGame, setPreviewGame] = useState(null);
-  const [previewBounds, setPreviewBounds] = useState(null);
-  const [showPreview, setShowPreview] = useState(false);
-  const [coverMap, setCoverMap] = useState(null);
+  const { isMobile } = useGame();
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -49,16 +45,6 @@ const Games = () => {
     fetchGames();
   }, []);
 
-  useEffect(() => {
-    const fetchCovers = async () => {
-      if (games.length === 0) return;
-      const gameIds = games.map((g) => g.igdb_id);
-      const covers = await getGameCovers(gameIds);
-      setCoverMap(covers);
-    };
-    fetchCovers();
-  }, [games, setCoverMap]);
-
   function getMonthStart(date) {
     const d = new Date(date);
     d.setDate(1);
@@ -68,7 +54,9 @@ const Games = () => {
   }
 
   function isoMonth(date) {
-    return date.toISOString().slice(0, 7);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    return `${year}-${month}`;
   }
 
   function addMonths(date, count) {
@@ -134,14 +122,16 @@ const Games = () => {
             <div>Go to</div>
             <input
               type="month"
-              className="border px-2 py-1 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="border px-2 py-1 rounded-md text-sm bg-background"
               value={isoMonth(currentMonthStart)}
               onChange={(e) => {
                 const [year, month] = e.target.value.split("-");
                 if (!year || !month) return;
-                setCurrentMonthStart(new Date(year, month - 1, 1));
+                const newDate = new Date(year, month - 1, 1);
+                setCurrentMonthStart(getMonthStart(newDate));
               }}
               aria-label="Jump to month"
+              lang="en-US"
             />
           </div>
           <div className="flex flex-row gap-2">
@@ -169,7 +159,7 @@ const Games = () => {
       <div className="flex flex-row justify-between items-center mb-4">
         <button
           onClick={() => shiftMonth(-1)}
-          className="text-sm px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          className="text-sm px-3 py-1 rounded hover:scale-105 bg-gradient-primary transition"
         >
           <FaArrowLeft />
         </button>
@@ -180,73 +170,105 @@ const Games = () => {
 
         <button
           onClick={() => shiftMonth(1)}
-          className="text-sm px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          className="text-sm px-3 py-1 bg-gradient-primary rounded hover:scale-105 transition"
         >
           <FaArrowRight />
         </button>
       </div>
 
-      {/* Weekday headers */}
-      <div className="grid grid-cols-7 text-center font-medium mb-2">
-        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-          <div key={d}>{d}</div>
-        ))}
-      </div>
+      {isMobile ? (
+        <div>
+          {weeks.flat().filter((day) => day.getMonth() === monthStart.getMonth()).map((day) => {
+            const dayStr = day.toISOString().slice(0, 10);
+            const isCurrentMonth = day.getMonth() === monthStart.getMonth();
+            const isToday = dayStr === new Date().toISOString().slice(0, 10);
 
-      {/* Calendar weeks */}
-      <div>
-        {weeks.map((week, idx) => (
-          <div key={idx} className="flex flex-row">
-            {week.map((day) => {
-              const dayStr = day.toISOString().slice(0, 10);
-              const isCurrentMonth = day.getMonth() === monthStart.getMonth();
+            const dayGames = games.filter(
+              (game) => game.jsDate.toISOString().slice(0, 10) === dayStr
+            );
 
-              const dayGames = games.filter(
-                (game) => game.jsDate.toISOString().slice(0, 10) === dayStr
-              );
-
-              return (
-                <div
-                  key={dayStr}
-                  className={`border p-2 h-32 w-full md:h-40 overflow-y-auto text-sm ${isCurrentMonth ? "bg-white" : "bg-gray-100 text-gray-400"
-                    }`}
-                >
-                  <div className="text-xs font-bold">{day.getDate()}</div>
-                  <ul className="mt-1 space-y-1">
-                    {dayGames.map((game, idx) => (
-                      <button
-                        onClick={(e) => {
-                          const rect = e.currentTarget.getBoundingClientRect();
-                          setPreviewGame({
-                            ...game,
-                            cover: coverMap[game.igdb_id],
-                          });
-                          setPreviewBounds({ top: rect.top + window.scrollY, left: rect.left + window.scrollX });
-                          setShowPreview(true);
-                        }}
-                        className="font-bold text-left w-full hover:scale-105 transition"
-                      >
-                        <li
-                          key={idx}
-                          className="bg-gradient-primary rounded px-1 py-0.5"
-                        >
-                          {game.name}
-                        </li>
-                      </button>
-                    ))}
-                  </ul>
+            return (
+              <div
+                key={dayStr}
+                className={`p-2 mb-2 rounded-md ${isToday ? "bg-gradient-tertiary" : "border"} ${!isCurrentMonth ? "bg-black/30 text-gray-400" : ""}`}
+              >
+                <div className="text-sm font-bold mb-1">
+                  {day.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
                 </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-      <GamePreviewModal
-        game={previewGame}
-        bounds={previewBounds}
-        isVisible={showPreview}
-        onClose={() => setShowPreview(false)}
-      />
+                <ul className="space-y-1">
+                  {dayGames.map((game, idx) => (
+                    <div
+                      key={idx}
+                      className="font-bold text-left w-full"
+                    >
+                      <li
+                        key={idx}
+                        className="bg-gradient-primary rounded px-1 py-0.5"
+                      >
+                        {game.name}
+                      </li>
+                    </div>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <>
+          {/* Weekday headers */}
+          <table className="w-full border-collapse border table-fixed">
+            <thead>
+              <tr className="text-center font-medium">
+                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+                  <th key={d} className="border border-gray-200 p-2">{d}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {/* Calendar weeks */}
+              {weeks.map((week, idx) => (
+                <tr key={idx}>
+                  {week.map((day) => {
+                    const dayStr = day.toISOString().slice(0, 10);
+                    const isCurrentMonth = day.getMonth() === monthStart.getMonth();
+                    const isToday = dayStr === new Date().toISOString().slice(0, 10);
+
+                    const dayGames = games.filter(
+                      (game) => game.jsDate.toISOString().slice(0, 10) === dayStr
+                    );
+
+                    return (
+                      <td
+                        key={dayStr}
+                        className={`border border-gray-200 p-2 h-32 md:h-40 text-sm ${isToday ? "bg-gradient-tertiary" : ""} ${isCurrentMonth ? "" : "bg-black/30 text-gray-300"}`}
+                      >
+                        <div className="text-xs font-bold">{day.getDate()}</div>
+                        <ul className="space-y-2 h-full overflow-y-auto">
+                          {dayGames.map((game, idx) => (
+                            <div
+                              key={idx}
+                              className="font-bold text-left w-full"
+                            >
+                              <li
+                                key={idx}
+                                className="bg-gradient-primary rounded px-1 py-0.5 text-ellipsis overflow-hidden whitespace-pre-line"
+                                title={game.name}
+                              >
+                                {game.name}
+                              </li>
+                            </div>
+                          ))}
+                        </ul>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
     </div>
   );
 };

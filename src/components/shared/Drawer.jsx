@@ -38,7 +38,7 @@ const Drawer = ({ open, setOpen }) => {
           {/* <Link to="/leaks-rumours" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Leaks & Rumours</Link> */}
           {/* <Link to="/hall-of-fame" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Hall Of Fame</Link> */}
           <Link to="/game-awards-history" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Game Awards History</Link>
-          {/* <Link to="/release-calendar" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Releases & Events Calendar</Link> */}
+          <Link to="/release-calendar" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Releases & Events Calendar</Link>
           <div className="border my-6"></div>
           <button
             className="text-left hover:scale-105 rounded-md text-white py-1.5 px-2 bg-gradient-primary w-fit transition"

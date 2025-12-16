@@ -10,29 +10,31 @@ const ReleaseCalendar = () => {
 
   return (
     <Layout>
-      <div className="max-w-5xl mx-auto flex flex-col gap-8">
+      <div className="w-5/6 mx-auto flex flex-col gap-8">
         <h2 className="text-2xl font-bold text-center">Calendars</h2>
         <div className="w-full flex justify-center">
-          <div className="flex flex-row w-full gap-4 items-center justify-center">
-            <button
-              className={`w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base
-                ${seeGames ? 'bg-gradient-primary text-white' : 'hover:bg-slate-200'}`}
+          <div className="border-primary rounded-xl">
+            <div className="flex flex-row gap-4 items-center justify-center p-2 rounded-md">
+              <button
+              className={`w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base
+                ${seeGames ? 'bg-gradient-primary' : 'hover:scale-105 transition'}`}
               onClick={() => setView('games')}
               disabled={seeGames}
             >
               Games
             </button>
             <button
-              className={`w-fit px-2 py-1.5 sm:px-3 sm:py-2 border rounded-md text-sm sm:text-base
-                ${seeEvents ? 'bg-gradient-primary text-white' : 'hover:bg-slate-200'}`}
+              className={`w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base
+                ${seeEvents ? 'bg-gradient-primary' : 'hover:scale-105 transition'}`}
               onClick={() => setView('events')}
               disabled={seeEvents}
             >
               Events
             </button>
+            </div>
           </div>
         </div>
-        <div className="w-full sm:w-4/5 mx-auto flex flex-col justify-between">
+        <div className="w-full flex flex-col justify-between">
           {seeGames ? (
             <Games />
           ) : seeEvents ? (
