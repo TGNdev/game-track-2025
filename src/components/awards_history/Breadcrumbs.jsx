@@ -1,44 +1,59 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { deslugify } from "../../js/utils";
+import { deslugify, slugify } from "../../js/utils";
 import { FaArrowRight, FaChevronDown } from "react-icons/fa";
 
 const Breadcrumbs = ({ tga = [] }) => {
-  const { year, awardId } = useParams();
   const navigate = useNavigate();
+  const { year, awardId } = useParams();
   const [isYearsOpen, setIsYearsOpen] = useState(false);
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const yearsRef = useRef(null);
+  const categoriesRef = useRef(null);
 
   const handleYearChange = (selectedYear) => {
     setIsYearsOpen(false);
     if (awardId) {
-      // Navigate to the same category in the selected year
       navigate(`/game-awards-history/${selectedYear}/${awardId}`);
     } else {
-      // Navigate to the selected year
       navigate(`/game-awards-history/${selectedYear}`);
     }
   };
 
-  // Close dropdown when clicking outside
+  const handleCategoryChange = (selectedAwardId) => {
+    selectedAwardId = slugify(selectedAwardId);
+    setIsCategoriesOpen(false);
+    if (year) {
+      navigate(`/game-awards-history/${year}/${selectedAwardId}`);
+    } else {
+      navigate(`/game-awards-history/${selectedAwardId}`);
+    }
+  }
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (yearsRef.current && !yearsRef.current.contains(event.target)) {
         setIsYearsOpen(false);
+      }
+      if (categoriesRef.current && !categoriesRef.current.contains(event.target)) {
+        setIsCategoriesOpen(false);
       }
     };
 
     if (isYearsOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
+    if (isCategoriesOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isYearsOpen]);
+  }, [isYearsOpen, isCategoriesOpen]);
 
-  // Sort years in descending order (newest first)
   const sortedYears = [...tga].sort((a, b) => b.year - a.year);
+  const filteredAwards = tga.find((tgaItem) => tgaItem.year.toString() === year)?.awards || [];
 
   return (
     <div className="flex items-center space-x-1 text-sm px-4">
@@ -50,7 +65,7 @@ const Breadcrumbs = ({ tga = [] }) => {
           to="/game-awards-history"
           className="bg-gradient-primary rounded px-3 py-1 text-white font-semibold hover:scale-105 transition"
         >
-          Years
+          History Home
         </Link>
       )}
 
@@ -101,9 +116,37 @@ const Breadcrumbs = ({ tga = [] }) => {
 
       {/* Award */}
       {awardId && (
-        <span className="border rounded px-3 py-1 font-semibold cursor-default">
-          {deslugify(awardId)}
-        </span>
+        <div className="relative flex flex-row items-center gap-1" ref={categoriesRef}>
+          <Link
+            to={`/game-awards-history/${year}/${awardId}`}
+            className="bg-gradient-primary rounded px-3 py-1 text-white font-semibold hover:scale-105 transition"
+          >
+            {deslugify(awardId)}
+          </Link>
+          <button
+            type="button"
+            onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+            className="bg-gradient-primary rounded px-2 py-1.5 text-white font-semibold hover:scale-105 transition"
+          >
+            <FaChevronDown className={`text-base transition-transform ${isCategoriesOpen ? "rotate-180" : ""}`} />
+          </button>
+          {isCategoriesOpen && (
+            <div className="absolute top-full left-0 mt-1 bg-background rounded-md shadow-lg z-50 max-h-60 overflow-y-auto min-w-full border border-gray-700">
+              {filteredAwards
+                .filter((award) => award.title !== deslugify(awardId))
+                .map((award) => (
+                  <button
+                    key={award.id}
+                    type="button"
+                    onClick={() => handleCategoryChange(award.title)}
+                    className="w-full text-left px-3 py-2 text-sm font-semibold hover:bg-gradient-primary transition duration-200 text-white hover:text-white"
+                  >
+                    {award.title}
+                  </button>
+                ))}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
