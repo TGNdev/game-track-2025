@@ -34,6 +34,7 @@ export const GameProvider = ({ children }) => {
   const [openSearch, setOpenSearch] = useState(false);
   const [awardWinners, setAwardWinners] = useState(new Set());
   const [awardsPerGame, setAwardsPerGame] = useState({});
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 868);
   const [showTimesDisclaimer, setShowTimesDisclaimer] = useState(() => {
     try {
       const stored = localStorage.getItem("showTimesDisclaimer");
@@ -197,6 +198,15 @@ export const GameProvider = ({ children }) => {
     }
   };
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const value = useMemo(() => {
     const tagsLabels = {
       dlc: "DLC / Expansion",
@@ -255,6 +265,8 @@ export const GameProvider = ({ children }) => {
       setShowTimesDisclaimer,
       setIsAwardsModalOpen,
       isAwardsModalOpen,
+      isMobile,
+      setIsMobile,
     };
   }, [
     games,
@@ -280,6 +292,8 @@ export const GameProvider = ({ children }) => {
     showTimesDisclaimer,
     setIsAwardsModalOpen,
     isAwardsModalOpen,
+    isMobile,
+    setIsMobile,
   ]);
 
   return (

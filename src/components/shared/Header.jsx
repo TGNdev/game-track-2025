@@ -30,7 +30,8 @@ const Header = ({ onDrawerOpen }) => {
     logout,
     edit, setEdit,
     openButtonRef,
-    setIsModalOpen
+    setIsModalOpen,
+    isMobile,
   } = useGame();
   const allowedSearchRoutes = ["/", "/leaks-rumours", "/hall-of-fame", "/game-track-2025"];
   const allowedContolsRoutes = ["/", "/game-track-2025"];
@@ -72,16 +73,18 @@ const Header = ({ onDrawerOpen }) => {
       {viewControls && (
         <div className="flex flex-row justify-between w-full">
           <div>
-            <button
-              type="button"
-              className={`${opened ? "animate-pulse bg-gradient-tertiary" : "bg-gradient-primary"} text-sm hover:scale-110 transition text-white px-2 py-1 rounded-md sm:hidden`}
-              onClick={() => {
-                setOpened(prev => !prev);
-                setFeaturedOpen(null);
-              }}
-            >
-              {opened ? "Collaspe all" : "Expand all"}
-            </button>
+            {isMobile && (
+              <button
+                type="button"
+                className={`${opened ? "animate-pulse bg-gradient-tertiary" : "bg-gradient-primary"} text-sm hover:scale-110 transition text-white px-2 py-1 rounded-md`}
+                onClick={() => {
+                  setOpened(prev => !prev);
+                  setFeaturedOpen(null);
+                }}
+              >
+                {opened ? "Collaspe all" : "Expand all"}
+              </button>
+            )}
           </div>
           {isLogged ? (
             <div className="flex flex-row items-center gap-2">

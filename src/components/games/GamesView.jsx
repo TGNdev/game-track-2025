@@ -31,6 +31,7 @@ const GamesView = () => {
     currentPage,
     setCurrentPage,
     timesToBeat,
+    isMobile,
   } = useGame();
   const [withRelease, setWithRelease] = useState(true);
   const isFirstRender = useRef(true);
@@ -60,19 +61,6 @@ const GamesView = () => {
     return false;
   });
   const [openRowId, setOpenRowId] = useState(null);
-
-  function useMediaQuery(query) {
-    const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
-
-    useEffect(() => {
-      const media = window.matchMedia(query);
-      const listener = () => setMatches(media.matches);
-      media.addListener(listener);
-      return () => media.removeListener(listener);
-    }, [query]);
-
-    return matches;
-  }
 
   useEffect(() => {
     const filters = {
@@ -216,8 +204,6 @@ const GamesView = () => {
     }
   }, [currentPage]);
 
-  const isSmallScreen = useMediaQuery('(max-width: 639px)');
-
   if (loading) {
     return (
       <>
@@ -341,8 +327,8 @@ const GamesView = () => {
         </div>
       </div>
 
-      {isSmallScreen ? (
-        <div className="overflow-y-auto min-w-full sm:hidden pb-8">
+      {isMobile ? (
+        <div className="overflow-y-auto min-w-full pb-8">
           <div className="flex flex-col gap-5">
             {filtered
               .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
