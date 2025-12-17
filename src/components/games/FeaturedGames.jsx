@@ -8,7 +8,7 @@ const FeaturedGames = ({ games }) => {
   const [columns, setColumns] = useState(3);
   const {
     coverMap,
-    loading
+    loadingGames
   } = useGame();
 
   const formatReleaseDate = (releaseDate) => {
@@ -95,7 +95,7 @@ const FeaturedGames = ({ games }) => {
   const firstRow = featuredGames.slice(0, columns);
   const otherRows = featuredGames.slice(columns);
 
-  if (loading) {
+  if (loadingGames) {
     return (
       <div className="w-full border rounded-xl p-4">
         <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between mb-4">

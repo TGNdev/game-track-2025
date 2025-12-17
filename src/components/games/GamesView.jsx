@@ -26,7 +26,7 @@ const GamesView = () => {
     handleCloseModal,
     coverMap,
     screenshotsMap,
-    loading,
+    loadingGames,
     itemsPerPage,
     currentPage,
     setCurrentPage,
@@ -204,7 +204,7 @@ const GamesView = () => {
     }
   }, [currentPage]);
 
-  if (loading) {
+  if (loadingGames) {
     return (
       <>
         <FeaturedGames games={games} />

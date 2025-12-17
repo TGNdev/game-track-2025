@@ -3,32 +3,15 @@ import { ToastContainer } from "react-toastify";
 import GamesView from "../components/games/GamesView"
 import { useGame } from "../contexts/GameContext";
 import Layout from "../components/shared/Layout";
-import { getGamesFromFirestore } from "../js/firebase";
 import { getGameCovers, getGameScreenshots, getGameTimeToBeat } from "../js/igdb";
 
 const Home = () => {
   const {
-    games, setGames,
+    games,
     setCoverMap,
     setScreenshotsMap,
-    setLoading,
     setTimesToBeat,
   } = useGame();
-
-  useEffect(() => {
-    const fetchGames = async () => {
-      try {
-        setLoading(true);
-        const gamesList = (await getGamesFromFirestore());
-        setGames(gamesList);
-      } catch (error) {
-        console.error("Error fetching games:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchGames();
-  }, [setLoading, setGames]);
 
   useEffect(() => {
     const fetchCovers = async () => {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Layout from "../components/shared/Layout";
-import { getGamesFromFirestore, getTgaFromFirestore } from "../js/firebase";
+import { getTgaFromFirestore } from "../js/firebase";
 import YearSelector from "../components/awards_history/YearSelector";
 import AwardSelector from "../components/awards_history/AwardSelector";
 import NomineesList from "../components/awards_history/NomineesList";
@@ -15,11 +15,11 @@ const AwardsHistory = () => {
   const { year, awardId } = useParams();
   const navigate = useNavigate();
 
-  const [games, setGames] = useState([]);
   const [tga, setTga] = useState([]);
   const [selectedYearNumber, setSelectedYearNumber] = useState(year ? parseInt(year) : null);
   const {
     coverMap, setCoverMap,
+    games
   } = useGame();
 
   const selectedYearObj = tga.find((y) => y.year === selectedYearNumber) || null;
@@ -32,12 +32,10 @@ const AwardsHistory = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [gamesList, tgaList] = await Promise.all([
-          getGamesFromFirestore(),
+        const tgaList = await Promise.all([
           getTgaFromFirestore(),
         ]);
         tgaList.sort((a, b) => b.year - a.year);
-        setGames(gamesList);
         setTga(tgaList);
       } catch (error) {
         console.error("Error fetching data:", error);
