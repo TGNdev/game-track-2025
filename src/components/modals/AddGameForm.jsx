@@ -5,22 +5,16 @@ import { Timestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import SuggestionDropdown from "./SuggestionDropdown";
 import Modal from "./Modal";
+import { PLATFORMS, TAGS } from "../../js/config";
 
-const platformOptions = ["pc", "ps", "xbox", "switch", "switch_2"];
-const tagsOptions = ["dlc", "remake", "remaster", "port"];
-const platformLabels = {
-  pc: "PC",
-  ps: "PlayStation",
-  xbox: "Xbox Series",
-  switch: "Nintendo Switch",
-  switch_2: "Nintendo Switch 2",
-};
-const tagsLabels = {
-  dlc: "DLC / Expansion",
-  remake: "Remake",
-  remaster: "Remaster",
-  port: "Port / Re-release",
-};
+const platformOptions = Object.keys(PLATFORMS);
+const platformLabels = Object.fromEntries(
+  platformOptions.map((key) => [key, PLATFORMS[key].label])
+);
+const tagsOptions = Object.keys(TAGS);
+const tagsLabels = Object.fromEntries(
+  tagsOptions.map((key) => [key, TAGS[key].label])
+);
 
 const AddGameForm = ({ games, onSuccess }) => {
   const getInitialFormState = () => ({

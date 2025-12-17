@@ -7,22 +7,16 @@ import SuggestionDropdown from "./SuggestionDropdown";
 import isEqual from "lodash.isequal";
 import Modal from "./Modal";
 import { useGame } from "../../contexts/GameContext";
+import { PLATFORMS, TAGS } from "../../js/config";
 
-const platformOptions = ["pc", "ps", "xbox", "switch", "switch_2"];
-const tagsOptions = ["dlc", "remake", "remaster", "port"];
-const platformLabels = {
-  pc: "PC",
-  ps: "PlayStation",
-  xbox: "Xbox Series",
-  switch: "Nintendo Switch",
-  switch_2: "Nintendo Switch 2",
-};
-const tagsLabels = {
-  dlc: "DLC / Expansion",
-  remake: "Remake",
-  remaster: "Remaster",
-  port: "Port / Re-release",
-};
+const platformOptions = Object.keys(PLATFORMS);
+const platformLabels = Object.fromEntries(
+  platformOptions.map((key) => [key, PLATFORMS[key].label])
+);
+const tagsOptions = Object.keys(TAGS);
+const tagsLabels = Object.fromEntries(
+  tagsOptions.map((key) => [key, TAGS[key].label])
+);
 
 const EditGameForm = ({ game, games, onSuccess }) => {
   const getInitialFormState = () => ({
@@ -156,9 +150,22 @@ const EditGameForm = ({ game, games, onSuccess }) => {
       });
 
       const updatedGame = {
-        ...form,
+        ...game,
         id: game.id,
-      }
+        name: form.name,
+        link: form.link,
+        release_date: releaseDate,
+        developers: form.developers,
+        editors: form.editors,
+        platforms: form.platforms,
+        ratings: {
+          critics: Number(form.ratings.critics) || 0,
+          players: Number(form.ratings.players) || 0,
+          link: form.ratings.link || "",
+        },
+        tags: form.tags,
+        cover: form.cover ?? null,
+      };
 
       setGames(prevGames =>
         prevGames.map(g => (g.id === game.id ? updatedGame : g))
@@ -232,9 +239,8 @@ const EditGameForm = ({ game, games, onSuccess }) => {
                   type="button"
                   key={tag}
                   onClick={() => handleTagToggle(tag)}
-                  className={`px-3 py-1 rounded-full border text-sm hover:bg-blue-100 transition ${
-                    form.tags[tag] ? "bg-gradient-primary text-white hover:bg-blue-400" : ""
-                  }`}
+                  className={`px-3 py-1 rounded-full border text-sm hover:bg-blue-100 transition ${form.tags[tag] ? "bg-gradient-primary text-white hover:bg-blue-400" : ""
+                    }`}
                 >
                   {tagsLabels[tag]}
                 </button>
@@ -369,9 +375,8 @@ const EditGameForm = ({ game, games, onSuccess }) => {
                 type="button"
                 key={platform}
                 onClick={() => handlePlatformToggle(platform)}
-                className={`px-3 py-1 rounded-full border text-sm hover:bg-blue-100 transition ${
-                  form.platforms[platform] ? "bg-gradient-primary text-white hover:bg-blue-400" : ""
-                }`}
+                className={`px-3 py-1 rounded-full border text-sm hover:bg-blue-100 transition ${form.platforms[platform] ? "bg-gradient-primary text-white hover:bg-blue-400" : ""
+                  }`}
               >
                 {platformLabels[platform]}
               </button>
@@ -421,7 +426,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
                 value={form.ratings.link}
                 onChange={handleChange}
                 className="px-3 py-2 rounded border bg-background"
-                />
+              />
             </div>
           </div>
         </div>
