@@ -32,7 +32,7 @@ const AwardsHistory = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const tgaList = await Promise.all([
+        const [tgaList] = await Promise.all([
           getTgaFromFirestore(),
         ]);
         tgaList.sort((a, b) => b.year - a.year);
