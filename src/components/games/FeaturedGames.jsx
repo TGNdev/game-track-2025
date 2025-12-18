@@ -144,7 +144,7 @@ const FeaturedGames = ({ games }) => {
         )}
         {otherRows.length > 0 && (
           <div className="flex justify-center mt-4">
-            <div className="border-primary rounded-md hover:scale-105 transition">
+            <div className="border-primary rounded-md">
               <button
                 onClick={() => setShowAll(!showAll)}
                 className="px-3 py-1.5"

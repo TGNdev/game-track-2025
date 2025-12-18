@@ -53,7 +53,7 @@ const FeaturedGame = ({ featured, cover }) => {
               setSearch(featured.name);
               setFeaturedOpen(featured.id);
             }}
-            className="self-start bg-gradient-primary text-white text-sm px-3 py-1.5 rounded-md hover:scale-105 transition"
+            className="self-start bg-gradient-primary text-sm px-3 py-1.5 rounded-md"
           >
             View Game
           </button>

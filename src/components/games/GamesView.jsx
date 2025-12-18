@@ -228,14 +228,14 @@ const GamesView = () => {
         <div className="border-primary rounded-xl">
           <div className="flex flex-row gap-4 items-center justify-center p-2 rounded-md">
             <button
-              className={`${withRelease && "bg-gradient-primary text-white"} disabled:scale-100 hover:scale-105 w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base transition`}
+              className={`${withRelease && "bg-gradient-primary"} disabled:scale-100 w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base`}
               onClick={() => setWithRelease(true)}
               disabled={withRelease}
             >
               With release date
             </button>
             <button
-              className={`${!withRelease && "bg-gradient-primary text-white"} disabled:scale-100 hover:scale-105 w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base transition`}
+              className={`${!withRelease && "bg-gradient-primary"} disabled:scale-100 w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base`}
               onClick={() => setWithRelease(false)}
               disabled={!withRelease}
             >

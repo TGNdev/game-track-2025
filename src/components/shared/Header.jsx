@@ -76,7 +76,7 @@ const Header = ({ onDrawerOpen }) => {
             {isMobile && (
               <button
                 type="button"
-                className={`${opened ? "animate-pulse bg-gradient-tertiary" : "bg-gradient-primary"} text-sm hover:scale-110 transition text-white px-2 py-1 rounded-md`}
+                className={`${opened ? "animate-pulse bg-gradient-tertiary" : "bg-gradient-primary"} text-sm px-2 py-1 rounded-md`}
                 onClick={() => {
                   setOpened(prev => !prev);
                   setFeaturedOpen(null);
@@ -91,7 +91,7 @@ const Header = ({ onDrawerOpen }) => {
               {!edit && (
                 <button
                   ref={openButtonRef}
-                  className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-secondary text-white rounded-md hover:scale-110 transition"
+                  className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-secondary rounded-md"
                   onClick={() => setIsModalOpen(true)}
                 >
                   <FaPlus className="block sm:hidden" />
@@ -99,7 +99,7 @@ const Header = ({ onDrawerOpen }) => {
                 </button>
               )}
               <button
-                className={`${edit && "animate-pulse"} size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-tertiary text-white rounded-md hover:scale-110 transition`}
+                className={`${edit && "animate-pulse"} size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-tertiary rounded-md`}
                 onClick={(e) => {
                   e.stopPropagation();
                   setEdit(prev => !prev)
@@ -120,7 +120,7 @@ const Header = ({ onDrawerOpen }) => {
               {isLogged && (
                 <button
                   onClick={logout}
-                  className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-primary text-white rounded-md hover:scale-110 transition"
+                  className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-primary rounded-md"
                 >
                   <FaSignOutAlt className="block sm:hidden" />
                   <div className="hidden sm:block">Logout</div>
@@ -130,7 +130,7 @@ const Header = ({ onDrawerOpen }) => {
           ) : (
             <button
               ref={openButtonRef}
-              className="text-sm sm:w-fit sm:py-2 px-2.5 sm:flex flex-row items-center bg-gradient-primary text-white rounded-md hover:scale-110 transition"
+              className="text-sm sm:w-fit sm:py-2 px-2.5 sm:flex flex-row items-center bg-gradient-primary rounded-md"
               onClick={() => setIsModalOpen(true)}
             >
               <div className="">I am an admin</div>

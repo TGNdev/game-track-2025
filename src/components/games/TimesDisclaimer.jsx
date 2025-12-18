@@ -4,7 +4,7 @@ const TimesDisclaimer = ({ onClose }) => {
       <button
         type="button"
         onClick={onClose}
-        className="absolute bottom-2 right-2 text-sm font-semibold text-yellow-700 hover:text-yellow-900 hover:scale-105 transition"
+        className="absolute bottom-2 right-2 text-sm text-yellow-700 hover:text-yellow-900"
       >
         Got it
       </button>

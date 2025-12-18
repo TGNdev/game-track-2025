@@ -63,7 +63,7 @@ const Breadcrumbs = ({ tga = [] }) => {
       ) : (
         <Link
           to="/game-awards-history"
-          className="bg-gradient-primary rounded px-3 py-1 text-white font-semibold hover:scale-105 transition"
+          className="bg-gradient-primary rounded px-3 py-1 font-semibold hover:scale-105 transition"
         >
           History Home
         </Link>
@@ -80,14 +80,14 @@ const Breadcrumbs = ({ tga = [] }) => {
           <div className="relative flex flex-row items-center gap-1" ref={yearsRef}>
             <Link
               to={`/game-awards-history/${year}`}
-              className="bg-gradient-primary rounded px-3 py-1 text-white font-semibold hover:scale-105 transition"
+              className="bg-gradient-primary rounded px-3 py-1 font-semibold hover:scale-105 transition"
             >
               {year}
             </Link>
             <button
               type="button"
               onClick={() => setIsYearsOpen(!isYearsOpen)}
-              className="bg-gradient-primary rounded px-2 py-1.5 text-white font-semibold hover:scale-105 transition"
+              className="bg-gradient-primary rounded px-2 py-1.5 hover:scale-105 transition"
             >
               <FaChevronDown className={`text-base transition-transform ${isYearsOpen ? "rotate-180" : ""}`} />
             </button>
@@ -100,7 +100,7 @@ const Breadcrumbs = ({ tga = [] }) => {
                       key={yearData.year}
                       type="button"
                       onClick={() => handleYearChange(yearData.year)}
-                      className="w-full text-left px-3 py-2 text-sm font-semibold hover:bg-gradient-primary transition duration-200 text-white hover:text-white"
+                      className="w-full text-left px-3 py-2 text-sm font-semibold hover:bg-gradient-primary transition duration-200"
                     >
                       {yearData.year}
                     </button>
@@ -117,16 +117,15 @@ const Breadcrumbs = ({ tga = [] }) => {
       {/* Award */}
       {awardId && (
         <div className="relative flex flex-row items-center gap-1" ref={categoriesRef}>
-          <Link
-            to={`/game-awards-history/${year}/${awardId}`}
-            className="bg-gradient-primary rounded px-3 py-1 text-white font-semibold hover:scale-105 transition"
+          <div
+            className="bg-gradient-primary rounded px-3 py-1 font-semibold pointer-events-none"
           >
             {deslugify(awardId)}
-          </Link>
+          </div>
           <button
             type="button"
             onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
-            className="bg-gradient-primary rounded px-2 py-1.5 text-white font-semibold hover:scale-105 transition"
+            className="bg-gradient-primary rounded px-2 py-1.5 font-semibold"
           >
             <FaChevronDown className={`text-base transition-transform ${isCategoriesOpen ? "rotate-180" : ""}`} />
           </button>
@@ -139,7 +138,7 @@ const Breadcrumbs = ({ tga = [] }) => {
                     key={award.id}
                     type="button"
                     onClick={() => handleCategoryChange(award.title)}
-                    className="w-full text-left px-3 py-2 text-sm font-semibold hover:bg-gradient-primary transition duration-200 text-white hover:text-white"
+                    className="w-full text-left px-3 py-2 text-sm font-semibold hover:bg-gradient-primary transition duration-200"
                   >
                     {award.title}
                   </button>

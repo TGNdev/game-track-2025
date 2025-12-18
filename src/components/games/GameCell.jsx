@@ -106,7 +106,7 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
         <button
           onClick={toggleDrawer}
         >
-          <div className="hover:scale-105 transition text-base font-semibold text-left">
+          <div className="text-base text-left">
             {highlightMatch(he.decode(game.name), search)}
           </div>
         </button>

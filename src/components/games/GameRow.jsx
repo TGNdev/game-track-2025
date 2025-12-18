@@ -68,7 +68,7 @@ const GameRow = ({ ref, game, coverImage, screenshots, times, isOpen, onToggle }
           <div className="flex flex-col divide-y">
             {game.developers.map((developer) => (
               <a target="_blank" rel="noreferrer" href={developer.link} key={developer.name}>
-                <div className="hover:scale-110 transition text-sm py-1">
+                <div className="hover:scale-105 transition text-sm py-1">
                   {highlightMatch(he.decode(developer.name), search)}
                 </div>
               </a>
@@ -80,7 +80,7 @@ const GameRow = ({ ref, game, coverImage, screenshots, times, isOpen, onToggle }
           <div className="flex flex-col divide-y">
             {game.editors.map((editor) => (
               <a target="_blank" rel="noreferrer" href={editor.link} key={editor.name}>
-                <div className="hover:scale-110 transition text-sm py-1">
+                <div className="hover:scale-105 transition text-sm py-1">
                   {highlightMatch(he.decode(editor.name), search)}
                 </div>
               </a>
@@ -113,7 +113,7 @@ const GameRow = ({ ref, game, coverImage, screenshots, times, isOpen, onToggle }
             </div>
             {game.ratings.link ? (
               <a target="_blank" rel="noreferrer" href={game.ratings.link}>
-                <div className="text-xs hover:scale-110 transition">
+                <div className="text-xs hover:scale-105 transition">
                   <span className="font-normal">Details on </span>
                   <span className="font-bold">OpenCritic</span>
                 </div>
@@ -133,12 +133,12 @@ const GameRow = ({ ref, game, coverImage, screenshots, times, isOpen, onToggle }
                   setIsModalOpen(true);
                   setGameToEdit(game);
                 }}
-                className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-amber-400 text-white rounded-md hover:scale-110 transition"
+                className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-amber-400 rounded-md"
               >
                 <AiFillEdit />
               </button>
               <button
-                className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-red-400 text-white rounded-md hover:scale-110 transition"
+                className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-red-400 rounded-md"
                 onClick={() => {
                   if (window.confirm(`Are you sure you want to delete "${game.name}" ?`)) {
                     deleteGameFromFirestore(game.id);
@@ -222,7 +222,7 @@ const GameRow = ({ ref, game, coverImage, screenshots, times, isOpen, onToggle }
                         <button
                           type="button"
                           onClick={() => setIsAwardsModalOpen(true)}
-                          className="bg-gradient-primary text-sm px-3 py-1.5 rounded-md hover:scale-105 transition"
+                          className="bg-gradient-primary text-sm px-3 py-1.5 rounded-md"
                         >
                           View all awards
                         </button>

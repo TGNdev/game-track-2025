@@ -17,7 +17,7 @@ const ReleaseCalendar = () => {
             <div className="flex flex-row gap-4 items-center justify-center p-2 rounded-md">
               <button
               className={`w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base
-                ${seeGames ? 'bg-gradient-primary' : 'hover:scale-105 transition'}`}
+                ${seeGames ? 'bg-gradient-primary' : ''}`}
               onClick={() => setView('games')}
               disabled={seeGames}
             >
@@ -25,7 +25,7 @@ const ReleaseCalendar = () => {
             </button>
             <button
               className={`w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base
-                ${seeEvents ? 'bg-gradient-primary' : 'hover:scale-105 transition'}`}
+                ${seeEvents ? 'bg-gradient-primary' : ''}`}
               onClick={() => setView('events')}
               disabled={seeEvents}
             >

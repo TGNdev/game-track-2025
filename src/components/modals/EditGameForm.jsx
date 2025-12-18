@@ -222,7 +222,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
               />
               <button
                 type="button"
-                className="px-3 py-1.5 min-w-fit bg-gradient-primary rounded-md text-white hover:scale-105 transition"
+                className="px-3 py-1.5 min-w-fit bg-gradient-primary rounded-md"
                 onClick={() => setReleaseTba(prev => !prev)}
               >
                 TBA
@@ -239,7 +239,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
                   type="button"
                   key={tag}
                   onClick={() => handleTagToggle(tag)}
-                  className={`px-3 py-1 rounded-full text-sm hover:scale-105 transition font-semibold ${form.tags[tag] ? "bg-gradient-primary text-white" : ""
+                  className={`px-3 py-1 rounded-full text-sm ${form.tags[tag] ? "bg-gradient-primary" : ""
                     }`}
                 >
                   {tagsLabels[tag]}
@@ -289,7 +289,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
 
               <button
                 type="button"
-                className="text-sm hover:scale-105 transition"
+                className="text-sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   removeEntry("developers", i)
@@ -346,7 +346,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
               />
               <button
                 type="button"
-                className="text-sm hover:scale-105 transition"
+                className="text-sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   removeEntry("editors", i)
@@ -375,7 +375,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
                 type="button"
                 key={platform}
                 onClick={() => handlePlatformToggle(platform)}
-                className={`px-3 py-1 rounded-full text-sm hover:scale-105 transition font-semibold ${form.platforms[platform] ? "bg-gradient-primary text-white" : ""
+                className={`px-3 py-1 rounded-full text-sm ${form.platforms[platform] ? "bg-gradient-primary" : ""
                   }`}
               >
                 {platformLabels[platform]}
@@ -435,7 +435,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
           {hasChanges && (
             <button
               type="submit"
-              className="rounded-md px-3 py-1.5 bg-gradient-primary text-white hover:scale-105 transition"
+              className="rounded-md px-3 py-1.5 bg-gradient-primary"
             >
               Save changes
             </button>

@@ -134,7 +134,7 @@ const Games = () => {
             {initialMonthRef.current && isoMonth(currentMonthStart) !== isoMonth(initialMonthRef.current) && (
               <button
                 onClick={() => setCurrentMonthStart(initialMonthRef.current)}
-                className="bg-gradient-primary rounded-md px-2 py-1 flex hover:scale-110 transition"
+                className="bg-gradient-primary rounded-md px-2 py-1 flex"
               >
                 Today
               </button>
@@ -142,7 +142,7 @@ const Games = () => {
             {firstFutureMonthStart && isoMonth(currentMonthStart) !== isoMonth(firstFutureMonthStart) && (
               <button
                 onClick={() => setCurrentMonthStart(firstFutureMonthStart)}
-                className="bg-gradient-primary rounded-md px-2 py-1 flex hover:scale-110 transition"
+                className="bg-gradient-primary rounded-md px-2 py-1 flex"
               >
                 Next Release
               </button>
@@ -155,7 +155,7 @@ const Games = () => {
       <div className="flex flex-row justify-between items-center mb-4">
         <button
           onClick={() => shiftMonth(-1)}
-          className="text-sm px-3 py-1 rounded hover:scale-105 bg-gradient-primary transition"
+          className="text-sm px-3 py-1 rounded bg-gradient-primary"
         >
           <FaArrowLeft />
         </button>
@@ -166,7 +166,7 @@ const Games = () => {
 
         <button
           onClick={() => shiftMonth(1)}
-          className="text-sm px-3 py-1 bg-gradient-primary rounded hover:scale-105 transition"
+          className="text-sm px-3 py-1 bg-gradient-primary rounded"
         >
           <FaArrowRight />
         </button>

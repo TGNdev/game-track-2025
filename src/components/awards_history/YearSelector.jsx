@@ -17,7 +17,7 @@ const YearSelector = ({ tga, onSelectYear }) => {
           <button
             key={yearData.id}
             onClick={() => onSelectYear(yearData)}
-            className="size-24 sm:size-40 flex items-center justify-center border-primary p-4 rounded-md hover:scale-105 transition"
+            className="size-24 sm:size-40 flex items-center justify-center border-primary p-4 rounded-md"
           >
             <span className="text-xl font-semibold">{yearData.year}</span>
           </button>

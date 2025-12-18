@@ -13,7 +13,7 @@ const Search = () => {
     <>
       {!openSearch ? (
         <button
-          className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md transition duration-150 ease-in-out top-4 right-16 sm:right-4 z-50 sm:static fixed hover:scale-105"
+          className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md duration-150 ease-in-out top-4 right-16 sm:right-4 z-50 sm:static fixed"
           onClick={() => setOpenSearch(true)}
           aria-label="Open search"
         >
@@ -21,7 +21,7 @@ const Search = () => {
         </button>
       ) : (
         <button
-          className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md transition duration-150 ease-in-out fixed top-4 right-16 sm:right-4 sm:static hover:scale-105"
+          className="w-10 h-10 min-w-[40px] min-h-[40px] shrink-0 flex items-center justify-center bg-gradient-primary rounded-full shadow-md duration-150 ease-in-out fixed top-4 right-16 sm:right-4 sm:static"
           onClick={() => {
             setOpenSearch(false);
             setSearch("");

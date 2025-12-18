@@ -29,7 +29,7 @@ const GameAwardsWon = ({ game, isOpen, onClose }) => {
                 </div>
 
                 <button
-                  className="bg-gradient-primary text-sm px-3 py-1.5 rounded-md hover:scale-105 transition w-fit"
+                  className="bg-gradient-primary text-sm px-3 py-1.5 rounded-md w-fit"
                 >
                   <Link
                     to={`/game-awards-history/${award.year}/${award.slug}`}

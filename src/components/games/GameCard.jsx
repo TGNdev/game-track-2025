@@ -125,7 +125,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
                     rel="noreferrer"
                     href={dev.link}
                     key={idx}
-                    className="hover:scale-110 transition"
+                    className="hover:scale-105 transition"
                   >
                     {dev.name}
                   </a>
@@ -141,7 +141,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
                     rel="noreferrer"
                     href={edit.link}
                     key={idx}
-                    className="hover:scale-110 transition"
+                    className="hover:scale-105 transition"
                   >
                     {edit.name}
                   </a>
@@ -150,7 +150,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
 
               {edit && (
                 <button
-                  className="bg-amber-400 text-white rounded-md w-fit text-sm px-2 py-1"
+                  className="bg-amber-400 rounded-md w-fit text-sm px-2 py-1"
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsModalOpen(true);
@@ -209,7 +209,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
                   href={game.ratings.link}
                   className="text-center"
                 >
-                  <div className="text-xs hover:scale-110 transition">
+                  <div className="text-xs hover:scale-105 transition">
                     <span className="font-bold">OpenCritic</span>
                   </div>
                 </a>

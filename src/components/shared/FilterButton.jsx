@@ -2,7 +2,7 @@ export default function FilterButton({ isVisible, filterCondition, onClick, text
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1 text-sm font-bold hover:scale-105 duration-200 ${extraClasses} ${filterCondition
+      className={`px-3 py-1 text-sm font-bold ${extraClasses} ${filterCondition
         ? "bg-gradient-primary"
         : ""
         }`}

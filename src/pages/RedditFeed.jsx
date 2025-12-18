@@ -124,9 +124,9 @@ const RedditFeed = () => {
           ) : (
             <div className="space-y-4">
               {visiblePosts.map((post) => (
-                <div
+                <button
                   key={post.id}
-                  className="relative border-primary bg-background rounded-2xl shadow-lg hover:scale-105 transition"
+                  className="relative border-primary bg-background rounded-2xl shadow-lg"
                 >
                   <a
                     href={post.url}
@@ -136,7 +136,7 @@ const RedditFeed = () => {
                   >
                     {post.link_flair_text && (
                       <div
-                        className="absolute -top-2 -left-2 -rotate-6 text-white py-0.5 px-2 text-sm rounded-md shadow-lg"
+                        className="absolute -top-2 -left-2 -rotate-6 py-0.5 px-2 text-sm rounded-md shadow-lg"
                         style={{ backgroundColor: post.link_flair_background_color }}
                       >
                         {post.link_flair_text}
@@ -149,7 +149,7 @@ const RedditFeed = () => {
                       {formatDate(post.created_utc)}
                     </p>
                   </a>
-                </div>
+                </button>
               ))}
             </div>
           )}

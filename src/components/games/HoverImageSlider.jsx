@@ -127,7 +127,7 @@ function HoverImageSlider({ images, bounds, isVisible, onClose }) {
                     setIndex((prev) => (prev - 1 + images.length) % images.length);
                     restartInterval();
                   }}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-gradient-primary hover:scale-105 p-1 rounded-full z-20 transition"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-gradient-primary p-1 rounded-full z-20"
                 >
                   <FaChevronLeft size={20} />
                 </button>
@@ -138,7 +138,7 @@ function HoverImageSlider({ images, bounds, isVisible, onClose }) {
                     setIndex((prev) => (prev + 1) % images.length);
                     restartInterval();
                   }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-primary hover:scale-105 p-1 rounded-full z-20 transition"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-primary p-1 rounded-full z-20"
                 >
                   <FaChevronRight size={20} />
                 </button>
@@ -148,7 +148,7 @@ function HoverImageSlider({ images, bounds, isVisible, onClose }) {
                     e.stopPropagation();
                     setIsPaused((prev) => !prev);
                   }}
-                  className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-gradient-primary hover:scale-105 transition p-1 rounded-full z-20"
+                  className="absolute bottom-5 left-1/2 -translate-x-1/2 bg-gradient-primary p-1 rounded-full z-20"
                 >
                   {isPaused ? <IoPlayOutline size={14} /> : <IoPauseOutline size={14} />}
                 </button>

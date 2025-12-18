@@ -26,7 +26,7 @@ const Drawer = ({ open, setOpen }) => {
       >
         {/* Close Button */}
         <button
-          className="absolute top-4 right-4 p-2 rounded-full bg-gradient-primary transition hover:scale-110 z-10"
+          className="absolute top-4 right-4 p-2 rounded-full bg-gradient-primary z-10"
           onClick={() => setOpen(false)}
           aria-label="Close navigation drawer"
         >
@@ -41,7 +41,7 @@ const Drawer = ({ open, setOpen }) => {
           <Link to="/release-calendar" className="text-primary hover:text-white hover:scale-105 duration-150 transition">Releases & Events Calendar</Link>
           <div className="border my-6"></div>
           <button
-            className="text-left hover:scale-105 rounded-md text-white py-1.5 px-2 bg-gradient-primary w-fit transition"
+            className="text-left rounded-md py-1.5 px-2 bg-gradient-primary w-fit"
             onClick={() => {
               setOpen(false);
               logout();
