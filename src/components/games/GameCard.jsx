@@ -4,12 +4,12 @@ import { FaThumbsUp } from "react-icons/fa6";
 import { useGame } from "../../contexts/GameContext";
 import he from "he";
 import { highlightMatch } from "../../js/utils";
+import { TAGS } from "../../js/config";
 
 const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
   const [isOpen, setIsOpen] = useState(false);
   const {
     search,
-    tagsLabels,
     getPlatformsSvg,
     isReleased,
     opened,
@@ -26,6 +26,9 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
   }, [opened, forceOpen]);
 
   const platforms = Object.keys(game.platforms).filter(p => game.platforms[p]);
+  const tagsLabels = Object.fromEntries(
+    Object.keys(TAGS).map((key) => [key, TAGS[key].label])
+  );
 
   return (
     <div

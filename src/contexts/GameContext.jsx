@@ -260,13 +260,6 @@ export const GameProvider = ({ children }) => {
   }, [ensureGamesLoaded]);
 
   const value = useMemo(() => {
-    const tagsLabels = {
-      dlc: "DLC / Expansion",
-      remake: "Remake",
-      remaster: "Remaster",
-      port: "Port / Re-release",
-    };
-
     return {
       games,
       setGames,
@@ -292,7 +285,6 @@ export const GameProvider = ({ children }) => {
       setGameToEdit,
       logout,
       handleCloseModal,
-      tagsLabels,
       getPlatformsSvg,
       isReleased,
       coverMap,

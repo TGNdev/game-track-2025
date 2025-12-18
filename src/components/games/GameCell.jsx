@@ -4,6 +4,7 @@ import { useGame } from "../../contexts/GameContext";
 import he from "he";
 import { highlightMatch } from "../../js/utils";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
+import { TAGS } from "../../js/config";
 
 function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
   const tagRefs = useRef([]);
@@ -15,10 +16,13 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
   const unmountTimeoutRef = useRef(null);
   const {
     search,
-    tagsLabels,
     isReleased,
     hasWonAward,
   } = useGame();
+
+  const tagsLabels = Object.fromEntries(
+    Object.keys(TAGS).map((key) => [key, TAGS[key].label])
+  );
 
   const activeTags = [
     {
