@@ -109,6 +109,13 @@ const Games = () => {
     setCurrentMonthStart(addMonths(currentMonthStart, offset));
   }
 
+  function formatDateToYYYYMMDD(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
   return (
     <div className="p-4">
       {/* Navigation Controls */}
@@ -175,12 +182,12 @@ const Games = () => {
       {isMobile ? (
         <div>
           {weeks.flat().filter((day) => day.getMonth() === monthStart.getMonth()).map((day) => {
-            const dayStr = day.toISOString().slice(0, 10);
+            const dayStr = formatDateToYYYYMMDD(day);
             const isCurrentMonth = day.getMonth() === monthStart.getMonth();
             const isToday = dayStr === new Date().toISOString().slice(0, 10);
 
             const dayGames = datedGames.filter(
-              (game) => game.jsDate.toISOString().slice(0, 10) === dayStr
+              (game) => formatDateToYYYYMMDD(game.jsDate) === dayStr
             );
 
             return (
@@ -226,12 +233,12 @@ const Games = () => {
               {weeks.map((week, idx) => (
                 <tr key={idx}>
                   {week.map((day) => {
-                    const dayStr = day.toISOString().slice(0, 10);
+                    const dayStr = formatDateToYYYYMMDD(day);
                     const isCurrentMonth = day.getMonth() === monthStart.getMonth();
                     const isToday = dayStr === new Date().toISOString().slice(0, 10);
 
                     const dayGames = datedGames.filter(
-                      (game) => game.jsDate.toISOString().slice(0, 10) === dayStr
+                      (game) => formatDateToYYYYMMDD(game.jsDate) === dayStr
                     );
 
                     return (
