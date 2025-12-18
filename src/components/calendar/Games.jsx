@@ -7,35 +7,35 @@ const Games = () => {
   const [firstFutureMonthStart, setFirstFutureMonthStart] = useState(null);
   const [datedGames, setDatedGames] = useState([]);
   const initialMonthRef = useRef(null);
-  const { 
+  const {
     games,
     isMobile
   } = useGame();
 
   useEffect(() => {
     const fetchGames = async () => {
-        const processedGames = games
-          .filter(
-            (game) =>
-              game.release_date &&
-              typeof game.release_date === "object" &&
-              game.release_date.seconds
-          )
-          .map((game) => ({
-            ...game,
-            jsDate: new Date(game.release_date.seconds * 1000),
-          }));
+      const processedGames = games
+        .filter(
+          (game) =>
+            game.release_date &&
+            typeof game.release_date === "object" &&
+            game.release_date.seconds
+        )
+        .map((game) => ({
+          ...game,
+          jsDate: new Date(game.release_date.seconds * 1000),
+        }));
 
-        setDatedGames(processedGames);
+      setDatedGames(processedGames);
 
-        const today = new Date();
-        const futureGame = processedGames.find(game => game.jsDate >= today);
+      const today = new Date();
+      const futureGame = processedGames.find(game => game.jsDate >= today);
 
-        const futureMonthStart = futureGame ? getMonthStart(futureGame.jsDate) : null;
+      const futureMonthStart = futureGame ? getMonthStart(futureGame.jsDate) : null;
 
-        initialMonthRef.current = getMonthStart(today);
-        setCurrentMonthStart(getMonthStart(today));
-        setFirstFutureMonthStart(futureMonthStart);
+      initialMonthRef.current = getMonthStart(today);
+      setCurrentMonthStart(getMonthStart(today));
+      setFirstFutureMonthStart(futureMonthStart);
     };
 
     fetchGames();
@@ -230,7 +230,7 @@ const Games = () => {
                     const isCurrentMonth = day.getMonth() === monthStart.getMonth();
                     const isToday = dayStr === new Date().toISOString().slice(0, 10);
 
-                    const dayGames = games.filter(
+                    const dayGames = datedGames.filter(
                       (game) => game.jsDate.toISOString().slice(0, 10) === dayStr
                     );
 

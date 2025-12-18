@@ -6,7 +6,11 @@ export default function BackToTopButton() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsVisible(window.scrollY > 0);
+      if (window.scrollY > 100 && window.scrollY < (document.documentElement.scrollHeight - window.innerHeight) - 100) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
     };
 
     window.addEventListener("scroll", handleScroll);

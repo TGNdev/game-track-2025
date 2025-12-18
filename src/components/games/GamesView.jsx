@@ -12,6 +12,7 @@ import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
 import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { getPaginationRange } from "../../js/utils";
 import FilterButton from "../shared/FilterButton";
+import { PLATFORMS } from "../../js/config";
 
 const GamesView = () => {
   const {
@@ -119,13 +120,10 @@ const GamesView = () => {
     new Set(games.flatMap(game => getPlatformArray(game.platforms)))
   ).sort();
 
-  const platformLabels = {
-    pc: "PC",
-    ps: "PlayStation",
-    xbox: "Xbox",
-    switch: "Switch",
-    switch_2: "Switch 2"
-  };
+  const platformLabels = Object.keys(PLATFORMS).reduce((acc, key) => {
+    acc[key.toLowerCase()] = PLATFORMS[key].label;
+    return acc;
+  }, {});
 
   const filtered = games
     .filter(game => {
