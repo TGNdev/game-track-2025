@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import HoverImageSlider from "./HoverImageSlider";
+import GameImageSlider from "./GameImageSlider";
 import { useGame } from "../../contexts/GameContext";
 import he from "he";
 import { highlightMatch } from "../../js/utils";
@@ -10,15 +10,11 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
   const tagRefs = useRef([]);
   const imgRef = useRef(null);
   const [tagLefts, setTagLefts] = useState([]);
-  const [hoverBounds, setHoverBounds] = useState(null);
-  const [isVisible, setIsVisible] = useState(false);
   const [coverLoaded, setCoverLoaded] = useState(false);
-  const unmountTimeoutRef = useRef(null);
-  const {
-    search,
-    isReleased,
-    hasWonAward,
-  } = useGame();
+  const [isSliderOpen, setIsSliderOpen] = useState(false);
+  const [imageBounds, setImageBounds] = useState(null);
+
+  const { search, isReleased, hasWonAward } = useGame();
 
   const tagsLabels = Object.fromEntries(
     Object.keys(TAGS).map((key) => [key, TAGS[key].label])
@@ -28,13 +24,19 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
     {
       key: "_release",
       label: isReleased(game.release_date) ? "Released" : "Coming soon",
-      color: isReleased(game.release_date) ? "bg-gradient-secondary" : "bg-gradient-tertiary",
+      color: isReleased(game.release_date)
+        ? "bg-gradient-secondary"
+        : "bg-gradient-tertiary",
     },
-    ...(hasWonAward(game.id) ? [{
-      key: "_award",
-      label: "Game Award Winner",
-      color: "bg-gradient-tertiary",
-    }] : []),
+    ...(hasWonAward(game.id)
+      ? [
+        {
+          key: "_award",
+          label: "Game Award Winner",
+          color: "bg-gradient-tertiary",
+        },
+      ]
+      : []),
     ...Object.keys(game.tags || {})
       .filter((tag) => game.tags[tag])
       .sort((a, b) => a.localeCompare(b))
@@ -48,28 +50,34 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
   useEffect(() => {
     const lefts = [];
     let currentLeft = 0;
-
     tagRefs.current.forEach((el) => {
       if (el) {
         lefts.push(currentLeft);
         currentLeft += el.offsetWidth + 10;
       }
     });
-
     setTagLefts(lefts);
   }, [game.tags, game.release_date]);
 
-  const handleMouseEnter = () => {
-    clearTimeout(unmountTimeoutRef.current);
-    const rect = imgRef.current.getBoundingClientRect();
-    setHoverBounds({ top: rect.top, left: rect.left });
-    requestAnimationFrame(() => setIsVisible(true));
+  const handleImageClick = (e) => {
+    e.stopPropagation();
+    const rect = imgRef.current?.getBoundingClientRect();
+    if (rect) {
+      setImageBounds({
+        top: rect.top,
+        left: rect.left,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+      });
+    }
+    setIsSliderOpen(true);
   };
 
   return (
     <td className="p-3 sticky left-0 bg-sticky-column z-20 w-80">
       <div className="relative flex items-center text-left gap-8 border-r-2">
-        {/* Tags */}
         <div className="absolute -top-1 left-0 z-30">
           {activeTags.map((tag, index) => (
             <div
@@ -86,16 +94,12 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
           ))}
         </div>
 
-        {/* Image + Hover logic */}
         <div
           ref={imgRef}
-          onMouseEnter={handleMouseEnter}
-          className="relative w-24 h-32 overflow-visible shrink-0"
+          onClick={handleImageClick}
+          className="relative w-24 h-32 overflow-visible shrink-0 cursor-pointer transform transition-transform duration-300 ease-out hover:scale-105 hover:brightness-110"
         >
-          {!coverLoaded && (
-            <CoverSkeleton />
-          )}
-
+          {!coverLoaded && <CoverSkeleton />}
           {coverImage && (
             <img
               src={coverImage}
@@ -107,23 +111,19 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
           )}
         </div>
 
-        <button
-          onClick={toggleDrawer}
-        >
+        <button onClick={toggleDrawer}>
           <div className="text-base text-left">
             {highlightMatch(he.decode(game.name), search)}
           </div>
         </button>
       </div>
 
-      {hoverBounds && screenshots && (
-        <HoverImageSlider
-          images={[...(screenshots || [])]}
-          bounds={hoverBounds}
-          isVisible={isVisible}
-          onClose={() => {
-            setIsVisible(false);
-          }}
+      {screenshots && (
+        <GameImageSlider
+          images={screenshots}
+          bounds={imageBounds}
+          isOpen={isSliderOpen}
+          onClose={() => setIsSliderOpen(false)}
         />
       )}
     </td>
