@@ -3,7 +3,7 @@ import GameCard from "./GameCard";
 import AddGameForm from "../modals/AddGameForm";
 import EditGameForm from "../modals/EditGameForm";
 import LoginForm from "../modals/LoginForm";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Timestamp } from "firebase/firestore";
 import { FaFilter } from "react-icons/fa";
 import { useGame } from "../../contexts/GameContext";
@@ -37,29 +37,33 @@ const GamesView = () => {
   const [withRelease, setWithRelease] = useState(true);
   const isFirstRender = useRef(true);
   const firstItemRef = useRef(null);
-  const [selectedPlatforms, setSelectedPlatforms] = useState(() => {
-    const saved = localStorage.getItem('gameFilters');
-    return saved ? JSON.parse(saved).selectedPlatforms || [] : [];
-  });
-  const [showOnlyUpcoming, setShowOnlyUpcoming] = useState(() => {
-    const saved = localStorage.getItem('gameFilters');
-    return saved ? JSON.parse(saved).showOnlyUpcoming ?? null : null
-  });
-  const [showThisYearOnly, setShowThisYearOnly] = useState(() => {
-    const saved = localStorage.getItem('gameFilters');
-    return saved ? JSON.parse(saved).showThisYearOnly ?? false : false;
-  });
-  const [filtersVisible, setFiltersVisible] = useState(() => {
-    const saved = localStorage.getItem('gameFilters');
-    if (saved) {
-      const {
-        selectedPlatforms = [],
-        showOnlyUpcoming = null,
-        showThisYearOnly = true,
-      } = JSON.parse(saved);
-      return (selectedPlatforms.length > 0 || showOnlyUpcoming !== null || showThisYearOnly);
+
+  const savedFilters = (() => {
+    try {
+      return JSON.parse(localStorage.getItem("gameFilters") || "null");
+    } catch {
+      return null;
     }
-    return false;
+  })();
+
+  const [selectedPlatforms, setSelectedPlatforms] = useState(
+    () => savedFilters?.selectedPlatforms || []
+  );
+  const [showOnlyUpcoming, setShowOnlyUpcoming] = useState(
+    () => savedFilters?.showOnlyUpcoming ?? null
+  );
+  const [showThisYearOnly, setShowThisYearOnly] = useState(
+    () => savedFilters?.showThisYearOnly || false
+  );
+  const [filtersVisible, setFiltersVisible] = useState(() => {
+    if (!savedFilters) return false;
+    const {
+      selectedPlatforms = [],
+      showOnlyUpcoming = null,
+      showThisYearOnly = false,
+    } = savedFilters;
+
+    return (selectedPlatforms.length > 0 || showOnlyUpcoming !== null || showThisYearOnly);
   });
   const [openRowId, setOpenRowId] = useState(null);
 
@@ -76,35 +80,6 @@ const GamesView = () => {
   useEffect(() => {
     setOpenRowId(null);
   }, [search, selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly]);
-
-
-  const quarterWeight = { Q1: 1, Q2: 2, Q3: 3, Q4: 4 };
-  const getSortValue = (release_date) => {
-    if (release_date instanceof Timestamp) {
-      return new Date(release_date.seconds * 1000).getTime();
-    }
-
-    if (typeof release_date === "string") {
-      const quarterMatch = release_date.match(/Q([1-4]) (\d{4})/);
-      const tbaMatch = release_date.match(/TBA (\d{4})/);
-
-      if (quarterMatch) {
-        const [, q, year] = quarterMatch;
-        return parseInt(year) * 100 + quarterWeight[`Q${q}`];
-      }
-
-      if (tbaMatch) {
-        const [, year] = tbaMatch;
-        return parseInt(year) * 100 + 99;
-      }
-
-      if (release_date === "TBA") {
-        return Infinity;
-      }
-    }
-
-    return Infinity;
-  };
 
   const getPlatformArray = (platformsObj) => {
     if (Array.isArray(platformsObj)) return platformsObj;
@@ -125,56 +100,91 @@ const GamesView = () => {
     return acc;
   }, {});
 
-  const filtered = games
-    .filter(game => {
-      if (withRelease) {
-        return game.release_date instanceof Timestamp;
-      } else {
-        return typeof game.release_date === "string";
+  const filtered = useMemo(() => {
+    const quarterWeight = { Q1: 1, Q2: 2, Q3: 3, Q4: 4 };
+
+    const getSortValue = (release_date) => {
+      if (release_date instanceof Timestamp) {
+        return new Date(release_date.seconds * 1000).getTime();
       }
-    })
-    .filter(game => {
-      // Search
-      const matchesSearch = game.name.toLowerCase().includes(search.toLowerCase()) ||
-        game.developers.some(dev => dev.name.toLowerCase().includes(search.toLowerCase())) ||
-        game.editors.some(editor => editor.name.toLowerCase().includes(search.toLowerCase()));
+      if (typeof release_date === "string") {
+        const quarterMatch = release_date.match(/Q([1-4]) (\d{4})/);
+        const tbaMatch = release_date.match(/TBA (\d{4})/);
 
-      // Platforms
-      const matchesPlatform = selectedPlatforms.length === 0 || selectedPlatforms.every(platform =>
-        getPlatformArray(game.platforms).includes(platform)
-      );
-
-      const isTimestamp = game.release_date instanceof Timestamp;
-      const now = new Date();
-      const currentYear = now.getFullYear();
-
-      let matchesReleaseStatus = true;
-      if (isTimestamp && showOnlyUpcoming !== null) {
-        const release = new Date(game.release_date.seconds * 1000);
-        matchesReleaseStatus = showOnlyUpcoming ? release >= now : release < now;
-      }
-
-      let matchesYear = true;
-      if (showThisYearOnly) {
-        if (isTimestamp) {
-          const release = new Date(game.release_date.seconds * 1000);
-          matchesYear = release.getFullYear() === currentYear;
-        } else if (typeof game.release_date === "string") {
-          const yearMatch = game.release_date.match(/\b(\d{4})\b/);
-          matchesYear = yearMatch ? parseInt(yearMatch[1]) === currentYear : false;
-        } else {
-          matchesYear = false;
+        if (quarterMatch) {
+          const [, q, year] = quarterMatch;
+          return parseInt(year) * 100 + quarterWeight[`Q${q}`];
         }
+        if (tbaMatch) {
+          const [, year] = tbaMatch;
+          return parseInt(year) * 100 + 99;
+        }
+        if (release_date === "TBA") return Infinity;
       }
+      return Infinity;
+    };
 
-      return matchesSearch && matchesPlatform && matchesReleaseStatus && matchesYear;
-    })
-    .sort((a, b) => {
-      const aSort = getSortValue(a.release_date);
-      const bSort = getSortValue(b.release_date);
-      if (aSort !== bSort) return aSort - bSort;
-      return a.name.localeCompare(b.name);
-    });
+    const getPlatformArray = (platformsObj) => {
+      if (Array.isArray(platformsObj)) return platformsObj;
+      if (typeof platformsObj === "object" && platformsObj !== null) {
+        return Object.entries(platformsObj)
+          .filter(([_, enabled]) => enabled)
+          .map(([key]) => key.toUpperCase());
+      }
+      return [];
+    };
+
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const q = search.toLowerCase();
+
+    return games
+      .filter((game) => {
+        if (withRelease) return game.release_date instanceof Timestamp;
+        return typeof game.release_date === "string";
+      })
+      .filter((game) => {
+        const matchesSearch =
+          game.name.toLowerCase().includes(q) ||
+          game.developers.some((dev) => dev.name.toLowerCase().includes(q)) ||
+          game.editors.some((editor) => editor.name.toLowerCase().includes(q));
+
+        const matchesPlatform =
+          selectedPlatforms.length === 0 ||
+          selectedPlatforms.every((platform) =>
+            getPlatformArray(game.platforms).includes(platform)
+          );
+
+        const isTimestamp = game.release_date instanceof Timestamp;
+
+        let matchesReleaseStatus = true;
+        if (isTimestamp && showOnlyUpcoming !== null) {
+          const release = new Date(game.release_date.seconds * 1000);
+          matchesReleaseStatus = showOnlyUpcoming ? release >= now : release < now;
+        }
+
+        let matchesYear = true;
+        if (showThisYearOnly) {
+          if (isTimestamp) {
+            const release = new Date(game.release_date.seconds * 1000);
+            matchesYear = release.getFullYear() === currentYear;
+          } else if (typeof game.release_date === "string") {
+            const yearMatch = game.release_date.match(/\b(\d{4})\b/);
+            matchesYear = yearMatch ? parseInt(yearMatch[1]) === currentYear : false;
+          } else {
+            matchesYear = false;
+          }
+        }
+
+        return matchesSearch && matchesPlatform && matchesReleaseStatus && matchesYear;
+      })
+      .sort((a, b) => {
+        const aSort = getSortValue(a.release_date);
+        const bSort = getSortValue(b.release_date);
+        if (aSort !== bSort) return aSort - bSort;
+        return a.name.localeCompare(b.name);
+      });
+  }, [games, search, selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly]);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -201,6 +211,10 @@ const GamesView = () => {
       window.scrollTo({ top, behavior: 'smooth', });
     }
   }, [currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly, setCurrentPage]);
 
   if (loadingGames) {
     return (
@@ -316,6 +330,7 @@ const GamesView = () => {
                   setSelectedPlatforms([]);
                   setShowOnlyUpcoming(null);
                   setShowThisYearOnly(false);
+                  setCurrentPage(1);
                   localStorage.removeItem('gameFilters');
                 }}
                 text="Reset filters"

@@ -1,5 +1,5 @@
 import { Timestamp } from "firebase/firestore";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import FeaturedGame from "./FeaturedGame";
 import { useGame } from "../../contexts/GameContext";
 
@@ -166,4 +166,4 @@ const FeaturedGames = ({ games }) => {
   )
 }
 
-export default FeaturedGames;
+export default memo(FeaturedGames);
