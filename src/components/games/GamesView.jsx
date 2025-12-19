@@ -36,7 +36,7 @@ const GamesView = () => {
     screenshotsMap,
     loadingGames,
     timesToBeat,
-  } = useGameData
+  } = useGameData();
   const [withRelease, setWithRelease] = useState(true);
   const isFirstRender = useRef(true);
   const firstItemRef = useRef(null);
