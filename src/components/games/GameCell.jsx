@@ -97,7 +97,7 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
         <div
           ref={imgRef}
           onClick={handleImageClick}
-          className="relative w-24 h-32 overflow-visible shrink-0 cursor-pointer transform transition-transform duration-300 ease-out hover:scale-105 hover:brightness-110"
+          className="relative w-24 aspect-[3/4] overflow-visible shrink-0 cursor-pointer transform transition-transform duration-300 ease-out hover:scale-105 hover:brightness-110"
         >
           {!coverLoaded && <CoverSkeleton />}
           {coverImage && (

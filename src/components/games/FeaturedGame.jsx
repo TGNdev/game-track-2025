@@ -12,16 +12,13 @@ const FeaturedGame = ({ featured, cover }) => {
 
   return (
     <div className="flex flex-row gap-3 rounded-lg border-primary">
-      <div className="relative h-full w-32" style={{ maxHeight: "180px" }}>
-        {!imgLoaded && (
-          <CoverSkeleton />
-        )}
+      <div className="relative w-32 aspect-[3/4] max-h-[180px]">
+        {!imgLoaded && <CoverSkeleton />}
         {cover && (
           <img
             src={cover}
             alt={featured.name}
-            className="h-full w-32 object-cover rounded transition-opacity duration-300"
-            style={{ maxHeight: "180px" }}
+            className="absolute inset-0 w-full h-full object-cover rounded transition-opacity duration-300"
             loading="lazy"
             onLoad={() => setImgLoaded(true)}
           />
