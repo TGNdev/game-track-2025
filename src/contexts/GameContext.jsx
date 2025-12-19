@@ -21,7 +21,7 @@ const GameContext = createContext(null);
 
 const AWARD_WINNERS_CACHE_KEY = "tgaAwardWinners";
 const AWARDS_PER_GAME_CACHE_KEY = "tgaAwardsPerGame";
-const TTL = 1000 * 60 * 60 * 24 * 10; // 10 days
+const TTL = 1000 * 60 * 60 * 24 * 3;
 const MOBILE_BREAKPOINT = 768;
 
 const hasWindow = typeof window !== "undefined";
