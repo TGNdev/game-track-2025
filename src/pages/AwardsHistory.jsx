@@ -7,8 +7,8 @@ import NomineesList from "../components/awards_history/NomineesList";
 import { useNavigate, useParams } from "react-router";
 import Breadcrumbs from "../components/awards_history/Breadcrumbs";
 import { slugify } from "../js/utils";
-import { useGame } from "../contexts/GameContext";
 import { getGameCovers } from "../js/igdb";
+import { useGameData } from "../contexts/GameDataContext";
 
 
 const AwardsHistory = () => {
@@ -20,7 +20,7 @@ const AwardsHistory = () => {
   const {
     coverMap, setCoverMap,
     games
-  } = useGame();
+  } = useGameData();
 
   const selectedYearObj = tga.find((y) => y.year === selectedYearNumber) || null;
   const awardSlug = awardId;

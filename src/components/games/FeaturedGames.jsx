@@ -1,7 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 import { useState, useEffect, memo } from "react";
 import FeaturedGame from "./FeaturedGame";
-import { useGame } from "../../contexts/GameContext";
+import { useGameData } from "../../contexts/GameDataContext";
 
 const FeaturedGames = ({ games }) => {
   const [showAll, setShowAll] = useState(false);
@@ -9,7 +9,7 @@ const FeaturedGames = ({ games }) => {
   const {
     coverMap,
     loadingGames
-  } = useGame();
+  } = useGameData();
 
   const formatReleaseDate = (releaseDate) => {
     if (releaseDate instanceof Timestamp) {

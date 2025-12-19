@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useGame } from "../../contexts/GameContext";
+import { useGameUI } from "../../contexts/GameUIContext";
 import { FiX } from "react-icons/fi";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 
@@ -7,7 +7,7 @@ const Search = () => {
   const {
     search, setSearch,
     openSearch, setOpenSearch
-  } = useGame();
+  } = useGameUI();
 
   return (
     <>

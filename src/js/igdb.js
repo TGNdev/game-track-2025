@@ -71,7 +71,7 @@ export const getGameScreenshots = async (gameIds) => {
         data.forEach((game) => {
             if (game.screenshots?.length > 0) {
                 const urls = game.screenshots.map(
-                    (s) => `https://images.igdb.com/igdb/image/upload/t_screenshot_big/${s.image_id}.jpg`
+                    (s) => `https://images.igdb.com/igdb/image/upload/t_1080p/${s.image_id}.jpg`
                 );
                 screenshotMap[game.id] = urls;
                 setCachedValue(game.id, "screenshots", urls);

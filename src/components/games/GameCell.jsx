@@ -1,10 +1,11 @@
 import { useRef, useEffect, useState } from "react";
 import GameImageSlider from "./GameImageSlider";
-import { useGame } from "../../contexts/GameContext";
+import { useGameUI } from "../../contexts/GameUIContext";
 import he from "he";
 import { highlightMatch } from "../../js/utils";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
 import { TAGS } from "../../js/config";
+import { useGameData } from "../../contexts/GameDataContext";
 
 function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
   const tagRefs = useRef([]);
@@ -14,7 +15,8 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [imageBounds, setImageBounds] = useState(null);
 
-  const { search, isReleased, hasWonAward } = useGame();
+  const { search, isReleased } = useGameUI();
+  const { hasWonAward } = useGameData();
 
   const tagsLabels = Object.fromEntries(
     Object.keys(TAGS).map((key) => [key, TAGS[key].label])

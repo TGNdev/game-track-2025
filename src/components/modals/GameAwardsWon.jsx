@@ -1,9 +1,9 @@
-import { useGame } from "../../contexts/GameContext";
+import { useGameData } from "../../contexts/GameDataContext";
 import Modal from "./Modal";
 import { Link } from "react-router-dom";
 
 const GameAwardsWon = ({ game, isOpen, onClose }) => {
-  const { awardsPerGame } = useGame();
+  const { awardsPerGame } = useGameData();
 
   if (!isOpen) return null;
 

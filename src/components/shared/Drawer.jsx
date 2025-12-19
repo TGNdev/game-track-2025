@@ -1,12 +1,12 @@
 import { FiX } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import { useGame } from "../../contexts/GameContext";
+import { useGameUI } from "../../contexts/GameUIContext";
 
 const Drawer = ({ open, setOpen }) => {
   const {
     logout,
     isLogged
-  } = useGame();
+  } = useGameUI();
 
   return (
     <>

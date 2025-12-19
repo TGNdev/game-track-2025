@@ -2,13 +2,14 @@ import { AiFillEdit } from "react-icons/ai";
 import { FaTrash } from "react-icons/fa";
 import { deleteGameFromFirestore } from "../../js/firebase";
 import GameCell from "./GameCell";
-import { useGame } from "../../contexts/GameContext";
 import he from "he";
 import { highlightMatch } from "../../js/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import TimesDisclaimer from "./TimesDisclaimer";
 import { FiInfo } from "react-icons/fi";
 import GameAwardsWon from "../modals/GameAwardsWon";
+import { useGameUI } from "../../contexts/GameUIContext";
+import { useGameData } from "../../contexts/GameDataContext";
 
 const getRatingStyle = (rating) => {
   const baseClasses = "size-5 px-5 py-4 rounded-xl text-white hover:cursor-default text-sm flex items-center justify-center";
@@ -26,12 +27,12 @@ const GameRow = ({ ref, game, coverImage, screenshots, times, isOpen, onToggle }
     edit,
     setGameToEdit,
     setIsModalOpen,
-    hasWonAward,
     showTimesDisclaimer,
     setShowTimesDisclaimer,
     setIsAwardsModalOpen,
     isAwardsModalOpen,
-  } = useGame();
+  } = useGameUI();
+  const { hasWonAward } = useGameData();
 
   const timeDescriptions = {
     completely: "Finish the game to 100% completion",

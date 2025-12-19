@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGame } from "../../contexts/GameContext";
+import { useGameUI } from "../../contexts/GameUIContext";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
 
 const FeaturedGame = ({ featured, cover }) => {
@@ -8,7 +8,7 @@ const FeaturedGame = ({ featured, cover }) => {
     setFeaturedOpen,
     setSearch,
     setOpenSearch,
-  } = useGame();
+  } = useGameUI();
 
   return (
     <div className="flex flex-row gap-3 rounded-lg border-primary">

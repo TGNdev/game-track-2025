@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import SuggestionDropdown from "./SuggestionDropdown";
 import isEqual from "lodash.isequal";
 import Modal from "./Modal";
-import { useGame } from "../../contexts/GameContext";
+import { useGameData } from "../../contexts/GameDataContext";
 import { PLATFORMS, TAGS } from "../../js/config";
 
 const platformOptions = Object.keys(PLATFORMS);
@@ -45,7 +45,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
   const navigate = useNavigate();
   const {
     setGames
-  } = useGame();
+  } = useGameData();
 
   useEffect(() => {
     const devSet = new Map();

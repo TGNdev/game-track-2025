@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import GamesView from "../components/games/GamesView"
-import { useGame } from "../contexts/GameContext";
 import Layout from "../components/shared/Layout";
 import { getGameCovers, getGameScreenshots, getGameTimeToBeat } from "../js/igdb";
+import { useGameData } from "../contexts/GameDataContext";
 
 const Home = () => {
   const {
@@ -11,7 +11,7 @@ const Home = () => {
     setCoverMap,
     setScreenshotsMap,
     setTimesToBeat,
-  } = useGame();
+  } = useGameData();
 
   useEffect(() => {
     const fetchCovers = async () => {

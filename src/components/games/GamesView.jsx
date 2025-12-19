@@ -6,17 +6,17 @@ import LoginForm from "../modals/LoginForm";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Timestamp } from "firebase/firestore";
 import { FaFilter } from "react-icons/fa";
-import { useGame } from "../../contexts/GameContext";
 import FeaturedGames from "./FeaturedGames";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
 import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
 import { getPaginationRange } from "../../js/utils";
 import FilterButton from "../shared/FilterButton";
 import { PLATFORMS } from "../../js/config";
+import { useGameData } from "../../contexts/GameDataContext";
+import { useGameUI } from "../../contexts/GameUIContext";
 
 const GamesView = () => {
   const {
-    games,
     search,
     isLogged,
     edit,
@@ -25,15 +25,18 @@ const GamesView = () => {
     setFeaturedOpen,
     gameToEdit,
     handleCloseModal,
-    coverMap,
-    screenshotsMap,
-    loadingGames,
     itemsPerPage,
     currentPage,
     setCurrentPage,
-    timesToBeat,
     isMobile,
-  } = useGame();
+  } = useGameUI();
+  const {
+    games,
+    coverMap,
+    screenshotsMap,
+    loadingGames,
+    timesToBeat,
+  } = useGameData
   const [withRelease, setWithRelease] = useState(true);
   const isFirstRender = useRef(true);
   const firstItemRef = useRef(null);

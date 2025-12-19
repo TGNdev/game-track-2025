@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import Layout from "../components/shared/Layout";
 import { getGamesFromFirestore } from "../js/firebase";
-import { useGame } from "../contexts/GameContext";
 import he from 'he';
 import { highlightMatch } from "../js/utils";
 import { getGameCovers } from "../js/igdb";
+import { useGameData } from "../contexts/GameDataContext";
+import { useGameUI } from "../contexts/GameUIContext";
 
 const Hof = () => {
   const [games, setGames] = useState([]);
-  const { coverMap, setCoverMap } = useGame();
-  const { search } = useGame();
+  const { coverMap, setCoverMap } = useGameData();
+  const { search } = useGameUI();
 
   useEffect(() => {
     const fetchGames = async () => {

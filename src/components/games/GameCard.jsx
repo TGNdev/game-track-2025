@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
 import { FaThumbsUp } from "react-icons/fa6";
-import { useGame } from "../../contexts/GameContext";
+import { useGameUI } from "../../contexts/GameUIContext";
 import he from "he";
 import { highlightMatch } from "../../js/utils";
 import { TAGS } from "../../js/config";
@@ -16,7 +16,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
     edit,
     setIsModalOpen,
     setGameToEdit
-  } = useGame();
+  } = useGameUI();
   const enabledTags = Object.keys(game.tags || {})
     .filter(t => game.tags && game.tags[t])
     .sort((a, b) => a.localeCompare(b));

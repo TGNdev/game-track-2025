@@ -1,5 +1,5 @@
 import { HashRouter } from "react-router-dom";
-import { GameProvider } from "./contexts/GameContext";
+import { GameProvider } from "./contexts/GameProvider";
 import AnimatedRoutes from "./routes/AnimatedRoutes";
 
 const App = () => {

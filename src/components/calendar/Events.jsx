@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { fetchMergedEvents } from '../../js/events';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import { useGame } from '../../contexts/GameContext';
+import { useGameUI } from '../../contexts/GameUIContext';
 import { highlightMatch } from '../../js/utils';
 
 const Events = () => {
@@ -12,7 +12,7 @@ const Events = () => {
   const initialWeekStartRef = useRef(null);
   const {
     search,
-  } = useGame();
+  } = useGameUI();
 
   useEffect(() => {
     fetchMergedEvents()

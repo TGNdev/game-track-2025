@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
-import { useGame } from "../../contexts/GameContext";
+import { useGameUI } from "../../contexts/GameUIContext";
 
 function GamePreviewModal({ game, bounds, isVisible, onClose }) {
   const [isFadingIn, setIsFadingIn] = useState(false);
@@ -10,7 +10,7 @@ function GamePreviewModal({ game, bounds, isVisible, onClose }) {
   const containerRef = useRef(null);
   const {
     getPlatformsSvg,
-  } = useGame();
+  } = useGameUI();
 
   const width = 240;
   const height = 320;

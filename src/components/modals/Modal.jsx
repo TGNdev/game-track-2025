@@ -1,12 +1,12 @@
 import { useEffect, useRef } from "react";
-import { useGame } from "../../contexts/GameContext";
+import { useGameUI } from "../../contexts/GameUIContext";
 import { FaPlus } from "react-icons/fa";
 
 const Modal = ({ title, children, onClose }) => {
   const {
     handleCloseModal,
     openButtonRef,
-  } = useGame();
+  } = useGameUI();
 
   const useOutsideClick = (callback, exceptions = []) => {
     const ref = useRef();

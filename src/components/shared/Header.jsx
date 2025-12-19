@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Search from "./Search";
-import { useGame } from "../../contexts/GameContext";
 import { FaPlus, FaSignOutAlt } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
 import { FiMenu } from "react-icons/fi";
+import { useGameUI } from "../../contexts/GameUIContext";
 
 const Header = ({ onDrawerOpen }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -32,7 +32,7 @@ const Header = ({ onDrawerOpen }) => {
     openButtonRef,
     setIsModalOpen,
     isMobile,
-  } = useGame();
+  } = useGameUI();
   const allowedSearchRoutes = ["/", "/leaks-rumours", "/hall-of-fame", "/game-track-2025"];
   const allowedContolsRoutes = ["/", "/game-track-2025"];
   const currentPath = window.location.hash
