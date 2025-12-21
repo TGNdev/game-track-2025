@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { deslugify, slugify } from "../../js/utils";
 import { FaArrowRight, FaChevronDown } from "react-icons/fa";
+import { useGameUI } from "../../contexts/GameUIContext";
 
 const Breadcrumbs = ({ tga = [] }) => {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ const Breadcrumbs = ({ tga = [] }) => {
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const yearsRef = useRef(null);
   const categoriesRef = useRef(null);
+  const { isMobile } = useGameUI();
 
   const handleYearChange = (selectedYear) => {
     setIsYearsOpen(false);
@@ -65,7 +67,7 @@ const Breadcrumbs = ({ tga = [] }) => {
           to="/game-awards-history"
           className="bg-gradient-primary rounded px-3 py-1 font-semibold hover:scale-105 transition"
         >
-          History Home
+          Years
         </Link>
       )}
 
@@ -118,7 +120,9 @@ const Breadcrumbs = ({ tga = [] }) => {
       {awardId && (
         <div className="relative flex flex-row items-center gap-1" ref={categoriesRef}>
           <div
-            className="bg-gradient-primary rounded px-3 py-1 font-semibold pointer-events-none"
+            className={`bg-gradient-primary rounded px-3 py-1 font-semibold ${isMobile ? "text-ellipsis overflow-hidden whitespace-nowrap max-w-32" : ""
+              }`}
+            title={deslugify(awardId)}
           >
             {deslugify(awardId)}
           </div>
@@ -130,15 +134,16 @@ const Breadcrumbs = ({ tga = [] }) => {
             <FaChevronDown className={`text-base transition-transform ${isCategoriesOpen ? "rotate-180" : ""}`} />
           </button>
           {isCategoriesOpen && (
-            <div className="absolute top-full left-0 mt-1 bg-background rounded-md shadow-lg z-50 max-h-60 overflow-y-auto min-w-full border border-gray-700">
+            <div className="absolute top-full left-0 mt-1 bg-background rounded-md shadow-lg z-50 max-h-60 overflow-y-auto min-w-full">
               {filteredAwards
                 .filter((award) => award.title !== deslugify(awardId))
                 .map((award) => (
                   <button
-                    key={award.id}
+                    key={award.title}
                     type="button"
                     onClick={() => handleCategoryChange(award.title)}
                     className="w-full text-left px-3 py-2 text-sm font-semibold hover:bg-gradient-primary transition duration-200"
+                    title={award.title}
                   >
                     {award.title}
                   </button>
