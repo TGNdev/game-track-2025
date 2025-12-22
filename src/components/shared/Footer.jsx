@@ -6,7 +6,7 @@ const Footer = () => {
   const year = new Date().getFullYear();
 
   return (
-    <footer role="contentinfo">
+    <footer role="contentinfo" className="mt-auto w-full">
       <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center md:justify-between gap-4 border-t">
         <div className="flex items-center space-x-3">
           <img src="logo.png" alt="Game Track Logo" className="size-8" />

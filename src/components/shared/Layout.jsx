@@ -7,7 +7,7 @@ const Layout = ({ children }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className="max-w-full">
+    <div className="min-h-screen flex flex-col">
       <Header onDrawerOpen={() => setDrawerOpen(true)} />
       <Drawer open={drawerOpen} setOpen={setDrawerOpen} />
       {children}
