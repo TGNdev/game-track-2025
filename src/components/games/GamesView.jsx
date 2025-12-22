@@ -343,144 +343,150 @@ const GamesView = () => {
         </div>
       </div>
 
-      {isMobile ? (
-        <div className="overflow-y-auto min-w-full pb-8">
-          <div className="flex flex-col gap-5">
-            {filtered
-              .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-              .map((game, index) => (
-                <GameCard
-                  key={game.id}
-                  ref={index === 0 ? firstItemRef : null}
-                  game={game}
-                  forceOpen={featuredOpen === game.id}
-                  setForceOpen={() => setFeaturedOpen(null)}
-                  coverImage={coverMap ? coverMap[game.igdb_id] : []}
-                />
-              ))}
-          </div>
-          <div className="flex justify-center items-center gap-3 mt-4 sm:hidden">
-            <button
-              className="px-3 py-1 bg-gradient-primary rounded disabled:opacity-50"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(1)}
-            >
-              <MdKeyboardDoubleArrowLeft />
-            </button>
-            <button
-              className="px-3 py-1 border rounded text-sm disabled:opacity-50"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
-            >
-              <FaChevronLeft />
-            </button>
-            <span className="text-sm">
-              {currentPage} / {Math.ceil(filtered.length / itemsPerPage)}
-            </span>
-            <button
-              className="px-3 py-1 border rounded text-sm disabled:opacity-50"
-              disabled={currentPage === Math.ceil(filtered.length / itemsPerPage)}
-              onClick={() => setCurrentPage(currentPage + 1)}
-            >
-              <FaChevronRight />
-            </button>
-            <button
-              className="px-3 py-1 bg-gradient-primary rounded text-sm flex disabled:opacity-50"
-              disabled={currentPage === Math.ceil(filtered.length / itemsPerPage)}
-              onClick={() => setCurrentPage(Math.ceil(filtered.length / itemsPerPage))}
-            >
-              <MdKeyboardDoubleArrowRight />
-            </button>
-          </div>
+      {filtered.length === 0 ? (
+        <div className="w-full flex justify-center items-center">
+          <p className="text-center italic">No games found with the current filters !</p>
         </div>
       ) : (
-        <>
-          <div className="flex-col max-w-full overflow-x-auto hidden sm:flex">
-            <div className="relative">
-              <table className="w-full border-collapse min-w-[1200px]">
-                <thead className="border-b">
-                  <tr>
-                    <th className="p-3 sticky left-0 bg-sticky-column z-10 flex flex-col items-center">
-                      <div>Name</div>
-                      <div className="text-xs opacity-50">Click to open details</div>
-                    </th>
-                    <th className="p-3">Release Date</th>
-                    <th className="p-3">Developers</th>
-                    <th className="p-3">Editors</th>
-                    <th className="p-3">Platforms</th>
-                    <th className="p-3 flex flex-col">
-                      <div>Ratings</div>
-                      <div className="flex flex-row gap-x-3 justify-center">
-                        <div className="text-xs opacity-50">Critics</div>
-                        <div className="text-xs opacity-50">Players</div>
-                      </div>
-                    </th>
-                    {edit && (
-                      <th className="p-3 sticky right-0 bg-sticky-column z-10">Edit actions</th>
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered
-                    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                    .map((game, index) => (
-                      <GameRow
-                        ref={index === 0 ? firstItemRef : null}
-                        key={game.id}
-                        game={game}
-                        coverImage={coverMap ? coverMap[game.igdb_id] : []}
-                        screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
-                        times={timesToBeat ? timesToBeat[game.igdb_id] : []}
-                        isOpen={openRowId === game.id}
-                        onToggle={() => setOpenRowId(prev => prev === game.id ? null : game.id)}
-                      />
-                    ))}
-                </tbody>
-              </table>
+        isMobile ? (
+          <div className="overflow-y-auto min-w-full pb-8">
+            <div className="flex flex-col gap-5">
+              {filtered
+                .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                .map((game, index) => (
+                  <GameCard
+                    key={game.id}
+                    ref={index === 0 ? firstItemRef : null}
+                    game={game}
+                    forceOpen={featuredOpen === game.id}
+                    setForceOpen={() => setFeaturedOpen(null)}
+                    coverImage={coverMap ? coverMap[game.igdb_id] : []}
+                  />
+                ))}
             </div>
-          </div>
-          {filtered.length > itemsPerPage && (
-            <div className="flex justify-center mt-6 gap-2 flex-wrap">
+            <div className="flex justify-center items-center gap-3 mt-4 sm:hidden">
               <button
                 className="px-3 py-1 bg-gradient-primary rounded disabled:opacity-50"
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
+                onClick={() => setCurrentPage(1)}
+              >
+                <MdKeyboardDoubleArrowLeft />
+              </button>
+              <button
+                className="px-3 py-1 border rounded text-sm disabled:opacity-50"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(currentPage - 1)}
               >
                 <FaChevronLeft />
               </button>
-
-              {getPaginationRange(filtered.length, itemsPerPage, currentPage).map((page, i) =>
-                page === '...' ? (
-                  <span key={i} className="px-3 py-1">
-                    ...
-                  </span>
-                ) : (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentPage(page)}
-                    className={`size-9 rounded ${currentPage === page ? 'bg-gradient-primary' : 'border-primary'
-                      }`}
-                    disabled={currentPage === page}
-                  >
-                    {page}
-                  </button>
-                )
-              )}
-
+              <span className="text-sm">
+                {currentPage} / {Math.ceil(filtered.length / itemsPerPage)}
+              </span>
               <button
-                className="px-3 py-1 bg-gradient-primary rounded disabled:opacity-50"
-                onClick={() =>
-                  setCurrentPage(prev =>
-                    Math.min(prev + 1, Math.ceil(filtered.length / itemsPerPage))
-                  )
-                }
+                className="px-3 py-1 border rounded text-sm disabled:opacity-50"
                 disabled={currentPage === Math.ceil(filtered.length / itemsPerPage)}
+                onClick={() => setCurrentPage(currentPage + 1)}
               >
                 <FaChevronRight />
               </button>
+              <button
+                className="px-3 py-1 bg-gradient-primary rounded text-sm flex disabled:opacity-50"
+                disabled={currentPage === Math.ceil(filtered.length / itemsPerPage)}
+                onClick={() => setCurrentPage(Math.ceil(filtered.length / itemsPerPage))}
+              >
+                <MdKeyboardDoubleArrowRight />
+              </button>
             </div>
-          )}
-        </>
+          </div>
+        ) : (
+          <>
+            <div className="flex-col max-w-full overflow-x-auto flex">
+              <div className="relative">
+                <table className="w-full border-collapse min-w-[1200px] border-b">
+                  <thead className="border-b">
+                    <tr>
+                      <th className="p-3 sticky left-0 bg-sticky-column z-10 flex flex-col items-center">
+                        <div>Name</div>
+                        <div className="text-xs opacity-50">Click to open details</div>
+                      </th>
+                      <th className="p-3">Release Date</th>
+                      <th className="p-3">Developers</th>
+                      <th className="p-3">Editors</th>
+                      <th className="p-3">Platforms</th>
+                      <th className="p-3 flex flex-col">
+                        <div>Ratings</div>
+                        <div className="flex flex-row gap-x-3 justify-center">
+                          <div className="text-xs opacity-50">Critics</div>
+                          <div className="text-xs opacity-50">Players</div>
+                        </div>
+                      </th>
+                      {edit && (
+                        <th className="p-3 sticky right-0 bg-sticky-column z-10">Edit actions</th>
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered
+                      .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                      .map((game, index) => (
+                        <GameRow
+                          ref={index === 0 ? firstItemRef : null}
+                          key={game.id}
+                          game={game}
+                          coverImage={coverMap ? coverMap[game.igdb_id] : []}
+                          screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
+                          times={timesToBeat ? timesToBeat[game.igdb_id] : []}
+                          isOpen={openRowId === game.id}
+                          onToggle={() => setOpenRowId(prev => prev === game.id ? null : game.id)}
+                        />
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {filtered.length > itemsPerPage && (
+              <div className="flex justify-center mt-6 gap-2 flex-wrap">
+                <button
+                  className="px-3 py-1 bg-gradient-primary rounded disabled:opacity-50"
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                >
+                  <FaChevronLeft />
+                </button>
+  
+                {getPaginationRange(filtered.length, itemsPerPage, currentPage).map((page, i) =>
+                  page === '...' ? (
+                    <span key={i} className="px-3 py-1">
+                      ...
+                    </span>
+                  ) : (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(page)}
+                      className={`size-9 rounded ${currentPage === page ? 'bg-gradient-primary' : 'border-primary'
+                        }`}
+                      disabled={currentPage === page}
+                    >
+                      {page}
+                    </button>
+                  )
+                )}
+  
+                <button
+                  className="px-3 py-1 bg-gradient-primary rounded disabled:opacity-50"
+                  onClick={() =>
+                    setCurrentPage(prev =>
+                      Math.min(prev + 1, Math.ceil(filtered.length / itemsPerPage))
+                    )
+                  }
+                  disabled={currentPage === Math.ceil(filtered.length / itemsPerPage)}
+                >
+                  <FaChevronRight />
+                </button>
+              </div>
+            )}
+          </>
+        )
       )}
 
       {isModalOpen && (
