@@ -34,7 +34,6 @@ const GamesView = () => {
     games,
     coverMap,
     screenshotsMap,
-    loadingGames,
     timesToBeat,
   } = useGameData();
   const [withRelease, setWithRelease] = useState(true);
@@ -218,22 +217,6 @@ const GamesView = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [search, selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly, setCurrentPage]);
-
-  if (loadingGames) {
-    return (
-      <>
-        <FeaturedGames games={games} />
-        <div className="w-full flex flex-col items-center mt-8">
-          {[...Array(1)].map((_, i) => (
-            <div
-              key={i}
-              className="w-full max-w-2xl h-20 bg-gray-200 animate-pulse rounded-lg mb-4"
-            />
-          ))}
-        </div>
-      </>
-    );
-  }
 
   return (
     <div className="px-6 w-full flex flex-col gap-6 pb-4">
