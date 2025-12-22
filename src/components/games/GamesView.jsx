@@ -385,7 +385,7 @@ const GamesView = () => {
           <>
             <div className="flex-col max-w-full overflow-x-auto flex">
               <div className="relative">
-                <table className="w-full border-collapse min-w-[1200px] border-b">
+                <table className="w-full border-collapse min-w-[1200px]">
                   <thead className="border-b">
                     <tr>
                       <th className="p-3 sticky left-0 bg-sticky-column z-10 flex flex-col items-center">
