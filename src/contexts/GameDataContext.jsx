@@ -9,12 +9,12 @@ import {
 } from "react";
 import { getTgaFromFirestore, getGamesFromFirestore } from "../js/firebase";
 import { slugify } from "../js/utils";
+import { TTL } from "../js/cache";
 
 const GameDataContext = createContext(null);
 
 const AWARD_WINNERS_CACHE_KEY = "tgaAwardWinners";
 const AWARDS_PER_GAME_CACHE_KEY = "tgaAwardsPerGame";
-const TTL = 1000 * 60 * 60 * 24 * 3;
 
 const hasWindow = typeof window !== "undefined";
 const safeLocalStorageGet = (key) => {

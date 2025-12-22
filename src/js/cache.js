@@ -1,4 +1,4 @@
-const TTL = 1000 * 60 * 60 * 24 * 3;
+export const TTL = 1000 * 60 * 60 * 24 * 3;
 
 export const getCachedValue = (id, field) => {
   const item = localStorage.getItem(id);
