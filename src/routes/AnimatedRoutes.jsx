@@ -1,43 +1,43 @@
 import React from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Home from "../pages/Home";
-// import RedditFeed from "../pages/RedditFeed";
 import PageFade from "../components/shared/PageFade";
-// import Hof from "../pages/Hof";
 import AwardsHistory from "../pages/AwardsHistory";
 import ReleaseCalendar from "../pages/ReleaseCalendar";
+import Welcome from "../pages/Welcome";
+
+function FirstRunGate({ children }) {
+  const hasSeen = localStorage.getItem("hasSeenWelcome") === "true";
+  if (!hasSeen) return <Navigate to="/welcome" replace />;
+  return children;
+}
 
 const AnimatedRoutes = () => {
   const location = useLocation();
+  const routeKey = `${location.pathname}${location.search}${location.hash}`;
 
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+      <Routes location={location} key={routeKey}>
+        <Route
+          path="/welcome"
+          element={
+            <PageFade>
+              <Welcome />
+            </PageFade>
+          }
+        />
         <Route
           path="/"
           element={
             <PageFade>
-              <Home />
+              <FirstRunGate>
+                <Home />
+              </FirstRunGate>
             </PageFade>
           }
         />
-        {/* <Route
-          path="/leaks-rumours"
-          element={
-            <PageFade>
-              <RedditFeed />
-            </PageFade>
-          }
-        /> */}
-        {/* <Route
-          path="/hall-of-fame"
-          element={
-            <PageFade>
-              <Hof />
-            </PageFade>
-          }
-        /> */}
         <Route
           path="/game-awards-history"
           element={
