@@ -6,10 +6,7 @@ import { useGameData } from "../../contexts/GameDataContext";
 const FeaturedGames = ({ games }) => {
   const [showAll, setShowAll] = useState(false);
   const [columns, setColumns] = useState(3);
-  const {
-    coverMap,
-    loadingGames
-  } = useGameData();
+  const { coverMap } = useGameData();
 
   const formatReleaseDate = (releaseDate) => {
     if (releaseDate instanceof Timestamp) {
@@ -94,22 +91,6 @@ const FeaturedGames = ({ games }) => {
 
   const firstRow = featuredGames.slice(0, columns);
   const otherRows = featuredGames.slice(columns);
-
-  if (loadingGames) {
-    return (
-      <div className="w-full border rounded-xl p-4">
-        <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between mb-4">
-          <div className="text-2xl font-semibold italic text-center sm:text-left bg-gray-200 rounded h-8 w-40 animate-pulse" />
-          <div className="sm:ml-auto bg-gray-200 rounded h-6 w-32 animate-pulse" />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-          {[...Array(columns)].map((_, i) => (
-            <div key={i} className="h-40 bg-gray-200 rounded-md animate-pulse" />
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full rounded-xl mt-6 shadow-lg">
