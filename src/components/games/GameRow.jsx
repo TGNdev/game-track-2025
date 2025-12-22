@@ -7,9 +7,7 @@ import { highlightMatch } from "../../js/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import TimesDisclaimer from "./TimesDisclaimer";
 import { FiInfo } from "react-icons/fi";
-import GameAwardsWon from "../modals/GameAwardsWon";
 import { useGameUI } from "../../contexts/GameUIContext";
-import { useGameData } from "../../contexts/GameDataContext";
 
 const getRatingStyle = (rating) => {
   const baseClasses = "size-5 px-5 py-4 rounded-xl text-white hover:cursor-default text-sm flex items-center justify-center";
@@ -28,11 +26,8 @@ const GameRow = ({ ref, game, coverImage, screenshots, times, isOpen, onToggle }
     setGameToEdit,
     setIsModalOpen,
     showTimesDisclaimer,
-    setShowTimesDisclaimer,
-    setIsAwardsModalOpen,
-    isAwardsModalOpen,
+    setShowTimesDisclaimer
   } = useGameUI();
-  const { hasWonAward } = useGameData();
 
   const timeDescriptions = {
     completely: "Finish the game to 100% completion",
@@ -213,32 +208,6 @@ const GameRow = ({ ref, game, coverImage, screenshots, times, isOpen, onToggle }
                   ) : (
                     <div>No estimation playtimes reported on IGDB yet.</div>
                   )}
-
-                  <div className="flex flex-col gap-3 w-1/2 items-end justify-center">
-                    {hasWonAward && hasWonAward(game.id) ? (
-                      <>
-                        <div className="text-xs sm:text-sm text-right opacity-80">
-                          This game has won at least one category at The Game Awards.
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setIsAwardsModalOpen(true)}
-                          className="bg-gradient-primary text-sm px-3 py-1.5 rounded-md"
-                        >
-                          View all awards
-                        </button>
-                        <GameAwardsWon
-                          game={game}
-                          isOpen={isAwardsModalOpen} // Pass modal visibility state
-                          onClose={() => setIsAwardsModalOpen(false)} // Pass close handler
-                        />
-                      </>
-                    ) : (
-                      <div className="text-xs text-right opacity-60">
-                        No Game Awards wins recorded yet.
-                      </div>
-                    )}
-                  </div>
                 </div>
               </motion.div>
             </td>
