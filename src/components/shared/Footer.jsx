@@ -6,7 +6,7 @@ const Footer = () => {
   const year = new Date().getFullYear();
 
   return (
-    <footer role="contentinfo" className="mt-auto w-full">
+    <footer role="contentinfo" className="w-full mt-10">
       <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center md:justify-between gap-4 border-t">
         <div className="flex items-center space-x-3">
           <img src="logo.png" alt="Game Track Logo" className="size-8" />
@@ -20,7 +20,7 @@ const Footer = () => {
         </nav>
       </div>
 
-      <div>
+      <div className="mb-2">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between text-xs">
           <span className="italic">Built with care and video games passion</span>
           <span className="md:hidden">© {year} Game Track</span>
