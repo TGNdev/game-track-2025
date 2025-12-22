@@ -1,16 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { useGameUI } from "../../contexts/GameUIContext";
+import { useGameData } from "../../contexts/GameDataContext";
 
 const Games = () => {
   const [currentMonthStart, setCurrentMonthStart] = useState(getMonthStart(new Date()));
   const [firstFutureMonthStart, setFirstFutureMonthStart] = useState(null);
   const [datedGames, setDatedGames] = useState([]);
   const initialMonthRef = useRef(null);
-  const {
-    games,
-    isMobile
-  } = useGameUI();
+  const { isMobile } = useGameUI();
+  const { games } = useGameData();
 
   useEffect(() => {
     const fetchGames = async () => {
