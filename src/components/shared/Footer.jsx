@@ -16,7 +16,7 @@ const Footer = () => {
         <nav aria-label="Footer" className="flex flex-wrap items-center gap-3 text-sm">
           <Link to="/" className="font-semibold text-white hover:text-primary transition">Home</Link>
           <Link to="/release-calendar" className="font-semibold text-white hover:text-primary transition">Calendars</Link>
-          <Link to="/awards-history" className="font-semibold text-white hover:text-primary transition">Awards History</Link>
+          <Link to="/game-awards-history" className="font-semibold text-white hover:text-primary transition">Awards History</Link>
         </nav>
       </div>
 
