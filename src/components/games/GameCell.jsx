@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import GameImageSlider from "./GameImageSlider";
 import { useGameUI } from "../../contexts/GameUIContext";
 import he from "he";
@@ -6,8 +7,10 @@ import { highlightMatch } from "../../js/utils";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
 import { TAGS } from "../../js/config";
 import { useGameData } from "../../contexts/GameDataContext";
+import { slugify } from "../../js/utils";
 
-function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
+function GameCell({ game, coverImage, screenshots }) {
+  const navigate = useNavigate();
   const tagRefs = useRef([]);
   const imgRef = useRef(null);
   const [tagLefts, setTagLefts] = useState([]);
@@ -77,6 +80,12 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
     setIsSliderOpen(true);
   };
 
+  const handleGameNavigate = (e) => {
+    e.stopPropagation();
+    var gameId = slugify(game.name);
+    navigate(`/games/${gameId}`);
+  }
+
   return (
     <td className="p-3 sticky left-0 bg-sticky-column z-20 w-80">
       <div className="relative flex items-center text-left gap-8 border-r-2">
@@ -113,7 +122,7 @@ function GameCell({ game, coverImage, screenshots, toggleDrawer }) {
           )}
         </div>
 
-        <button onClick={toggleDrawer}>
+        <button onClick={handleGameNavigate}>
           <div className="text-base text-left">
             {highlightMatch(he.decode(game.name), search)}
           </div>

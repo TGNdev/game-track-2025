@@ -34,7 +34,7 @@ const GamesView = () => {
     games,
     coverMap,
     screenshotsMap,
-    timesToBeat,
+    loadingGames
   } = useGameData();
   const [withRelease, setWithRelease] = useState(true);
   const isFirstRender = useRef(true);
@@ -67,7 +67,6 @@ const GamesView = () => {
 
     return (selectedPlatforms.length > 0 || showOnlyUpcoming !== null || showThisYearOnly);
   });
-  const [openRowId, setOpenRowId] = useState(null);
 
   useEffect(() => {
     const filters = {
@@ -78,10 +77,6 @@ const GamesView = () => {
     };
     localStorage.setItem('gameFilters', JSON.stringify(filters));
   }, [selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly]);
-
-  useEffect(() => {
-    setOpenRowId(null);
-  }, [search, selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly]);
 
   const getPlatformArray = (platformsObj) => {
     if (Array.isArray(platformsObj)) return platformsObj;
@@ -327,9 +322,82 @@ const GamesView = () => {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="w-full flex justify-center items-center">
-          <p className="text-center italic">No games found with the current filters !</p>
-        </div>
+        loadingGames ? (
+          isMobile ? (
+            <div className="overflow-y-auto min-w-full pb-8">
+              <div className="flex flex-col gap-5">
+                {Array.from({ length: Math.min(itemsPerPage, 5) }).map((_, i) => (
+                  <div key={i} className="rounded-md overflow-hidden transition-all duration-300 relative border-primary p-4">
+                    <div className="flex gap-4 items-start">
+                      <div className="w-32 aspect-[3/4] bg-background animate-pulse rounded" />
+                      <div className="flex-1 space-y-2 py-1">
+                        <div className="h-6 bg-background rounded animate-pulse w-3/4" />
+                        <div className="h-4 bg-background rounded animate-pulse w-1/2" />
+                        <div className="h-3 bg-background rounded animate-pulse w-1/3" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="flex-col max-w-full overflow-x-auto flex">
+              <div className="relative">
+                <table className="w-full border-collapse min-w-[1200px]">
+                  <thead className="border-b">
+                    <tr>
+                      <th className="p-3 sticky left-0 bg-sticky-column z-10 flex flex-col items-center">
+                        <div>Name</div>
+                        <div className="text-xs opacity-50">Click to open details</div>
+                      </th>
+                      <th className="p-3">Release Date</th>
+                      <th className="p-3">Developers</th>
+                      <th className="p-3">Editors</th>
+                      <th className="p-3">Platforms</th>
+                      <th className="p-3 flex flex-col">
+                        <div>Ratings</div>
+                        <div className="flex flex-row gap-x-3 justify-center">
+                          <div className="text-xs opacity-50">Critics</div>
+                          <div className="text-xs opacity-50">Players</div>
+                        </div>
+                      </th>
+                      {edit && (
+                        <th className="p-3 sticky right-0 bg-sticky-column z-10">Edit actions</th>
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.from({ length: itemsPerPage }).map((_, idx) => (
+                      <tr key={idx} className="animate-pulse">
+                        <td className="p-3 sticky left-0 bg-sticky-column z-20 w-80">
+                          <div className="flex items-center text-left gap-8 border-r-2">
+                            <div className="relative w-24 aspect-[3/4] overflow-visible shrink-0">
+                              <div className="w-full h-full bg-background rounded" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="h-6 bg-background rounded w-1/2 mb-2" />
+                              <div className="h-4 bg-background rounded w-1/3" />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-3"><div className="h-4 bg-background rounded w-24" /></td>
+                        <td className="p-3"><div className="h-4 bg-background rounded w-32" /></td>
+                        <td className="p-3"><div className="h-4 bg-background rounded w-28" /></td>
+                        <td className="p-3"><div className="h-4 bg-background rounded w-40" /></td>
+                        <td className="p-3"><div className="h-6 bg-background rounded w-20" /></td>
+                        {edit && <td className="p-3"><div className="h-6 bg-background rounded w-20" /></td>}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )
+        ) : (
+          <div className="w-full flex justify-center items-center">
+            <p className="text-center italic">No games found with the current filters !</p>
+          </div>
+        )
       ) : (
         isMobile ? (
           <div className="overflow-y-auto min-w-full pb-8">
@@ -347,7 +415,7 @@ const GamesView = () => {
                   />
                 ))}
             </div>
-            <div className="flex justify-center items-center gap-3 mt-4 sm:hidden">
+            <div className="flex justify-center items-center gap-3 mt-10">
               <button
                 className="px-3 py-1 bg-gradient-primary rounded disabled:opacity-50"
                 disabled={currentPage === 1}
@@ -418,9 +486,6 @@ const GamesView = () => {
                           game={game}
                           coverImage={coverMap ? coverMap[game.igdb_id] : []}
                           screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
-                          times={timesToBeat ? timesToBeat[game.igdb_id] : []}
-                          isOpen={openRowId === game.id}
-                          onToggle={() => setOpenRowId(prev => prev === game.id ? null : game.id)}
                         />
                       ))}
                   </tbody>
@@ -436,7 +501,7 @@ const GamesView = () => {
                 >
                   <FaChevronLeft />
                 </button>
-  
+
                 {getPaginationRange(filtered.length, itemsPerPage, currentPage).map((page, i) =>
                   page === '...' ? (
                     <span key={i} className="px-3 py-1">
@@ -454,7 +519,7 @@ const GamesView = () => {
                     </button>
                   )
                 )}
-  
+
                 <button
                   className="px-3 py-1 bg-gradient-primary rounded disabled:opacity-50"
                   onClick={() =>

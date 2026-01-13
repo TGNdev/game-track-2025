@@ -6,6 +6,7 @@ import PageFade from "../components/shared/PageFade";
 import AwardsHistory from "../pages/AwardsHistory";
 import ReleaseCalendar from "../pages/ReleaseCalendar";
 import Welcome from "../pages/Welcome";
+import GameDetails from "../pages/GameDetails";
 
 function FirstRunGate({ children }) {
   const hasSeen = localStorage.getItem("hasSeenWelcome") === "true";
@@ -35,6 +36,14 @@ const AnimatedRoutes = () => {
               <FirstRunGate>
                 <Home />
               </FirstRunGate>
+            </PageFade>
+          }
+        />
+        <Route
+          path="/games/:game"
+          element={
+            <PageFade>
+              <GameDetails />
             </PageFade>
           }
         />

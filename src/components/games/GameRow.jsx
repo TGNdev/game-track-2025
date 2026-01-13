@@ -4,9 +4,6 @@ import { deleteGameFromFirestore } from "../../js/firebase";
 import GameCell from "./GameCell";
 import he from "he";
 import { highlightMatch } from "../../js/utils";
-import { motion, AnimatePresence } from "framer-motion";
-import TimesDisclaimer from "./TimesDisclaimer";
-import { FiInfo } from "react-icons/fi";
 import { useGameUI } from "../../contexts/GameUIContext";
 
 const getRatingStyle = (rating) => {
@@ -18,15 +15,13 @@ const getRatingStyle = (rating) => {
   return `${baseClasses} bg-green-600`;
 };
 
-const GameRow = ({ ref, game, coverImage, screenshots, times, isOpen, onToggle }) => {
+const GameRow = ({ ref, game, coverImage, screenshots }) => {
   const {
     search,
     getPlatformsSvg,
     edit,
     setGameToEdit,
     setIsModalOpen,
-    showTimesDisclaimer,
-    setShowTimesDisclaimer
   } = useGameUI();
 
   const timeDescriptions = {
@@ -45,7 +40,6 @@ const GameRow = ({ ref, game, coverImage, screenshots, times, isOpen, onToggle }
           game={game}
           coverImage={coverImage}
           screenshots={screenshots}
-          toggleDrawer={onToggle}
         />
 
         <td className="p-3">
@@ -147,73 +141,6 @@ const GameRow = ({ ref, game, coverImage, screenshots, times, isOpen, onToggle }
           </td>
         )}
       </tr>
-      <AnimatePresence>
-        {isOpen && (
-          <tr>
-            <td colSpan={edit ? 7 : 6} className="bg-background">
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="overflow-hidden"
-              >
-                <div className="p-6 flex flex-row justify-between">
-                  {times ? (
-                    <div className="flex flex-col gap-3 w-1/2">
-
-                      {showTimesDisclaimer ? (
-                        <TimesDisclaimer onClose={() => setShowTimesDisclaimer(false)} />
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => setShowTimesDisclaimer(true)}
-                          className="self-start text-xs text-yellow-200 hover:text-yellow-100 underline"
-                        >
-                          Show estimated playtime disclaimer
-                        </button>
-                      )}
-                      <div className="flex gap-4 items-center flex-wrap">
-                        {Object.entries(times).map(([label, seconds]) => {
-                          const hours = (seconds / 3600).toFixed(1);
-                          const title = label.charAt(0).toUpperCase() + label.slice(1);
-                          const colors = {
-                            completely: "bg-gradient-primary",
-                            hastily: "bg-gradient-tertiary",
-                            normally: "bg-gradient-secondary"
-                          };
-
-                          return (
-                            <div
-                              key={label}
-                              className={`relative group rounded-xl shadow-md p-4 text-center w-28 ${colors[label] || "bg-gray-100 text-gray-800"}`}
-                            >
-                              {/* Info icon in top right */}
-                              <div className="absolute top-1 right-1">
-                                <FiInfo className="text-white/80 group-hover:text-white" size={14} />
-                              </div>
-
-                              <div className="text-sm font-semibold">{title}</div>
-                              <div className="text-xl font-bold">{hours}h</div>
-
-                              {/* Popover on hover */}
-                              <div className="absolute bottom-full mb-2 w-48 text-xs bg-white text-gray-800 border border-gray-200 rounded-md shadow-lg p-2 opacity-0 group-hover:opacity-100 pointer-events-none transition duration-200">
-                                {timeDescriptions[label]}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ) : (
-                    <div>No estimation playtimes reported on IGDB yet.</div>
-                  )}
-                </div>
-              </motion.div>
-            </td>
-          </tr>
-        )}
-      </AnimatePresence>
     </>
   );
 };
