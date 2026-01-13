@@ -104,23 +104,25 @@ const FeaturedGames = ({ games }) => {
               {firstRow.length > 0 && releaseMessage(firstRow[0].release_date)}
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+          <div className="flex flex-wrap gap-4 w-full">
             {firstRow.map(featured => (
-              <FeaturedGame
-                key={featured.id}
-                featured={featured}
-                cover={coverMap ? coverMap[featured.igdb_id] : []}
-              />
-            ))}
-          </div>
-          {showAll && (
-            <div className="w-full max-h-[400px] overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-4">
-              {otherRows.map(featured => (
+              <div key={featured.id} className="flex-1">
                 <FeaturedGame
-                  key={featured.id}
                   featured={featured}
                   cover={coverMap ? coverMap[featured.igdb_id] : []}
                 />
+              </div>
+            ))}
+          </div>
+          {showAll && (
+            <div className="w-full max-h-[400px] overflow-y-auto flex flex-wrap gap-4 my-4">
+              {otherRows.map(featured => (
+                <div key={featured.id} className="flex-1">
+                  <FeaturedGame
+                    featured={featured}
+                    cover={coverMap ? coverMap[featured.igdb_id] : []}
+                  />
+                </div>
               ))}
             </div>
           )}
