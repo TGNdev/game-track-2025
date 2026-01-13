@@ -7,7 +7,6 @@ import { useGameUI } from "../contexts/GameUIContext";
 import { slugify } from "../js/utils";
 import { getGameCovers, getGameScreenshots, getGameTimeToBeat } from "../js/igdb";
 import CoverSkeleton from "../components/skeletons/CoverSkeleton";
-import EventLogoSkeleton from "../components/skeletons/EventLogoSkeleton";
 import he from "he";
 
 const getRatingStyle = (rating) => {
@@ -44,7 +43,7 @@ export default function GameDetails() {
     setTimesToBeat
   } = useGameData();
 
-  const { getPlatformsSvg, isMobile } = useGameUI();
+  const { getPlatformsSvg } = useGameUI();
 
   const game = useMemo(() => {
     return games.find(g => slugify(g.name) === gameSlug);

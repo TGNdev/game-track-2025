@@ -24,12 +24,6 @@ const GameRow = ({ ref, game, coverImage, screenshots }) => {
     setIsModalOpen,
   } = useGameUI();
 
-  const timeDescriptions = {
-    completely: "Finish the game to 100% completion",
-    hastily: "Finish the game to its credits without spending notable time on extras such as side quests",
-    normally: "Finish the game while mixing in some extras such as side quests without being overly thorough"
-  };
-
   return (
     <>
       <tr

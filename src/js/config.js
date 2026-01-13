@@ -27,3 +27,9 @@ export const TAGS = {
   remaster: { label: "Remaster" },
   port: { label: "Port / Re-release" },
 };
+
+export const TIME_DESCRIPTIONS = {
+  completely: "Finish the game to 100% completion",
+  hastily: "Finish the game to its credits without spending notable time on extras such as side quests",
+  normally: "Finish the game while mixing in some extras such as side quests without being overly thorough"
+};
