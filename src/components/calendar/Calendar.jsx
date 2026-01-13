@@ -3,11 +3,15 @@ import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import { useGameUI } from "../../contexts/GameUIContext";
 import { useGameData } from "../../contexts/GameDataContext";
 import { fetchMergedEvents } from "../../js/events";
+import Modal from "../modals/Modal";
+import EventLogoSkeleton from "../skeletons/EventLogoSkeleton";
 
 const Calendar = ({ mode = "games" }) => {
   const [currentMonthStart, setCurrentMonthStart] = useState(getMonthStart(new Date()));
   const [firstFutureMonthStart, setFirstFutureMonthStart] = useState(null);
   const [items, setItems] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [loadedImage, setLoadedImage] = useState(false);
   const initialMonthRef = useRef(null);
   const { isMobile } = useGameUI();
   const { games } = useGameData();
@@ -211,7 +215,14 @@ const Calendar = ({ mode = "games" }) => {
                   {dayItems.map((item, idx) => (
                     <div
                       key={item.id || idx}
-                      className="font-bold text-left w-full"
+                      className="font-bold text-left w-full cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (mode === "events") {
+                          setSelectedItem(item);
+                          setLoadedImage(false);
+                        }
+                      }}
                     >
                       <li
                         className="bg-gradient-primary rounded px-1 py-0.5"
@@ -259,7 +270,14 @@ const Calendar = ({ mode = "games" }) => {
                           {dayItems.map((item, idx) => (
                             <div
                               key={item.id || idx}
-                              className="font-bold text-left w-full"
+                              className="font-bold text-left w-full cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (mode === "events") {
+                                  setSelectedItem(item);
+                                  setLoadedImage(false);
+                                }
+                              }}
                             >
                               <li
                                 className="bg-gradient-primary rounded px-1 py-0.5 text-ellipsis overflow-hidden whitespace-pre-line"
@@ -278,6 +296,79 @@ const Calendar = ({ mode = "games" }) => {
             </tbody>
           </table>
         </>
+      )}
+
+      {selectedItem && (
+        <Modal
+          title={selectedItem.title}
+          onClose={() => {
+            setSelectedItem(null);
+            setLoadedImage(false);
+          }}
+        >
+          <div className="flex flex-col gap-4">
+            {selectedItem.logo && (
+              <div className="w-full h-[334px] overflow-hidden flex justify-center mb-2 relative bg-background rounded-md border-primary">
+                {selectedItem.streamUrl ? (
+                  <iframe
+                    src={selectedItem.streamUrl.replace("watch?v=", "embed/")}
+                    className="w-full h-full rounded-md"
+                    title={selectedItem.title}
+                    allowFullScreen
+                  />
+                ) : (
+                  <>
+                    {!loadedImage && <EventLogoSkeleton />}
+                    <img
+                      src={selectedItem.logo}
+                      alt={selectedItem.title}
+                      className={`w-full h-full object-cover rounded-sm transition-opacity duration-300 ${loadedImage ? "opacity-100" : "opacity-0 absolute"
+                        }`}
+                      onLoad={() => setLoadedImage(true)}
+                      loading="lazy"
+                    />
+                  </>
+                )}
+              </div>
+            )}
+            {selectedItem.description && (
+              <div>
+                <h3 className="text-sm font-bold uppercase tracking-wider mb-1">Description</h3>
+                <p className="text-sm whitespace-pre-line">{selectedItem.description}</p>
+              </div>
+            )}
+            <div className="grid grid-cols-2 gap-4 mt-2">
+              <div>
+                <h3 className="text-sm font-bold uppercase tracking-wider mb-1">Starts</h3>
+                <p className="text-sm">
+                  {selectedItem.jsDate.toLocaleString("en-US", {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                  })}
+                </p>
+              </div>
+              {selectedItem.end && (
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider mb-1">Ends</h3>
+                  <p className="text-sm">
+                    {new Date(selectedItem.end).toLocaleString("en-US", {
+                      weekday: "long",
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit"
+                    })}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </Modal>
       )}
     </div>
   );

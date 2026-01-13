@@ -147,3 +147,28 @@ export const getRedditPosts = async (limit) => {
 
     return data;
 }
+
+export const getIGDBEvents = async () => {
+    const cached = getCachedValue("igdb_events", "all");
+    if (cached) return cached;
+
+    const query = `fields name, description, event_logo.image_id, live_stream_url, start_time, end_time; limit 500; sort start_time desc;`;
+
+    const res = await fetch("/api/igdb", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            query,
+            destination: "igdb",
+            endpoint: "events",
+        }),
+    });
+
+    if (!res.ok) {
+        return [];
+    }
+
+    const data = await res.json();
+    setCachedValue("igdb_events", "all", data);
+    return data;
+};

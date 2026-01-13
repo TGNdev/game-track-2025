@@ -1,58 +1,18 @@
-import ICAL from 'ical.js';
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "./firebase";
-
-export async function fetchICalEvents() {
-  const webcalUrl = process.env.REACT_APP_EVENTS_CALENDAR;
-  const httpsUrl = webcalUrl.replace(/^webcal:\/\//, 'https://');
-  const res = await fetch(httpsUrl);
-  const icalText = await res.text();
-
-  const jcalData = ICAL.parse(icalText);
-  const comp = new ICAL.Component(jcalData);
-  const vevents = comp.getAllSubcomponents('vevent');
-  const events = vevents.map(event => {
-    const e = new ICAL.Event(event);
-    const start = e.startDate.toJSDate();
-    const end = e.endDate?.toJSDate();
-
-    return {
-      title: e.summary,
-      description: e.description,
-      start,
-      end,
-      duration: e.duration,
-      allDay: e.startDate.isDate,
-      source: 'ical'
-    };
-  });
-
-  return events.sort((a, b) => a.start - b.start);
-}
-
-export async function fetchFirestoreEvents() {
-  const snapshot = await getDocs(collection(db, "events"));
-  return snapshot.docs.map(doc => {
-    const data = doc.data();
-
-    return {
-      id: doc.id,
-      title: data.title,
-      description: data.description,
-      start: data.start.toDate ? data.start.toDate() : new Date(data.start),
-      end: data.end?.toDate ? data.end.toDate() : (data.end ? new Date(data.end) : null),
-      duration: data.duration,
-      allDay: data.allDay || false,
-      source: 'custom'
-    };
-  });
-}
+import { getIGDBEvents } from "./igdb";
 
 export async function fetchMergedEvents() {
-  const [icalEvents, firestoreEvents] = await Promise.all([
-    fetchICalEvents(),
-    fetchFirestoreEvents()
-  ]);
+  const igdbEvents = await getIGDBEvents();
 
-  return [...icalEvents, ...firestoreEvents].sort((a, b) => a.start - b.start);
+  const events = igdbEvents.map(event => ({
+    id: event.id,
+    title: event.name,
+    description: event.description,
+    streamUrl: event.live_stream_url,
+    logo: event.event_logo ? `https://images.igdb.com/igdb/image/upload/t_720p/${event.event_logo.image_id}.png` : null,
+    start: event.start_time ? new Date(event.start_time * 1000) : null,
+    end: event.end_time ? new Date(event.end_time * 1000) : null,
+    source: 'igdb'
+  })).filter(e => e.start);
+
+  return events.sort((a, b) => a.start - b.start);
 }
