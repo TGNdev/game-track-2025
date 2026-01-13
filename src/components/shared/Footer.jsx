@@ -6,8 +6,8 @@ const Footer = () => {
   const year = new Date().getFullYear();
 
   return (
-    <footer role="contentinfo" className="w-full mt-10">
-      <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center md:justify-between gap-4 border-t">
+    <footer role="contentinfo" className="w-full mt-10 border-t">
+      <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center md:justify-between gap-4">
         <div className="flex items-center space-x-3">
           <img src="logo.png" alt="Game Track Logo" className="size-8" />
           <span className="text-sm hidden md:inline">© {year} Game Track. All rights reserved.</span>
