@@ -51,7 +51,10 @@ export default function GameDetails() {
 
   const gameAwards = awardsPerGame[game?.id] || [];
   const gameTimeToBeat = timesToBeat[game?.igdb_id];
-  const gameScreenshots = screenshotsMap[game?.igdb_id] || [];
+  const gameScreenshots = useMemo(() => screenshotsMap[game?.igdb_id] || [], [screenshotsMap, game?.igdb_id]);
+  const displayedScreenshots = showAllScreenshots
+    ? gameScreenshots.slice(1)
+    : gameScreenshots.slice(1, 5);
   const gameCover = coverMap[game?.igdb_id];
 
   useEffect(() => {
@@ -61,7 +64,6 @@ export default function GameDetails() {
     }
   }, [game]);
 
-  // Background transition logic
   useEffect(() => {
     if (gameScreenshots.length > 1) {
       const interval = setInterval(() => {
@@ -123,10 +125,6 @@ export default function GameDetails() {
       </Layout>
     );
   }
-
-  const displayedScreenshots = showAllScreenshots
-    ? gameScreenshots.slice(1)
-    : gameScreenshots.slice(1, 5);
 
   return (
     <Layout>
