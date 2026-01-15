@@ -98,7 +98,7 @@ function GameCell({ game, coverImage, screenshots }) {
 
   return (
     <td className="p-3 sticky left-0 bg-sticky-column z-20 w-80">
-      <div className="relative flex items-center text-left gap-8 border-r-2">
+      <div className="relative flex items-center text-left gap-3 border-r">
         <div className="absolute -top-1 left-0 z-30">
           {activeTags.map((tag, index) => (
             <div
@@ -133,7 +133,7 @@ function GameCell({ game, coverImage, screenshots }) {
         </div>
 
         <button onClick={handleGameNavigate}>
-          <div className="text-base text-left">
+          <div className="text-base text-left px-2">
             {highlightMatch(he.decode(game.name), search)}
           </div>
         </button>
