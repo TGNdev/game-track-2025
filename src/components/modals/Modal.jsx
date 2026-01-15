@@ -35,14 +35,14 @@ const Modal = ({ title, children, onClose }) => {
   const modalRef = useOutsideClick(onClose || handleCloseModal, [openButtonRef]);
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div className="fixed inset-0 backdrop-blur-sm z-[100] flex items-center justify-center">
       <div
         ref={modalRef}
-        className="bg-background border-primary rounded-lg w-full max-w-2xl relative max-h-[75%] overflow-auto transition"
+        className="bg-background border-primary rounded-lg w-full max-w-2xl relative max-h-[75%] overflow-auto transition shadow-2xl"
       >
         <button
           onClick={onClose || handleCloseModal}
-          className="absolute top-4 right-4 text-lg rotate-45"
+          className="absolute top-4 right-4 text-lg rotate-45 hover:text-primary transition"
         >
           <FaPlus />
         </button>
