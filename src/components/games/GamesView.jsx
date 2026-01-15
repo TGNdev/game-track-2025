@@ -1,6 +1,7 @@
 import GameRow from "./GameRow";
 import GameCard from "./GameCard";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Timestamp } from "firebase/firestore";
 import { FaFilter } from "react-icons/fa";
 import FeaturedGames from "./FeaturedGames";
@@ -212,7 +213,7 @@ const GamesView = () => {
       <FeaturedGames games={games} />
 
       <div className="w-full flex justify-center">
-        <div className="border-primary rounded-xl">
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-1 shadow-2xl relative overflow-hidden">
           <div className="flex flex-row gap-4 items-center justify-center p-2 rounded-md">
             <button
               className={`${withRelease && "bg-gradient-primary"} disabled:scale-100 w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base`}
@@ -232,89 +233,103 @@ const GamesView = () => {
         </div>
       </div>
 
-      <div className="w-full flex flex-col items-end">
-        {/* Toggle Button */}
-        <div className="flex justify-center">
-          <button
-            className="flex items-center text-sm gap-2 px-3 py-1.5 bg-gradient-primary text-white rounded-md hover:bg-gradient-primary transition"
-            onClick={() => setFiltersVisible(prev => !prev)}
-          >
-            <FaFilter />
-            {filtersVisible ? "Hide Filters" : "Show Filters"}
-          </button>
-        </div>
-        {/* Filters */}
-        <div
-          className={`overflow-hidden transition-all duration-500 ease-in-out w-full ${filtersVisible ? "max-h-[1000px] opacity-100 py-4" : "max-h-0 opacity-0"
-            }`}
+      <div className="w-full flex flex-col items-center">
+        <button
+          className="flex items-center text-sm gap-2 px-2 py-1.5 bg-gradient-primary rounded-md hover:scale-105 transition-transform shadow-lg z-10"
+          onClick={() => setFiltersVisible(prev => !prev)}
         >
-          <div className="flex flex-col gap-4 items-center md:flex-row md:items-center md:justify-center md:flex-wrap w-full">
-            <div className="flex justify-center gap-1 md:justify-start">
-              <FilterButton
-                isVisible={filtersVisible}
-                filterCondition={showThisYearOnly}
-                onClick={() => setShowThisYearOnly(prev => !prev)}
-                text="This year"
-              />
-            </div>
-            {/* Platform Filter */}
-            <div className="flex flex-wrap justify-center gap-1 md:justify-start">
-              {allPlatforms.map(platform => (
-                <FilterButton
-                  key={platform}
-                  isVisible={filtersVisible}
-                  filterCondition={selectedPlatforms.includes(platform)}
-                  onClick={() => {
-                    setSelectedPlatforms(prev =>
-                      prev.includes(platform)
-                        ? prev.filter(p => p !== platform)
-                        : [...prev, platform]
-                    );
-                  }}
-                  text={platformLabels[platform.toLowerCase()] || platform}
-                />
-              ))}
-            </div>
-            {/* Release Status Filter */}
-            <div className="flex flex-wrap justify-center gap-1 md:justify-start">
-              <FilterButton
-                isVisible={filtersVisible}
-                filterCondition={showOnlyUpcoming === true}
-                onClick={() => setShowOnlyUpcoming(true)}
-                text="Upcoming only"
-              />
-              <FilterButton
-                isVisible={filtersVisible}
-                filterCondition={showOnlyUpcoming === false}
-                onClick={() => setShowOnlyUpcoming(false)}
-                text="Already released"
-              />
-              <FilterButton
-                isVisible={filtersVisible}
-                filterCondition={showOnlyUpcoming === null}
-                onClick={() => setShowOnlyUpcoming(null)}
-                text="All"
-              />
-            </div>
-            {/* Reset */}
-            <div className="flex justify-center gap-1 md:justify-start">
-              <FilterButton
-                isVisible={filtersVisible}
-                extraClasses="rounded-md bg-gradient-primary"
-                onClick={() => {
-                  setSelectedPlatforms([]);
-                  setShowOnlyUpcoming(null);
-                  setShowThisYearOnly(false);
-                  setCurrentPage(1);
-                  localStorage.removeItem('gameFilters');
-                }}
-                text="Reset filters"
-              />
-            </div>
-          </div>
-        </div>
+          <FaFilter />
+          {filtersVisible ? "Hide Filters" : "Show Filters"}
+        </button>
+        <AnimatePresence>
+          {filtersVisible && (
+            <motion.div
+              initial={{ height: 0, opacity: 0, marginTop: 0 }}
+              animate={{ height: "auto", opacity: 1, marginTop: 16 }}
+              exit={{ height: 0, opacity: 0, marginTop: 0 }}
+              transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
+              className="overflow-hidden w-full"
+            >
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
+                <div className="flex flex-col gap-8 items-center">
+                  {withRelease && (
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-xs font-bold uppercase tracking-wider opacity-50">Release Year</span>
+                      <div className="flex justify-center gap-2">
+                        <FilterButton
+                          isVisible={filtersVisible}
+                          filterCondition={showThisYearOnly}
+                          onClick={() => setShowThisYearOnly(prev => !prev)}
+                          text="This year"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-xs font-bold uppercase tracking-wider opacity-50">Platforms</span>
+                    <div className="flex flex-wrap justify-center gap-2">
+                      {allPlatforms.map(platform => (
+                        <FilterButton
+                          key={platform}
+                          isVisible={filtersVisible}
+                          filterCondition={selectedPlatforms.includes(platform)}
+                          onClick={() => {
+                            setSelectedPlatforms(prev =>
+                              prev.includes(platform)
+                                ? prev.filter(p => p !== platform)
+                                : [...prev, platform]
+                            );
+                          }}
+                          text={platformLabels[platform.toLowerCase()] || platform}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  {withRelease && (
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-xs font-bold uppercase tracking-wider opacity-50">Release Status</span>
+                      <div className="flex flex-wrap justify-center gap-2">
+                        <FilterButton
+                          isVisible={filtersVisible}
+                          filterCondition={showOnlyUpcoming === true}
+                          onClick={() => setShowOnlyUpcoming(true)}
+                          text="Upcoming only"
+                        />
+                        <FilterButton
+                          isVisible={filtersVisible}
+                          filterCondition={showOnlyUpcoming === false}
+                          onClick={() => setShowOnlyUpcoming(false)}
+                          text="Already released"
+                        />
+                        <FilterButton
+                          isVisible={filtersVisible}
+                          filterCondition={showOnlyUpcoming === null}
+                          onClick={() => setShowOnlyUpcoming(null)}
+                          text="All"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  <div className="pt-4 border-t border-white/10 w-full flex justify-center">
+                    <button
+                      onClick={() => {
+                        setSelectedPlatforms([]);
+                        setShowOnlyUpcoming(null);
+                        setShowThisYearOnly(false);
+                        setCurrentPage(1);
+                        localStorage.removeItem('gameFilters');
+                      }}
+                      className="text-sm font-semibold transition px-2 py-1.5 bg-gradient-red rounded-md"
+                    >
+                      Reset all filters
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-
       {filtered.length === 0 ? (
         loadingGames ? (
           isMobile ? (
