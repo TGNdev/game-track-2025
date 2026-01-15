@@ -1,54 +1,69 @@
 import { useState } from "react";
-import { signIn } from "../../js/firebase";
+import { signIn, register } from "../../js/firebase";
 import { toast } from "react-toastify";
 import Modal from "./Modal";
 
-const LoginForm = ({ onSuccess, onClose }) => {
+const LoginForm = ({ onSuccess }) => {
+  const [isRegistering, setIsRegistering] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = async (e) => {
+  const handleAuth = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
-      await signIn(email, password);
-      toast.success("Admin is gaming !");
+      if (isRegistering) {
+        await register(email, password);
+        toast.success("Welcome to GameTrack !");
+      } else {
+        const { user } = await signIn(email, password);
+        toast.success(`Welcome back ${user.displayName || email.split("@")[0]} !`);
+      }
       onSuccess();
     } catch (error) {
-      setError("You are NOT an admin.");
+      setError("Invalid credentials.");
     }
   };
 
   return (
-    <Modal title={"Login"}>
-      <form onSubmit={handleLogin} className="flex flex-col gap-4 mt-6">
-        <div className="w-full flex flex-row gap-3 justify-between">
+    <Modal title={isRegistering ? "Register" : "Login"}>
+      <form onSubmit={handleAuth} className="flex flex-col gap-4 mt-6">
+        <div className="flex flex-col gap-3">
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter admin email"
+            placeholder="Email address"
             className="border px-3 py-2 rounded w-full bg-background"
+            required
           />
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter admin password"
+            placeholder="Password"
             className="border px-3 py-2 rounded w-full bg-background"
+            required
           />
         </div>
-        {error && <div className="text-red-500 text-sm">{error}</div>}
-        <div className="flex justify-between items-center">
+        {error && <div className="text-sm bg-gradient-error py-1 px-2 rounded">{error}</div>}
+        <div className="flex flex-col gap-3">
           <button
             type="submit"
-            className="bg-gradient-primary py-1.5 px-3 rounded"
+            className="bg-gradient-primary py-2 px-4 rounded font-medium"
           >
-            I am an admin
+            {isRegistering ? "Sign Up" : "Log In"}
           </button>
-          <button onClick={onClose} type="button" className="text-sm text-gray-500 hover:underline">
-            Cancel
+          <button
+            type="button"
+            onClick={() => setIsRegistering(!isRegistering)}
+            className="text-sm text-gray-400 hover:text-white transition-colors"
+          >
+            {isRegistering
+              ? "Already have an account? Log In"
+              : "Don't have an account? Sign Up"}
           </button>
         </div>
       </form>
