@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Search from "./Search";
-import { FaPlus, FaSignOutAlt } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
 import { FiMenu } from "react-icons/fi";
 import { useGameUI } from "../../contexts/GameUIContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Header = ({ onDrawerOpen }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -16,38 +17,32 @@ const Header = ({ onDrawerOpen }) => {
     };
 
     window.addEventListener("scroll", handleScroll);
-    // Check initial scroll position
     handleScroll();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
   const {
     opened, setOpened,
     setFeaturedOpen,
     isLogged,
-    logout,
     edit, setEdit,
     openButtonRef,
     setIsModalOpen,
     isMobile,
   } = useGameUI();
+  const { userData } = useAuth();
+
   const allowedSearchRoutes = ["/", "/leaks-rumours", "/hall-of-fame", "/game-track-2025"];
   const allowedContolsRoutes = ["/", "/game-track-2025"];
   const currentPath = window.location.hash
     ? window.location.hash.replace(/^#/, "")
     : window.location.pathname;
-  let canSearch = true;
-  let viewControls = false;
 
-  if (!allowedSearchRoutes.includes(currentPath)) {
-    canSearch = false;
-  }
-
-  if (allowedContolsRoutes.includes(currentPath)) {
-    viewControls = true;
-  }
+  let canSearch = allowedSearchRoutes.includes(currentPath);
+  let viewControls = allowedContolsRoutes.includes(currentPath);
 
   return (
     <div className={`sticky top-0 z-30 isolation-isolate flex flex-col items-start justify-between w-full gap-6 py-4 px-6 transition-all duration-300 ${isScrolled ? "backdrop-blur-md shadow-md" : ""}`}>
@@ -86,9 +81,9 @@ const Header = ({ onDrawerOpen }) => {
               </button>
             )}
           </div>
-          {isLogged ? (
+          {isLogged && (
             <div className="flex flex-row items-center gap-2">
-              {!edit && (
+              {userData?.isAdmin && !edit && (
                 <button
                   ref={openButtonRef}
                   className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-secondary rounded-md"
@@ -98,43 +93,28 @@ const Header = ({ onDrawerOpen }) => {
                   <div className="hidden sm:block">Add new game</div>
                 </button>
               )}
-              <button
-                className={`${edit && "animate-pulse"} size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-tertiary rounded-md`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEdit(prev => !prev)
-                  if (!opened && !edit) {
-                    setOpened(true);
-                  }
-                }}
-              >
-                {edit ? (
-                  <FaPlus className="rotate-45 block sm:hidden" />
-                ) : (
-                  <AiFillEdit className="block sm:hidden" />
-                )}
-                <div className="hidden sm:block">
-                  {edit ? "Quit Edit Mode" : "Edit games"}
-                </div>
-              </button>
-              {isLogged && (
+              {userData?.isAdmin && (
                 <button
-                  onClick={logout}
-                  className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-primary rounded-md"
+                  className={`${edit && "animate-pulse"} size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-tertiary rounded-md`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEdit(prev => !prev)
+                    if (!opened && !edit) {
+                      setOpened(true);
+                    }
+                  }}
                 >
-                  <FaSignOutAlt className="block sm:hidden" />
-                  <div className="hidden sm:block">Logout</div>
+                  {edit ? (
+                    <FaPlus className="rotate-45 block sm:hidden" />
+                  ) : (
+                    <AiFillEdit className="block sm:hidden" />
+                  )}
+                  <div className="hidden sm:block">
+                    {edit ? "Quit Edit Mode" : "Edit games"}
+                  </div>
                 </button>
               )}
             </div>
-          ) : (
-            <button
-              ref={openButtonRef}
-              className="text-sm sm:w-fit sm:py-2 px-2.5 sm:flex flex-row items-center bg-gradient-primary rounded-md"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <div className="">I am an admin</div>
-            </button>
           )}
         </div>
       )}
