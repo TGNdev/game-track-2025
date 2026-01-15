@@ -42,11 +42,11 @@ const Modal = ({ title, children, onClose }) => {
       >
         <button
           onClick={onClose || handleCloseModal}
-          className="absolute top-4 right-4 text-lg rotate-45 hover:text-primary transition"
+          className="absolute top-4 right-4 text-lg rotate-45 hover:scale-105 transition"
         >
           <FaPlus />
         </button>
-        <div className="sm:px-8 py-5">
+        <div className="px-8 py-5">
           <h2 className="text-2xl font-bold mb-4">{title}</h2>
           {children}
         </div>
