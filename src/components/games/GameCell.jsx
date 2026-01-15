@@ -1,6 +1,5 @@
 import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import GameImageSlider from "./GameImageSlider";
 import { useGameUI } from "../../contexts/GameUIContext";
 import he from "he";
 import { highlightMatch } from "../../js/utils";
@@ -15,9 +14,6 @@ function GameCell({ game, coverImage, screenshots }) {
   const imgRef = useRef(null);
   const [tagLefts, setTagLefts] = useState([]);
   const [coverLoaded, setCoverLoaded] = useState(false);
-  const [isSliderOpen, setIsSliderOpen] = useState(false);
-  const [imageBounds, setImageBounds] = useState(null);
-
   const { search, isReleased, isComingSoon } = useGameUI();
   const { hasWonAward } = useGameData();
 
@@ -74,22 +70,6 @@ function GameCell({ game, coverImage, screenshots }) {
     setTagLefts(lefts);
   }, [game.tags, game.release_date]);
 
-  const handleImageClick = (e) => {
-    e.stopPropagation();
-    const rect = imgRef.current?.getBoundingClientRect();
-    if (rect) {
-      setImageBounds({
-        top: rect.top,
-        left: rect.left,
-        right: rect.right,
-        bottom: rect.bottom,
-        width: rect.width,
-        height: rect.height,
-      });
-    }
-    setIsSliderOpen(true);
-  };
-
   const handleGameNavigate = (e) => {
     e.stopPropagation();
     var gameId = slugify(game.name);
@@ -117,8 +97,7 @@ function GameCell({ game, coverImage, screenshots }) {
 
         <div
           ref={imgRef}
-          onClick={handleImageClick}
-          className="relative w-24 aspect-[3/4] overflow-visible shrink-0 cursor-pointer transform transition-transform duration-300 ease-out hover:scale-105"
+          className="relative w-24 aspect-[3/4] overflow-visible shrink-0"
         >
           {!coverLoaded && <CoverSkeleton />}
           {coverImage && (
@@ -138,15 +117,6 @@ function GameCell({ game, coverImage, screenshots }) {
           </div>
         </button>
       </div>
-
-      {screenshots && (
-        <GameImageSlider
-          images={screenshots}
-          bounds={imageBounds}
-          isOpen={isSliderOpen}
-          onClose={() => setIsSliderOpen(false)}
-        />
-      )}
     </td>
   );
 }
