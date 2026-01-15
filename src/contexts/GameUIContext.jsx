@@ -8,8 +8,9 @@ import {
   useState,
 } from "react";
 import { auth } from "../js/firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { toast } from "react-toastify";
+import { useAuth } from "./AuthContext";
 import { ReactComponent as XboxIcon } from "../assets/icons/xbox.svg";
 import { ReactComponent as PsIcon } from "../assets/icons/ps.svg";
 import { ReactComponent as PcIcon } from "../assets/icons/pc.svg";
@@ -40,6 +41,7 @@ export const GameUIProvider = ({ children }) => {
   const [viewGames, setViewGames] = useState(true);
   const [search, setSearch] = useState("");
   const [opened, setOpened] = useState(false);
+  const { currentUser, userData, loading: authLoading } = useAuth();
   const [isLogged, setIsLogged] = useState(false);
   const [edit, setEdit] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,11 +70,8 @@ export const GameUIProvider = ({ children }) => {
   const openButtonRef = useRef(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsLogged(!!user);
-    });
-    return () => unsubscribe();
-  }, []);
+    setIsLogged(!!currentUser);
+  }, [currentUser]);
 
   useEffect(() => {
     if (!hasWindow) return;
@@ -94,7 +93,7 @@ export const GameUIProvider = ({ children }) => {
       await signOut(auth);
       setIsModalOpen(false);
       setEdit(false);
-      toast.success("Admin... Going dark.");
+      toast.success("See you later !");
     } catch (e) {
       console.error("Error logging out: ", e);
       throw e;
@@ -131,6 +130,18 @@ export const GameUIProvider = ({ children }) => {
     return releaseDate < today;
   }, []);
 
+  const isComingSoon = useCallback((date) => {
+    const now = new Date();
+    const releaseDate = new Date(date.seconds * 1000);
+
+    if (releaseDate <= now) return false;
+
+    const threeMonthsLater = new Date();
+    threeMonthsLater.setMonth(now.getMonth() + 3);
+
+    return releaseDate <= threeMonthsLater;
+  }, []);
+
   const value = useMemo(
     () => ({
       viewGames,
@@ -164,10 +175,13 @@ export const GameUIProvider = ({ children }) => {
       setIsAwardsModalOpen,
       isMobile,
       setIsMobile,
+      currentUser,
+      userData,
       logout,
       handleCloseModal,
       getPlatformsSvg,
       isReleased,
+      isComingSoon,
     }),
     [
       viewGames,
@@ -176,6 +190,7 @@ export const GameUIProvider = ({ children }) => {
       isLogged,
       edit,
       isModalOpen,
+      setIsModalOpen,
       featuredOpen,
       gameToEdit,
       gameToSee,
@@ -185,10 +200,13 @@ export const GameUIProvider = ({ children }) => {
       showTimesDisclaimer,
       isAwardsModalOpen,
       isMobile,
+      currentUser,
+      userData,
       logout,
       handleCloseModal,
       getPlatformsSvg,
       isReleased,
+      isComingSoon,
     ]
   );
 
