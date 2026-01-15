@@ -41,7 +41,7 @@ export const GameUIProvider = ({ children }) => {
   const [viewGames, setViewGames] = useState(true);
   const [search, setSearch] = useState("");
   const [opened, setOpened] = useState(false);
-  const { currentUser, userData, loading: authLoading } = useAuth();
+  const { currentUser, userData } = useAuth();
   const [isLogged, setIsLogged] = useState(false);
   const [edit, setEdit] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -15,13 +15,10 @@ import { useGameUI } from "../../contexts/GameUIContext";
 const GamesView = () => {
   const {
     search,
-    isLogged,
     edit,
     isModalOpen,
     featuredOpen,
     setFeaturedOpen,
-    gameToEdit,
-    handleCloseModal,
     itemsPerPage,
     currentPage,
     setCurrentPage,

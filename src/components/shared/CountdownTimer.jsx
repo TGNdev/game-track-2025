@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { intervalToDuration, isPast } from "date-fns";
+import { isPast } from "date-fns";
 
 const CountdownTimer = ({ targetDate }) => {
   const [timeLeft, setTimeLeft] = useState(null);
