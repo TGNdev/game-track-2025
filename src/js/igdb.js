@@ -26,15 +26,19 @@ export const getGameCovers = async (gameIds) => {
             }),
         });
 
+        if (!res.ok) return coverMap;
+
         const data = await res.json();
 
-        data.forEach((game) => {
-            if (game.cover) {
-                const url = `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`;
-                coverMap[game.id] = url;
-                setCachedValue(game.id, "cover", url);
-            }
-        });
+        if (Array.isArray(data)) {
+            data.forEach((game) => {
+                if (game.cover) {
+                    const url = `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`;
+                    coverMap[game.id] = url;
+                    setCachedValue(game.id, "cover", url);
+                }
+            });
+        }
     }
 
     return coverMap;
@@ -66,17 +70,21 @@ export const getGameScreenshots = async (gameIds) => {
             }),
         });
 
+        if (!res.ok) return screenshotMap;
+
         const data = await res.json();
 
-        data.forEach((game) => {
-            if (game.screenshots?.length > 0) {
-                const urls = game.screenshots.map(
-                    (s) => `https://images.igdb.com/igdb/image/upload/t_1080p/${s.image_id}.jpg`
-                );
-                screenshotMap[game.id] = urls;
-                setCachedValue(game.id, "screenshots", urls);
-            }
-        });
+        if (Array.isArray(data)) {
+            data.forEach((game) => {
+                if (game.screenshots?.length > 0) {
+                    const urls = game.screenshots.map(
+                        (s) => `https://images.igdb.com/igdb/image/upload/t_1080p/${s.image_id}.jpg`
+                    );
+                    screenshotMap[game.id] = urls;
+                    setCachedValue(game.id, "screenshots", urls);
+                }
+            });
+        }
     }
 
     return screenshotMap;
@@ -108,25 +116,29 @@ export const getGameTimeToBeat = async (gameIds) => {
             }),
         });
 
+        if (!res.ok) return timeToBeatMap;
+
         const data = await res.json();
 
-        data.forEach((entry) => {
-            if (
-                entry &&
-                (entry.completely !== undefined ||
-                    entry.hastily !== undefined ||
-                    entry.normally !== undefined)
-            ) {
-                const timeToBeat = {
-                    completely: entry.completely,
-                    hastily: entry.hastily,
-                    normally: entry.normally,
-                };
+        if (Array.isArray(data)) {
+            data.forEach((entry) => {
+                if (
+                    entry &&
+                    (entry.completely !== undefined ||
+                        entry.hastily !== undefined ||
+                        entry.normally !== undefined)
+                ) {
+                    const timeToBeat = {
+                        completely: entry.completely,
+                        hastily: entry.hastily,
+                        normally: entry.normally,
+                    };
 
-                timeToBeatMap[entry.game_id] = timeToBeat;
-                setCachedValue(entry.game_id, "time_to_beat", timeToBeat);
-            }
-        });
+                    timeToBeatMap[entry.game_id] = timeToBeat;
+                    setCachedValue(entry.game_id, "time_to_beat", timeToBeat);
+                }
+            });
+        }
     }
 
     return timeToBeatMap;
