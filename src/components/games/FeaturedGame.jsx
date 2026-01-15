@@ -11,14 +11,14 @@ const FeaturedGame = ({ featured, cover }) => {
   } = useGameUI();
 
   return (
-    <div className="flex flex-row gap-3 rounded-lg border-primary">
+    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 shadow-2xl relative overflow-hidden flex flex-row gap-3">
       <div className="relative w-32 aspect-[3/4] max-h-[180px]">
         {!imgLoaded && <CoverSkeleton />}
         {cover && (
           <img
             src={cover}
             alt={featured.name}
-            className="absolute inset-0 w-full h-full object-cover rounded transition-opacity duration-300"
+            className="absolute inset-0 w-full h-full object-cover rounded-lg transition-opacity duration-300"
             loading="lazy"
             onLoad={() => setImgLoaded(true)}
           />

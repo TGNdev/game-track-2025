@@ -94,18 +94,28 @@ const FeaturedGames = ({ games }) => {
 
   return (
     <div className="w-full rounded-xl mt-6 shadow-lg">
-      <div className="border-primary rounded-lg">
-        <div className="p-4">
-          <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-between mb-4">
-            <div className="text-2xl font-bold text-primary text-center sm:text-left">
-              {featuredGames.length > 1 ? "Next Releases" : "Next Release"}
-            </div>
-            <div className="sm:ml-auto font-semibold">
-              {firstRow.length > 0 && releaseMessage(firstRow[0].release_date)}
-            </div>
+      <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between mb-4">
+          <div className="text-2xl font-bold text-center sm:text-left">
+            {featuredGames.length > 1 ? "Next Releases" : "Next Release"}
           </div>
-          <div className="flex flex-wrap gap-4 w-full">
-            {firstRow.map(featured => (
+          <div className="sm:ml-auto font-semibold">
+            {firstRow.length > 0 && releaseMessage(firstRow[0].release_date)}
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-4 w-full">
+          {firstRow.map(featured => (
+            <div key={featured.id} className="flex-1">
+              <FeaturedGame
+                featured={featured}
+                cover={coverMap ? coverMap[featured.igdb_id] : []}
+              />
+            </div>
+          ))}
+        </div>
+        {showAll && (
+          <div className="w-full max-h-[400px] overflow-y-auto flex flex-wrap gap-4 my-4">
+            {otherRows.map(featured => (
               <div key={featured.id} className="flex-1">
                 <FeaturedGame
                   featured={featured}
@@ -114,36 +124,22 @@ const FeaturedGames = ({ games }) => {
               </div>
             ))}
           </div>
-          {showAll && (
-            <div className="w-full max-h-[400px] overflow-y-auto flex flex-wrap gap-4 my-4">
-              {otherRows.map(featured => (
-                <div key={featured.id} className="flex-1">
-                  <FeaturedGame
-                    featured={featured}
-                    cover={coverMap ? coverMap[featured.igdb_id] : []}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-          {otherRows.length > 0 && (
-            <div className="flex justify-center mt-4">
-              <div className="border-primary rounded-md">
-                <button
-                  onClick={() => setShowAll(!showAll)}
-                  className="px-3 py-1.5"
-                >
-                  {showAll
-                    ? "Show Less"
-                    : otherRows.length === 1
-                      ? "Show 1 more game"
-                      : `Show ${otherRows.length} more games`
-                  }
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+        )}
+        {otherRows.length > 0 && (
+          <div className="flex justify-center mt-6">
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className="px-2 py-1.5 bg-gradient-primary rounded-md"
+            >
+              {showAll
+                ? "Show Less"
+                : otherRows.length === 1
+                  ? "Show 1 more game"
+                  : `Show ${otherRows.length} more games`
+              }
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
