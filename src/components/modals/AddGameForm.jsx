@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import SuggestionDropdown from "./SuggestionDropdown";
 import Modal from "./Modal";
 import { PLATFORMS, TAGS } from "../../js/config";
+import { FaTrash } from "react-icons/fa";
 
 const platformOptions = Object.keys(PLATFORMS);
 const platformLabels = Object.fromEntries(
@@ -161,7 +162,6 @@ const AddGameForm = ({ games, onSuccess }) => {
   return (
     <Modal title={"Add a new game"}>
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* General Info */}
         <div className="flex flex-col gap-4">
           <div className="flex flex-col">
             <label className="block text-sm mb-2 font-semibold">Name</label>
@@ -174,7 +174,6 @@ const AddGameForm = ({ games, onSuccess }) => {
             />
             {errors.name && <span className="text-red-500 text-sm">{errors.name}</span>}
           </div>
-
           <div className="flex flex-col">
             <label className="block text-sm mb-2 font-semibold">Link</label>
             <input
@@ -186,7 +185,6 @@ const AddGameForm = ({ games, onSuccess }) => {
             />
             {errors.link && <span className="text-red-500 text-sm">{errors.link}</span>}
           </div>
-
           <div className="flex flex-col">
             <label className="block text-sm mb-2 font-semibold">Release date</label>
             <div className="flex flex-row justify-between gap-4">
@@ -194,16 +192,16 @@ const AddGameForm = ({ games, onSuccess }) => {
                 type={`${releaseTba ? "text" : "date"}`}
                 placeholder={`${releaseTba && "'TBA 2026' or 'Q4 2025'"}`}
                 name="releaseDate"
-                className="px-4 py-2 rounded border w-full bg-background"
+                className="px-4 py-2 rounded border bg-background w-full"
                 value={form.releaseDate}
                 onChange={handleChange}
               />
               <button
                 type="button"
-                className="px-3 py-1.5 min-w-fit bg-gradient-primary rounded-md"
+                className="px-3 py-1.5 min-w-fit bg-gradient-primary rounded-md text-sm"
                 onClick={() => setReleaseTba(prev => !prev)}
               >
-                TBA
+                {releaseTba ? "Date" : "TBA"}
               </button>
             </div>
             {errors.releaseDate && <span className="text-red-500 text-sm">{errors.releaseDate}</span>}
@@ -226,8 +224,6 @@ const AddGameForm = ({ games, onSuccess }) => {
             {errors.tags && <span className="text-red-500 text-sm">{errors.tags}</span>}
           </div>
         </div>
-
-        {/* Developers */}
         <div>
           <label className="block text-sm mb-2 font-semibold">Developers</label>
           {form.developers.map((dev, i) => (
@@ -235,7 +231,7 @@ const AddGameForm = ({ games, onSuccess }) => {
               <div className="relative w-full">
                 <input
                   placeholder="Name"
-                  className="px-3 py-1 rounded border w-full bg-background"
+                  className="px-4 py-2 rounded border w-full bg-background"
                   value={dev.name}
                   onFocus={() => {
                     if (!dev.name) setSuggestionTarget({ type: "developers", index: i, field: "name" });
@@ -256,37 +252,35 @@ const AddGameForm = ({ games, onSuccess }) => {
                     />
                   )}
               </div>
-
               <input
                 placeholder="Link"
-                className="px-3 py-1 rounded border w-full bg-background"
+                className="px-4 py-2 rounded border w-full bg-background"
                 value={dev.link}
                 onChange={(e) => updateEntry("developers", i, "link", e.target.value)}
               />
-
               <button
                 type="button"
-                className="text-sm"
+                className="text-sm bg-gradient-red rounded-md p-2"
                 onClick={(e) => {
                   e.stopPropagation();
                   removeEntry("developers", i)
                 }}
-              >Remove</button>
+              >
+                <FaTrash className="size-4" />
+              </button>
             </div>
           ))}
           <div className="flex flex-col gap-2 items-start">
             <button
               type="button"
               onClick={() => addEntry("developers")}
-              className="text-sm underline"
+              className="text-sm bg-gradient-primary rounded-md px-2 py-1.5"
             >
-              + Add Developer
+              Add one more
             </button>
             {errors.developers && <span className="text-red-500 text-sm">{errors.developers}</span>}
           </div>
         </div>
-
-        {/* Editors */}
         <div>
           <label className="block text-sm mb-2 font-semibold">Editors</label>
           {form.editors.map((ed, i) => (
@@ -294,7 +288,7 @@ const AddGameForm = ({ games, onSuccess }) => {
               <div className="relative w-full">
                 <input
                   placeholder="Name"
-                  className="px-3 py-1 rounded border w-full bg-background"
+                  className="px-4 py-2 rounded border w-full bg-background"
                   value={ed.name}
                   onFocus={() => {
                     if (!ed.name) setSuggestionTarget({ type: "editors", index: i, field: "name" });
@@ -317,33 +311,33 @@ const AddGameForm = ({ games, onSuccess }) => {
               </div>
               <input
                 placeholder="Link"
-                className="px-3 py-1 rounded border w-full bg-background"
+                className="px-4 py-2 rounded border w-full bg-background"
                 value={ed.link}
                 onChange={(e) => updateEntry("editors", i, "link", e.target.value)}
               />
               <button
                 type="button"
-                className="text-sm"
+                className="text-sm bg-gradient-red rounded-md p-2"
                 onClick={(e) => {
                   e.stopPropagation();
                   removeEntry("editors", i)
                 }}
-              >Remove</button>
+              >
+                <FaTrash className="size-4" />
+              </button>
             </div>
           ))}
           <div className="flex flex-col gap-2 items-start">
             <button
               type="button"
               onClick={() => addEntry("editors")}
-              className="text-sm underline"
+              className="text-sm bg-gradient-primary rounded-md px-2 py-1.5"
             >
-              + Add Editor
+              Add one more
             </button>
             {errors.editors && <span className="text-red-500 text-sm">{errors.editors}</span>}
           </div>
         </div>
-
-        {/* Platforms */}
         <div>
           <label className="block text-sm mb-2 font-semibold">Platforms</label>
           <div className="flex flex-wrap gap-2">
@@ -361,8 +355,6 @@ const AddGameForm = ({ games, onSuccess }) => {
           </div>
           {errors.platforms && <span className="text-red-500 text-sm">{errors.platforms}</span>}
         </div>
-
-        {/* Ratings */}
         <div>
           <label className="block text-sm mb-2 font-semibold">Ratings</label>
           <div className="grid grid-cols-2 gap-4">
@@ -407,7 +399,6 @@ const AddGameForm = ({ games, onSuccess }) => {
             </div>
           </div>
         </div>
-
         <div className="flex flex-col">
           <label className="block text-sm mb-2 font-semibold">IGDB game ID</label>
           <input
@@ -419,7 +410,6 @@ const AddGameForm = ({ games, onSuccess }) => {
           />
           {errors.igdb_id && <span className="text-red-500 text-sm">{errors.igdb_id}</span>}
         </div>
-
         <div className="flex flex-row gap-3">
           <button
             type="submit"
