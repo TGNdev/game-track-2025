@@ -7,6 +7,7 @@ const LoginForm = ({ onSuccess }) => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [error, setError] = useState("");
 
   const handleAuth = async (e) => {
@@ -15,15 +16,23 @@ const LoginForm = ({ onSuccess }) => {
 
     try {
       if (isRegistering) {
-        await register(email, password);
+        if (!username) {
+          setError("Username is required.");
+          return;
+        }
+        await register(email, password, username);
         toast.success("Welcome to GameTrack !");
       } else {
-        const { user } = await signIn(email, password);
-        toast.success(`Welcome back ${user.displayName || email.split("@")[0]} !`);
+        await signIn(email, password);
+        toast.success(`Welcome back !`);
       }
       onSuccess();
     } catch (error) {
-      setError("Invalid credentials.");
+      if (error.message === "Username already taken") {
+        setError("This username is already taken.");
+      } else {
+        setError("Invalid credentials or email already in use.");
+      }
     }
   };
 
@@ -36,15 +45,25 @@ const LoginForm = ({ onSuccess }) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email address"
-            className="border px-3 py-2 rounded w-full bg-background"
+            className="border px-3 py-2 rounded w-full bg-background border-white/10"
             required
           />
+          {isRegistering && (
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
+              className="border px-3 py-2 rounded w-full bg-background border-white/10"
+              required
+            />
+          )}
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-            className="border px-3 py-2 rounded w-full bg-background"
+            className="border px-3 py-2 rounded w-full bg-background border-white/10"
             required
           />
         </div>

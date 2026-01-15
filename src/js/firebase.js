@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, deleteDoc, updateDoc, doc, getDocs, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, deleteDoc, updateDoc, doc, getDocs, arrayUnion, arrayRemove, getDoc, setDoc, query, where } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_API_KEY,
@@ -68,9 +68,41 @@ export const signIn = async (email, password) => {
     }
 };
 
-export const register = async (email, password) => {
+export const checkUsernameUnique = async (username) => {
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("username", "==", username));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.empty;
+};
+
+export const register = async (email, password, username) => {
     try {
-        return await createUserWithEmailAndPassword(auth, email, password);
+        // Check uniqueness first
+        const isUnique = await checkUsernameUnique(username);
+        if (!isUnique) {
+            throw new Error("Username already taken");
+        }
+
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Create the user document immediately
+        const userDocRef = doc(db, "users", user.uid);
+        const initialData = {
+            uid: user.uid,
+            email: user.email,
+            username: username,
+            library: {
+                played: [],
+                toPlay: []
+            },
+            wanted: [],
+            createdAt: new Date().toISOString(),
+            isAdmin: user.email === process.env.REACT_APP_ADMIN_EMAIL
+        };
+        await setDoc(userDocRef, initialData);
+
+        return userCredential;
     } catch (e) {
         console.error("Error registering: ", e);
         throw e;
@@ -89,11 +121,11 @@ export const getTgaFromFirestore = async () => {
     }
 };
 
-export const addToLibrary = async (userId, gameId) => {
+export const addToLibrary = async (userId, gameId, type = "played") => {
     try {
         const userRef = doc(db, "users", userId);
         await updateDoc(userRef, {
-            library: arrayUnion(gameId)
+            [`library.${type}`]: arrayUnion(gameId)
         });
     } catch (e) {
         console.error("Error adding to library: ", e);
@@ -101,11 +133,11 @@ export const addToLibrary = async (userId, gameId) => {
     }
 };
 
-export const removeFromLibrary = async (userId, gameId) => {
+export const removeFromLibrary = async (userId, gameId, type = "played") => {
     try {
         const userRef = doc(db, "users", userId);
         await updateDoc(userRef, {
-            library: arrayRemove(gameId)
+            [`library.${type}`]: arrayRemove(gameId)
         });
     } catch (e) {
         console.error("Error removing from library: ", e);
