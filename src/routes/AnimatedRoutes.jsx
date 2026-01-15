@@ -1,4 +1,3 @@
-import React from "react";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Home from "../pages/Home";
@@ -7,6 +6,7 @@ import AwardsHistory from "../pages/AwardsHistory";
 import ReleaseCalendar from "../pages/ReleaseCalendar";
 import Welcome from "../pages/Welcome";
 import GameDetails from "../pages/GameDetails";
+import Profile from "../pages/Profile";
 
 function FirstRunGate({ children }) {
   const hasSeen = localStorage.getItem("hasSeenWelcome") === "true";
@@ -76,6 +76,14 @@ const AnimatedRoutes = () => {
           element={
             <PageFade>
               <ReleaseCalendar />
+            </PageFade>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PageFade>
+              <Profile />
             </PageFade>
           }
         />
