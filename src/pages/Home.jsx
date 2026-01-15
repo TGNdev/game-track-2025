@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { ToastContainer } from "react-toastify";
 import GamesView from "../components/games/GamesView"
 import Layout from "../components/shared/Layout";
 import { getGameCovers, getGameScreenshots, getGameTimeToBeat } from "../js/igdb";
@@ -46,7 +45,6 @@ const Home = () => {
   return (
     <Layout>
       <GamesView />
-      <ToastContainer position="top-right" autoClose={3000} />
     </Layout>
   );
 };

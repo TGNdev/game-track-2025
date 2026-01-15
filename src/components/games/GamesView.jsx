@@ -1,8 +1,5 @@
 import GameRow from "./GameRow";
 import GameCard from "./GameCard";
-import AddGameForm from "../modals/AddGameForm";
-import EditGameForm from "../modals/EditGameForm";
-import LoginForm from "../modals/LoginForm";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Timestamp } from "firebase/firestore";
 import { FaFilter } from "react-icons/fa";
@@ -534,29 +531,6 @@ const GamesView = () => {
               </div>
             )}
           </>
-        )
-      )}
-
-      {isModalOpen && (
-        isLogged ? (
-          edit ? (
-            <EditGameForm
-              game={gameToEdit}
-              games={games}
-              onSuccess={handleCloseModal}
-            />
-          ) : (
-            <AddGameForm
-              games={games}
-              onClose={handleCloseModal}
-              onSuccess={handleCloseModal}
-            />
-          )
-        ) : (
-          <LoginForm
-            onSuccess={handleCloseModal}
-            onClose={handleCloseModal}
-          />
         )
       )}
     </div>
