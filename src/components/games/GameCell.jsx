@@ -18,7 +18,7 @@ function GameCell({ game, coverImage, screenshots }) {
   const [isSliderOpen, setIsSliderOpen] = useState(false);
   const [imageBounds, setImageBounds] = useState(null);
 
-  const { search, isReleased } = useGameUI();
+  const { search, isReleased, isComingSoon } = useGameUI();
   const { hasWonAward } = useGameData();
 
   const tagsLabels = Object.fromEntries(
@@ -26,13 +26,23 @@ function GameCell({ game, coverImage, screenshots }) {
   );
 
   const activeTags = [
-    {
-      key: "_release",
-      label: isReleased(game.release_date) ? "Released" : "Coming soon",
-      color: isReleased(game.release_date)
-        ? "bg-gradient-secondary"
-        : "bg-gradient-tertiary",
-    },
+    ...(isReleased(game.release_date)
+      ? [
+        {
+          key: "_release",
+          label: "Released",
+          color: "bg-gradient-secondary",
+        },
+      ]
+      : isComingSoon(game.release_date)
+        ? [
+          {
+            key: "_coming_soon",
+            label: "Coming soon",
+            color: "bg-gradient-tertiary",
+          },
+        ]
+        : []),
     ...(hasWonAward(game.id)
       ? [
         {
