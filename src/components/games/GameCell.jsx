@@ -72,6 +72,7 @@ function GameCell({ game, coverImage, screenshots }) {
 
   const handleGameNavigate = (e) => {
     e.stopPropagation();
+    sessionStorage.setItem("lastClickedId", game.id);
     var gameId = slugify(game.name);
     navigate(`/games/${gameId}`);
   }

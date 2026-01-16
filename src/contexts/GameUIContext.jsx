@@ -53,6 +53,47 @@ export const GameUIProvider = ({ children }) => {
   const [openSearch, setOpenSearch] = useState(false);
   const [isAwardsModalOpen, setIsAwardsModalOpen] = useState(false);
 
+  const savedFilters = (() => {
+    try {
+      return JSON.parse(safeLocalStorageGet("gameFilters") || "null");
+    } catch {
+      return null;
+    }
+  })();
+
+  const [selectedPlatforms, setSelectedPlatforms] = useState(
+    () => savedFilters?.selectedPlatforms || []
+  );
+  const [showOnlyUpcoming, setShowOnlyUpcoming] = useState(
+    () => savedFilters?.showOnlyUpcoming ?? null
+  );
+  const [showThisYearOnly, setShowThisYearOnly] = useState(
+    () => savedFilters?.showThisYearOnly || false
+  );
+  const [withRelease, setWithRelease] = useState(
+    () => savedFilters?.withRelease ?? true
+  );
+  const [filtersVisible, setFiltersVisible] = useState(() => {
+    if (!savedFilters) return false;
+    const {
+      selectedPlatforms = [],
+      showOnlyUpcoming = null,
+      showThisYearOnly = false,
+    } = savedFilters;
+
+    return (selectedPlatforms.length > 0 || showOnlyUpcoming !== null || showThisYearOnly);
+  });
+
+  useEffect(() => {
+    const filters = {
+      selectedPlatforms,
+      showOnlyUpcoming,
+      withRelease,
+      showThisYearOnly,
+    };
+    safeLocalStorageSet('gameFilters', JSON.stringify(filters));
+  }, [selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly]);
+
   const [isMobile, setIsMobile] = useState(() =>
     hasWindow ? window.innerWidth <= MOBILE_BREAKPOINT : false
   );
@@ -182,6 +223,16 @@ export const GameUIProvider = ({ children }) => {
       getPlatformsSvg,
       isReleased,
       isComingSoon,
+      selectedPlatforms,
+      setSelectedPlatforms,
+      showOnlyUpcoming,
+      setShowOnlyUpcoming,
+      withRelease,
+      setWithRelease,
+      showThisYearOnly,
+      setShowThisYearOnly,
+      filtersVisible,
+      setFiltersVisible,
     }),
     [
       viewGames,
@@ -193,7 +244,9 @@ export const GameUIProvider = ({ children }) => {
       setIsModalOpen,
       featuredOpen,
       gameToEdit,
+      setGameToEdit,
       gameToSee,
+      setGameToSee,
       itemsPerPage,
       currentPage,
       openSearch,
@@ -207,6 +260,11 @@ export const GameUIProvider = ({ children }) => {
       getPlatformsSvg,
       isReleased,
       isComingSoon,
+      selectedPlatforms,
+      showOnlyUpcoming,
+      withRelease,
+      showThisYearOnly,
+      filtersVisible,
     ]
   );
 

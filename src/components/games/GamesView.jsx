@@ -24,6 +24,16 @@ const GamesView = () => {
     currentPage,
     setCurrentPage,
     isMobile,
+    selectedPlatforms,
+    showOnlyUpcoming,
+    showThisYearOnly,
+    withRelease,
+    setWithRelease,
+    filtersVisible,
+    setFiltersVisible,
+    setSelectedPlatforms,
+    setShowOnlyUpcoming,
+    setShowThisYearOnly,
   } = useGameUI();
   const {
     games,
@@ -31,37 +41,11 @@ const GamesView = () => {
     screenshotsMap,
     loadingGames
   } = useGameData();
-  const [withRelease, setWithRelease] = useState(true);
   const isFirstRender = useRef(true);
+  const isInitialFilterMount = useRef(true);
   const firstItemRef = useRef(null);
 
-  const savedFilters = (() => {
-    try {
-      return JSON.parse(localStorage.getItem("gameFilters") || "null");
-    } catch {
-      return null;
-    }
-  })();
 
-  const [selectedPlatforms, setSelectedPlatforms] = useState(
-    () => savedFilters?.selectedPlatforms || []
-  );
-  const [showOnlyUpcoming, setShowOnlyUpcoming] = useState(
-    () => savedFilters?.showOnlyUpcoming ?? null
-  );
-  const [showThisYearOnly, setShowThisYearOnly] = useState(
-    () => savedFilters?.showThisYearOnly || false
-  );
-  const [filtersVisible, setFiltersVisible] = useState(() => {
-    if (!savedFilters) return false;
-    const {
-      selectedPlatforms = [],
-      showOnlyUpcoming = null,
-      showThisYearOnly = false,
-    } = savedFilters;
-
-    return (selectedPlatforms.length > 0 || showOnlyUpcoming !== null || showThisYearOnly);
-  });
 
   useEffect(() => {
     const filters = {
@@ -179,6 +163,23 @@ const GamesView = () => {
   }, [games, search, selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly]);
 
   useEffect(() => {
+    if (!loadingGames && filtered.length > 0) {
+      const lastClickedId = sessionStorage.getItem("lastClickedId");
+      if (lastClickedId) {
+        const timer = setTimeout(() => {
+          const element = document.getElementById(`game-${lastClickedId}`) ||
+            document.getElementById(`gamecard-${lastClickedId}`);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+            sessionStorage.removeItem("lastClickedId");
+          }
+        }, 100);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [loadingGames, filtered.length]);
+
+  useEffect(() => {
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -196,7 +197,8 @@ const GamesView = () => {
       return;
     }
 
-    if (firstItemRef.current) {
+    const lastClickedId = sessionStorage.getItem("lastClickedId");
+    if (firstItemRef.current && !lastClickedId) {
       const headerHeight = 325;
       const top = firstItemRef.current.getBoundingClientRect().top + window.scrollY - headerHeight;
 
@@ -205,6 +207,10 @@ const GamesView = () => {
   }, [currentPage]);
 
   useEffect(() => {
+    if (isInitialFilterMount.current) {
+      isInitialFilterMount.current = false;
+      return;
+    }
     setCurrentPage(1);
   }, [search, selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly, setCurrentPage]);
 
