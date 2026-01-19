@@ -1,6 +1,6 @@
 import GameRow from "./GameRow";
 import GameCard from "./GameCard";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Timestamp } from "firebase/firestore";
 import { FaFilter } from "react-icons/fa";
