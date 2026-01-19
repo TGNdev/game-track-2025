@@ -1,11 +1,9 @@
 import { Timestamp } from "firebase/firestore";
-import { useState, useEffect, memo } from "react";
+import { memo } from "react";
 import FeaturedGame from "./FeaturedGame";
 import { useGameData } from "../../contexts/GameDataContext";
 
 const FeaturedGames = ({ games }) => {
-  const [showAll, setShowAll] = useState(false);
-  const [columns, setColumns] = useState(3);
   const { coverMap } = useGameData();
 
   const formatReleaseDate = (releaseDate) => {
@@ -42,10 +40,12 @@ const FeaturedGames = ({ games }) => {
       classes += "bg-gradient-tertiary"
     }
 
-    return <div className={`${classes}`}>
-      <p>{text}</p>
-      <p className="italic text-xs font-normal">{formatReleaseDate(releaseDate)}</p>
-    </div>
+    return (
+      <div className={`${classes}`}>
+        <p>{text}</p>
+        <p className="italic text-xs font-normal">{formatReleaseDate(releaseDate)}</p>
+      </div>
+    );
   };
 
   const featuredGames = (() => {
@@ -76,21 +76,7 @@ const FeaturedGames = ({ games }) => {
       .sort((a, b) => a.name.localeCompare(b.name));
   })();
 
-  useEffect(() => {
-    const updateColumns = () => {
-      const width = window.innerWidth;
-      if (width < 640) setColumns(1);
-      else if (width < 1024) setColumns(2);
-      else setColumns(3);
-    };
-
-    updateColumns();
-    window.addEventListener("resize", updateColumns);
-    return () => window.removeEventListener("resize", updateColumns);
-  }, []);
-
-  const firstRow = featuredGames.slice(0, columns);
-  const otherRows = featuredGames.slice(columns);
+  if (featuredGames.length === 0) return null;
 
   return (
     <div className="w-full rounded-xl mt-6 shadow-lg">
@@ -100,23 +86,14 @@ const FeaturedGames = ({ games }) => {
             {featuredGames.length > 1 ? "Next Releases" : "Next Release"}
           </div>
           <div className="sm:ml-auto font-semibold">
-            {firstRow.length > 0 && releaseMessage(firstRow[0].release_date)}
+            {featuredGames.length > 0 && releaseMessage(featuredGames[0].release_date)}
           </div>
         </div>
-        <div className="flex flex-wrap gap-4 w-full">
-          {firstRow.map(featured => (
-            <div key={featured.id} className="flex-1">
-              <FeaturedGame
-                featured={featured}
-                cover={coverMap ? coverMap[featured.igdb_id] : []}
-              />
-            </div>
-          ))}
-        </div>
-        {showAll && (
-          <div className="w-full max-h-[400px] overflow-y-auto flex flex-wrap gap-4 my-4">
-            {otherRows.map(featured => (
-              <div key={featured.id} className="flex-1">
+
+        <div className="max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="flex flex-wrap gap-4 w-full">
+            {featuredGames.map(featured => (
+              <div key={featured.id} className="min-w-[300px] md:min-w-[400px] flex-1">
                 <FeaturedGame
                   featured={featured}
                   cover={coverMap ? coverMap[featured.igdb_id] : []}
@@ -124,25 +101,10 @@ const FeaturedGames = ({ games }) => {
               </div>
             ))}
           </div>
-        )}
-        {otherRows.length > 0 && (
-          <div className="flex justify-center mt-6">
-            <button
-              onClick={() => setShowAll(!showAll)}
-              className="px-2 py-1.5 bg-gradient-primary rounded-md"
-            >
-              {showAll
-                ? "Show Less"
-                : otherRows.length === 1
-                  ? "Show 1 more game"
-                  : `Show ${otherRows.length} more games`
-              }
-            </button>
-          </div>
-        )}
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default memo(FeaturedGames);
