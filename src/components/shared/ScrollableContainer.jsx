@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const ScrollableContainer = ({ children }) => {
   const scrollRef = useRef(null);
