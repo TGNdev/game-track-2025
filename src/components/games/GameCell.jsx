@@ -39,6 +39,15 @@ function GameCell({ game, coverImage, screenshots }) {
           },
         ]
         : []),
+
+    ...Object.keys(game.tags || {})
+      .filter((tag) => game.tags[tag])
+      .sort((a, b) => a.localeCompare(b))
+      .map((tag) => ({
+        key: tag,
+        label: tagsLabels[tag] || tag,
+        color: "bg-gradient-primary",
+      })),
     ...(hasWonAward(game.id)
       ? [
         {
@@ -48,14 +57,6 @@ function GameCell({ game, coverImage, screenshots }) {
         },
       ]
       : []),
-    ...Object.keys(game.tags || {})
-      .filter((tag) => game.tags[tag])
-      .sort((a, b) => a.localeCompare(b))
-      .map((tag) => ({
-        key: tag,
-        label: tagsLabels[tag] || tag,
-        color: "bg-gradient-primary",
-      })),
   ];
 
   useEffect(() => {
