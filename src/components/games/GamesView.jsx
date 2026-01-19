@@ -12,6 +12,9 @@ import FilterButton from "../shared/FilterButton";
 import { PLATFORMS } from "../../js/config";
 import { useGameData } from "../../contexts/GameDataContext";
 import { useGameUI } from "../../contexts/GameUIContext";
+import { FaUser } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import ScrollableContainer from "../shared/ScrollableContainer";
 
 const GamesView = () => {
   const {
@@ -39,8 +42,10 @@ const GamesView = () => {
     games,
     coverMap,
     screenshotsMap,
-    loadingGames
+    loadingGames,
+    users
   } = useGameData();
+  const navigate = useNavigate();
   const isFirstRender = useRef(true);
   const isInitialFilterMount = useRef(true);
   const firstItemRef = useRef(null);
@@ -162,6 +167,12 @@ const GamesView = () => {
       });
   }, [games, search, selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly]);
 
+  const filteredUsers = useMemo(() => {
+    if (!search || search.length < 2) return [];
+    const q = search.toLowerCase();
+    return users.filter(user => user.username.toLowerCase().includes(q));
+  }, [users, search]);
+
   useEffect(() => {
     if (!loadingGames && filtered.length > 0) {
       const lastClickedId = sessionStorage.getItem("lastClickedId");
@@ -217,6 +228,35 @@ const GamesView = () => {
   return (
     <div className="px-6 w-full flex flex-col gap-6 pb-4">
       <FeaturedGames games={games} />
+
+      {search && filteredUsers.length > 0 && (
+        <section className="w-full flex flex-col gap-4">
+          <div className="flex items-center gap-2 text-white/60 px-2 font-bold uppercase tracking-wider text-xs">
+            <FaUser className="size-3" />
+            <span>Matching Users ({filteredUsers.length})</span>
+          </div>
+          <ScrollableContainer>
+            {filteredUsers.map(user => (
+              <div
+                key={user.id}
+                onClick={() => navigate(`/profiles/${user.username}`)}
+                className="hover:cursor-pointer shrink-0 flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 p-3 rounded-2xl transition-colors duration-200 shadow-lg"
+              >
+                <div className="p-3 rounded-xl bg-gradient-primary">
+                  <FaUser className="size-5" />
+                </div>
+                <div className="flex flex-col items-start pr-4">
+                  <span className="font-black text-sm">{user.username}</span>
+                  <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest">
+                    {(user.library?.played?.length || 0) + (user.library?.toPlay?.length || 0)} Games
+                  </span>
+                </div>
+              </div>
+            ))}
+          </ScrollableContainer>
+          <div className="border-b border-white/10 w-full mt-2" />
+        </section>
+      )}
 
       <div className="w-full flex justify-center">
         <div className="bg-white/5 border border-white/10 rounded-2xl p-1 shadow-2xl relative overflow-hidden">

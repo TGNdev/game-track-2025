@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { getTgaFromFirestore, getGamesFromFirestore } from "../js/firebase";
+import { getTgaFromFirestore, getGamesFromFirestore, getUsersFromFirestore } from "../js/firebase";
 import { slugify } from "../js/utils";
 import { TTL } from "../js/cache";
 
@@ -34,11 +34,15 @@ const safeLocalStorageSet = (key, value) => {
 
 export const GameDataProvider = ({ children }) => {
   const [games, setGames] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loadingGames, setLoadingGames] = useState(false);
+  const [loadingUsers, setLoadingUsers] = useState(false);
   const [gamesError, setGamesError] = useState(null);
 
   const gamesLoadPromiseRef = useRef(null);
+  const usersLoadPromiseRef = useRef(null);
   const didAttemptInitialGamesLoadRef = useRef(false);
+  const didAttemptInitialUsersLoadRef = useRef(false);
 
   const [awardWinners, setAwardWinners] = useState(new Set());
   const [awardsPerGame, setAwardsPerGame] = useState({});
@@ -164,6 +168,35 @@ export const GameDataProvider = ({ children }) => {
     ensureGamesLoaded().catch(() => { });
   }, [ensureGamesLoaded]);
 
+  const ensureUsersLoaded = useCallback(async () => {
+    if (users.length > 0) return users;
+
+    if (!usersLoadPromiseRef.current) {
+      usersLoadPromiseRef.current = (async () => {
+        try {
+          setLoadingUsers(true);
+          const list = await getUsersFromFirestore();
+          setUsers(list);
+          return list;
+        } catch (e) {
+          console.error("Failed to load users:", e);
+          throw e;
+        } finally {
+          setLoadingUsers(false);
+          usersLoadPromiseRef.current = null;
+        }
+      })();
+    }
+
+    return usersLoadPromiseRef.current;
+  }, [users]);
+
+  useEffect(() => {
+    if (didAttemptInitialUsersLoadRef.current) return;
+    didAttemptInitialUsersLoadRef.current = true;
+    ensureUsersLoaded().catch(() => { });
+  }, [ensureUsersLoaded]);
+
   const value = useMemo(
     () => ({
       games,
@@ -171,6 +204,10 @@ export const GameDataProvider = ({ children }) => {
       loadingGames,
       gamesError,
       ensureGamesLoaded,
+
+      users,
+      loadingUsers,
+      ensureUsersLoaded,
 
       awardWinners,
       setAwardWinners,
@@ -190,6 +227,9 @@ export const GameDataProvider = ({ children }) => {
       loadingGames,
       gamesError,
       ensureGamesLoaded,
+      users,
+      loadingUsers,
+      ensureUsersLoaded,
       awardWinners,
       awardsPerGame,
       hasWonAward,

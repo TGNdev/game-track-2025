@@ -31,6 +31,18 @@ export const getGamesFromFirestore = async () => {
     }
 }
 
+export const getUsersFromFirestore = async () => {
+    try {
+        const usersRef = collection(db, "users");
+        const querySnapshot = await getDocs(usersRef);
+        const usersList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return usersList;
+    } catch (e) {
+        console.error("Error fetching users: ", e);
+        throw e;
+    }
+};
+
 export const addGameToFirestore = async (gameData) => {
     try {
         const gamesRef = collection(db, "games");
@@ -179,6 +191,21 @@ export const getUserProfile = async (userId) => {
         return null;
     } catch (e) {
         console.error("Error fetching user profile: ", e);
+        throw e;
+    }
+};
+
+export const getUserByUsername = async (username) => {
+    try {
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("username", "==", username));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+            return querySnapshot.docs[0].data();
+        }
+        return null;
+    } catch (e) {
+        console.error("Error fetching user by username: ", e);
         throw e;
     }
 };

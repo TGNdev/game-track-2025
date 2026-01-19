@@ -80,13 +80,14 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
-          path="/profile"
+          path="/profiles/:username"
           element={
             <PageFade>
               <Profile />
             </PageFade>
           }
         />
+        <Route path="/profile" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>
   );

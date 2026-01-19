@@ -76,7 +76,7 @@ const Drawer = ({ open, setOpen }) => {
 
             {isLogged && (
               <Link
-                to="/profile"
+                to={`/profiles/${userData?.username}`}
                 className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
                 onClick={() => setOpen(false)}
               >
