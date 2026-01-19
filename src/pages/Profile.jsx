@@ -6,10 +6,11 @@ import { useEffect, useMemo, useState } from "react";
 import { getGameCovers } from "../js/igdb";
 import { useNavigate } from "react-router-dom";
 import { slugify } from "../js/utils";
-import { FaExternalLinkAlt, FaClock, FaPlus, FaCheck } from "react-icons/fa";
+import { FaExternalLinkAlt, FaClock, FaPlus, FaCheck, FaBookmark } from "react-icons/fa";
 import { removeFromLibrary, removeCountdown } from "../js/firebase";
 import { toast } from "react-toastify";
 import CountdownTimer from "../components/shared/CountdownTimer";
+import ScrollableContainer from "../components/shared/ScrollableContainer";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -23,14 +24,14 @@ const Profile = () => {
     if (!userData?.library?.played || games.length === 0) return [];
     return games
       .filter(g => userData.library.played.includes(g.id))
-      .sort((a, b) => (b.release_date?.seconds || 0) - (a.release_date?.seconds || 0));
+      .sort((a, b) => (a.release_date?.seconds || 0) - (b.release_date?.seconds || 0));
   }, [userData?.library?.played, games]);
 
   const toPlayGames = useMemo(() => {
     if (!userData?.library?.toPlay || games.length === 0) return [];
     return games
       .filter(g => userData.library.toPlay.includes(g.id))
-      .sort((a, b) => (b.release_date?.seconds || 0) - (a.release_date?.seconds || 0));
+      .sort((a, b) => (a.release_date?.seconds || 0) - (b.release_date?.seconds || 0));
   }, [userData?.library?.toPlay, games]);
 
   const handleRemoveFromLibrary = (gameId, type) => {
@@ -66,7 +67,7 @@ const Profile = () => {
 
   return (
     <Layout>
-      <div className="mx-6 mt-6 flex flex-col gap-12 md:gap-20">
+      <div className="mx-6 mt-6 flex flex-col gap-10 md:gap-14">
         <section className="flex flex-col items-center md:items-start gap-4">
           <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
             {userData?.username || 'Gamer'}
@@ -101,16 +102,13 @@ const Profile = () => {
               className="flex items-center gap-4 p-4 rounded-xl bg-white/5"
             >
               <div className="p-2 rounded-lg bg-gradient-primary">
-                {isPlayedView ? <FaCheck className="size-5" /> : <FaPlus className="size-5" />}
+                {isPlayedView ? <FaCheck className="size-5" /> : <FaBookmark className="size-5" />}
               </div>
               <h3 className="text-xl font-bold">{isPlayedView ? "Games Played" : "To Play"}</h3>
             </div>
 
             {(isPlayedView ? playedGames : toPlayGames).length > 0 ? (
-              <div
-                className="flex gap-6 pb-6 w-full overflow-x-auto scrollbar-hide"
-                style={{ WebkitOverflowScrolling: 'touch' }}
-              >
+              <ScrollableContainer>
                 {(isPlayedView ? playedGames : toPlayGames).map(game => (
                   <div key={game.id} className="w-60 h-auto shrink-0 rounded-xl shadow-sm text-center flex flex-col items-center border-primary">
                     <img
@@ -137,7 +135,7 @@ const Profile = () => {
                     </div>
                   </div>
                 ))}
-              </div>
+              </ScrollableContainer>
             ) : (
               <div className="bg-white/5 rounded-2xl p-12 border-white/10 flex flex-col gap-2 justify-center items-center">
                 <p className="text-white/80 text-center">
@@ -162,13 +160,15 @@ const Profile = () => {
             <div className="p-2 rounded-lg bg-gradient-primary">
               <FaClock className="size-5" />
             </div>
-            <h3 className="text-xl font-bold">Countdowns</h3>
+            <h3 className="text-xl font-bold">Countdowns {countdowns.length > 0 ? `(${countdowns.length})` : ''}</h3>
+          </div>
+          <div className="flex justify-between items-end">
+            <p className="text-white/60 text-[10px] font-black uppercase tracking-widest mb-4 p-2 bg-white/5 rounded-lg w-full">
+              These countdowns are based on the release day of the game and may not be totally accurate as games tend to be available on different days (depending on the region you are in) and at a certain time during the day (the game might not usually be available directly at midnight).
+            </p>
           </div>
           {countdowns.length > 0 ? (
-            <div
-              className="flex gap-6 pb-6 w-full overflow-x-auto scrollbar-hide"
-              style={{ WebkitOverflowScrolling: 'touch' }}
-            >
+            <ScrollableContainer>
               {countdowns.map(game => (
                 <div key={game.id} className="w-60 h-auto shrink-0 rounded-xl shadow-sm text-center flex flex-col items-center border-primary">
                   <img
@@ -179,7 +179,7 @@ const Profile = () => {
                   <div className="flex justify-center scale-75">
                     <CountdownTimer targetDate={game.release_date} />
                   </div>
-                  <div className="pt-4 border-t border-white/30">
+                  <div className="border-b border-white/30 w-full">
                     <h4 className="px-4 font-black text-sm mb-2">{game.name}</h4>
                   </div>
                   <div className="flex gap-2">
@@ -198,7 +198,7 @@ const Profile = () => {
                   </div>
                 </div>
               ))}
-            </div>
+            </ScrollableContainer>
           ) : (
             <div className="bg-white/5 rounded-2xl p-12 border-white/10 flex flex-col gap-2 justify-center items-center">
               <p className="text-white/80 text-center">No countdowns added yet !</p>
