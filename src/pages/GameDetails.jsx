@@ -111,7 +111,7 @@ export default function GameDetails() {
     ? gameScreenshots.slice(0)
     : gameScreenshots.slice(0, 4);
   const gameCover = coverMap[game?.igdb_id];
-  const canAddCountdown = game?.release_date?.seconds;
+  const canAddCountdown = game?.release_date?.seconds && game.release_date.seconds * 1000 > Date.now();
 
   useEffect(() => {
     window.scrollTo(0, 0);
