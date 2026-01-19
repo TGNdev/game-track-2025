@@ -2,6 +2,7 @@ import { FiX, FiHome, FiUser, FiLogOut } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useGameUI } from "../../contexts/GameUIContext";
 import { FaTrophy, FaCalendar } from "react-icons/fa";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Drawer = ({ open, setOpen }) => {
   const {
@@ -10,6 +11,7 @@ const Drawer = ({ open, setOpen }) => {
     setIsModalOpen,
     openButtonRef,
   } = useGameUI();
+  const { userData } = useAuth();
 
   return (
     <>
@@ -26,7 +28,9 @@ const Drawer = ({ open, setOpen }) => {
       >
         <div className="flex flex-col h-full">
           <div className="flex justify-between items-center p-6 border-b border-white/10">
-            <h2 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">Menu</h2>
+            <h2 className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              {isLogged ? "Hey, " + userData?.username + " !" : "Menu"}
+            </h2>
             <button
               onClick={() => setOpen(false)}
               className="p-2 bg-gradient-primary rounded-full"
@@ -39,7 +43,7 @@ const Drawer = ({ open, setOpen }) => {
           <nav className="flex-1 p-2 space-y-2">
             <Link
               to="/"
-              className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/10 transition-colors"
+              className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
               onClick={() => setOpen(false)}
             >
               <div className="p-2 rounded-lg bg-gradient-primary transition-colors">
@@ -50,7 +54,7 @@ const Drawer = ({ open, setOpen }) => {
 
             <Link
               to="/game-awards-history"
-              className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/10 transition-colors"
+              className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
               onClick={() => setOpen(false)}
             >
               <div className="p-2 rounded-lg bg-gradient-primary transition-colors">
@@ -61,7 +65,7 @@ const Drawer = ({ open, setOpen }) => {
 
             <Link
               to="/release-calendar"
-              className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/10 transition-colors"
+              className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
               onClick={() => setOpen(false)}
             >
               <div className="p-2 rounded-lg bg-gradient-primary transition-colors">
@@ -73,7 +77,7 @@ const Drawer = ({ open, setOpen }) => {
             {isLogged && (
               <Link
                 to="/profile"
-                className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/10 transition-colors"
+                className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
                 onClick={() => setOpen(false)}
               >
                 <div className="p-2 rounded-lg bg-gradient-primary transition-colors">
