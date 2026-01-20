@@ -8,6 +8,7 @@ import isEqual from "lodash.isequal";
 import Modal from "./Modal";
 import { useGameData } from "../../contexts/GameDataContext";
 import { PLATFORMS, TAGS } from "../../js/config";
+import { FiTrash2 } from "react-icons/fi";
 
 const platformOptions = Object.keys(PLATFORMS);
 const platformLabels = Object.fromEntries(
@@ -137,6 +138,12 @@ const EditGameForm = ({ game, games, onSuccess }) => {
         ? Timestamp.fromDate(new Date(form.releaseDate))
         : form.releaseDate;
 
+      const normalizedRatings = {
+        critics: Number(form.ratings.critics) || 0,
+        players: Number(form.ratings.players) || 0,
+        link: form.ratings.link || "",
+      };
+
       await editGameFromFirestore(game.id, {
         name: form.name,
         link: form.link,
@@ -144,7 +151,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
         developers: form.developers,
         editors: form.editors,
         platforms: form.platforms,
-        ratings: form.ratings,
+        ratings: normalizedRatings,
         tags: form.tags,
         cover: form.cover,
       });
@@ -158,11 +165,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
         developers: form.developers,
         editors: form.editors,
         platforms: form.platforms,
-        ratings: {
-          critics: Number(form.ratings.critics) || 0,
-          players: Number(form.ratings.players) || 0,
-          link: form.ratings.link || "",
-        },
+        ratings: normalizedRatings,
         tags: form.tags,
         cover: form.cover ?? null,
       };
@@ -184,260 +187,260 @@ const EditGameForm = ({ game, games, onSuccess }) => {
     <Modal title={`Edit ${game.name}`}>
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* General Info */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
           <div className="flex flex-col">
-            <label className="block text-sm mb-2 font-semibold">Name</label>
+            <label className="text-xs font-black uppercase tracking-widest text-white/40 mb-2 ml-1">Game Name</label>
             <input
-              className="px-4 py-2 rounded border bg-background"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all font-bold"
               name="name"
               value={form.name}
-              placeholder="with full notation (don't forget ':' or correct numbering such as 'VI' or '6')"
+              placeholder="e.g. Final Fantasy VII Rebirth"
               onChange={handleChange}
             />
-            {errors.name && <span className="text-red-500 text-sm">{errors.name}</span>}
+            {errors.name && <span className="text-red-500 text-xs font-bold mt-1 ml-1">{errors.name}</span>}
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-sm mb-2 font-semibold">Link</label>
+            <label className="text-xs font-black uppercase tracking-widest text-white/40 mb-2 ml-1">Website Link</label>
             <input
-              className="px-4 py-2 rounded border bg-background"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all font-mono text-sm"
               name="link"
-              placeholder="Game website (or IGN page if no website)"
+              placeholder="https://..."
               value={form.link}
               onChange={handleChange}
             />
-            {errors.link && <span className="text-red-500 text-sm">{errors.link}</span>}
+            {errors.link && <span className="text-red-500 text-xs font-bold mt-1 ml-1">{errors.link}</span>}
           </div>
 
           <div className="flex flex-col">
-            <label className="block text-sm mb-2 font-semibold">Release date</label>
-            <div className="flex flex-row justify-between gap-4">
+            <label className="text-xs font-black uppercase tracking-widest text-white/40 mb-2 ml-1">Release date</label>
+            <div className="flex flex-row justify-between gap-3">
               <input
                 type={`${releaseTba ? "text" : "date"}`}
-                placeholder={`${releaseTba && "'TBA 2026' or 'Q4 2025'"}`}
+                placeholder={`${releaseTba ? "'TBA 2026' or 'Q4 2025'" : ""}`}
                 name="releaseDate"
-                className="px-4 py-2 rounded border w-full bg-background"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all"
                 value={form.releaseDate}
                 onChange={handleChange}
               />
               <button
                 type="button"
-                className="px-3 py-1.5 min-w-fit bg-gradient-primary rounded-md"
+                className={`px-4 py-1.5 min-w-[70px] rounded-xl text-xs font-black uppercase tracking-widest transition-all ${releaseTba ? "bg-gradient-primary text-white" : "bg-white/5 border border-white/10 text-white/40"}`}
                 onClick={() => setReleaseTba(prev => !prev)}
               >
                 TBA
               </button>
             </div>
-            {errors.releaseDate && <span className="text-red-500 text-sm">{errors.releaseDate}</span>}
+            {errors.releaseDate && <span className="text-red-500 text-xs font-bold mt-1 ml-1">{errors.releaseDate}</span>}
           </div>
 
           <div>
-            <label className="block text-sm mb-2 font-semibold">Tags</label>
+            <label className="text-xs font-black uppercase tracking-widest text-white/40 mb-3 ml-1 block">Genre Tags</label>
             <div className="flex flex-wrap gap-2">
               {tagsOptions.map((tag) => (
                 <button
                   type="button"
                   key={tag}
                   onClick={() => handleTagToggle(tag)}
-                  className={`px-3 py-1 rounded-full text-sm ${form.tags[tag] ? "bg-gradient-primary" : ""
+                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${form.tags[tag]
+                    ? "bg-gradient-primary text-white shadow-lg shadow-primary/20 scale-105"
+                    : "bg-white/5 border border-white/10 text-white/60 hover:bg-white/10"
                     }`}
                 >
                   {tagsLabels[tag]}
                 </button>
               ))}
             </div>
-            {errors.tags && <span className="text-red-500 text-sm">{errors.tags}</span>}
           </div>
         </div>
 
         {/* Developers */}
-        <div>
-          <label className="block text-sm mb-2 font-semibold">Developers</label>
-          {form.developers.map((dev, i) => (
-            <div key={i} className="flex flex-row gap-2 mb-2 items-center">
-              <div className="relative w-full">
+        <div className="space-y-4 pt-4 border-t border-white/5">
+          <label className="text-xs font-black uppercase tracking-widest text-white/40 ml-1 block">Developers</label>
+          <div className="space-y-3">
+            {form.developers.map((dev, i) => (
+              <div key={i} className="flex flex-row gap-3 items-center group">
+                <div className={`relative flex-1 ${suggestionTarget?.type === "developers" && suggestionTarget?.index === i ? "z-50" : ""}`}>
+                  <input
+                    placeholder="Studio Name"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all font-bold"
+                    value={dev.name}
+                    onFocus={() => {
+                      if (!dev.name) setSuggestionTarget({ type: "developers", index: i, field: "name" });
+                    }}
+                    onChange={(e) => updateEntry("developers", i, "name", e.target.value)}
+                  />
+                  {suggestionTarget?.type === "developers" &&
+                    suggestionTarget?.index === i &&
+                    suggestionTarget?.field === "name" && (
+                      <SuggestionDropdown
+                        suggestions={existingDevs}
+                        value={dev.name}
+                        onSelect={(selected) => {
+                          updateEntry("developers", i, "name", selected.name);
+                          updateEntry("developers", i, "link", selected.link);
+                          setSuggestionTarget(null);
+                        }}
+                      />
+                    )}
+                </div>
                 <input
-                  placeholder="Name"
-                  className="px-3 py-1 rounded border w-full bg-background"
-                  value={dev.name}
-                  onFocus={() => {
-                    if (!dev.name) setSuggestionTarget({ type: "developers", index: i, field: "name" });
-                  }}
-                  onChange={(e) => updateEntry("developers", i, "name", e.target.value)}
+                  placeholder="Website"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-primary/50 transition-all"
+                  value={dev.link}
+                  onChange={(e) => updateEntry("developers", i, "link", e.target.value)}
                 />
-                {suggestionTarget?.type === "developers" &&
-                  suggestionTarget?.index === i &&
-                  suggestionTarget?.field === "name" && (
-                    <SuggestionDropdown
-                      suggestions={existingDevs}
-                      value={dev.name}
-                      onSelect={(selected) => {
-                        updateEntry("developers", i, "name", selected.name);
-                        updateEntry("developers", i, "link", selected.link);
-                        setSuggestionTarget(null);
-                      }}
-                    />
-                  )}
+                <button
+                  type="button"
+                  className="text-white/20 hover:text-red-500 transition-colors p-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeEntry("developers", i)
+                  }}
+                >
+                  <FiTrash2 size={18} />
+                </button>
               </div>
-
-              <input
-                placeholder="Link"
-                className="px-3 py-1 rounded border w-full bg-background"
-                value={dev.link}
-                onChange={(e) => updateEntry("developers", i, "link", e.target.value)}
-              />
-
-              <button
-                type="button"
-                className="text-sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeEntry("developers", i)
-                }}
-              >Remove</button>
-            </div>
-          ))}
-          <div className="flex flex-col gap-2 items-start">
-            <button
-              type="button"
-              onClick={() => addEntry("developers")}
-              className="text-sm underline"
-            >
-              + Add Developer
-            </button>
-            {errors.developers && <span className="text-red-500 text-sm">{errors.developers}</span>}
+            ))}
           </div>
+          <button
+            type="button"
+            onClick={() => addEntry("developers")}
+            className="text-[10px] font-black uppercase tracking-widest text-primary-light hover:text-primary transition-colors ml-1"
+          >
+            + Add Developer
+          </button>
+          {errors.developers && <div className="text-red-500 text-xs font-bold ml-1">{errors.developers}</div>}
         </div>
 
-        {/* Editors */}
-        <div>
-          <label className="block text-sm mb-2 font-semibold">Editors</label>
-          {form.editors.map((ed, i) => (
-            <div key={i} className="flex flex-row gap-2 mb-2 items-center">
-              <div className="relative w-full">
+        <div className="space-y-4">
+          <label className="text-xs font-black uppercase tracking-widest text-white/40 ml-1 block">Publishers</label>
+          <div className="space-y-3">
+            {form.editors.map((ed, i) => (
+              <div key={i} className="flex flex-row gap-3 items-center group">
+                <div className={`relative flex-1 ${suggestionTarget?.type === "editors" && suggestionTarget?.index === i ? "z-50" : ""}`}>
+                  <input
+                    placeholder="Company Name"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all font-bold"
+                    value={ed.name}
+                    onFocus={() => {
+                      if (!ed.name) setSuggestionTarget({ type: "editors", index: i, field: "name" });
+                    }}
+                    onChange={(e) => updateEntry("editors", i, "name", e.target.value)}
+                  />
+                  {suggestionTarget?.type === "editors" &&
+                    suggestionTarget?.index === i &&
+                    suggestionTarget?.field === "name" && (
+                      <SuggestionDropdown
+                        suggestions={existingEditors}
+                        value={ed.name}
+                        onSelect={(selected) => {
+                          updateEntry("editors", i, "name", selected.name);
+                          updateEntry("editors", i, "link", selected.link);
+                          setSuggestionTarget(null);
+                        }}
+                      />
+                    )}
+                </div>
                 <input
-                  placeholder="Name"
-                  className="px-3 py-1 rounded border w-full bg-background"
-                  value={ed.name}
-                  onFocus={() => {
-                    if (!ed.name) setSuggestionTarget({ type: "editors", index: i, field: "name" });
-                  }}
-                  onChange={(e) => updateEntry("editors", i, "name", e.target.value)}
+                  placeholder="Website"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-primary/50 transition-all"
+                  value={ed.link}
+                  onChange={(e) => updateEntry("editors", i, "link", e.target.value)}
                 />
-                {suggestionTarget?.type === "editors" &&
-                  suggestionTarget?.index === i &&
-                  suggestionTarget?.field === "name" && (
-                    <SuggestionDropdown
-                      suggestions={existingEditors}
-                      value={ed.name}
-                      onSelect={(selected) => {
-                        updateEntry("editors", i, "name", selected.name);
-                        updateEntry("editors", i, "link", selected.link);
-                        setSuggestionTarget(null);
-                      }}
-                    />
-                  )}
+                <button
+                  type="button"
+                  className="text-white/20 hover:text-red-500 transition-colors p-2"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeEntry("editors", i)
+                  }}
+                >
+                  <FiTrash2 size={18} />
+                </button>
               </div>
-              <input
-                placeholder="Link"
-                className="px-3 py-1 rounded border w-full bg-background"
-                value={ed.link}
-                onChange={(e) => updateEntry("editors", i, "link", e.target.value)}
-              />
-              <button
-                type="button"
-                className="text-sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  removeEntry("editors", i)
-                }}
-              >Remove</button>
-            </div>
-          ))}
-          <div className="flex flex-col gap-2 items-start">
-            <button
-              type="button"
-              onClick={() => addEntry("editors")}
-              className="text-sm underline"
-            >
-              + Add Editor
-            </button>
-            {errors.editors && <span className="text-red-500 text-sm">{errors.editors}</span>}
+            ))}
           </div>
+          <button
+            type="button"
+            onClick={() => addEntry("editors")}
+            className="text-[10px] font-black uppercase tracking-widest text-primary-light hover:text-primary transition-colors ml-1"
+          >
+            + Add Publisher
+          </button>
+          {errors.editors && <div className="text-red-500 text-xs font-bold ml-1">{errors.editors}</div>}
         </div>
 
         {/* Platforms */}
-        <div>
-          <label className="block text-sm mb-2 font-semibold">Platforms</label>
+        <div className="pt-4 border-t border-white/5">
+          <label className="text-xs font-black uppercase tracking-widest text-white/40 mb-3 ml-1 block">Platforms</label>
           <div className="flex flex-wrap gap-2">
             {platformOptions.map((platform) => (
               <button
                 type="button"
                 key={platform}
                 onClick={() => handlePlatformToggle(platform)}
-                className={`px-3 py-1 rounded-full text-sm ${form.platforms[platform] ? "bg-gradient-primary" : ""
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${form.platforms[platform]
+                  ? "bg-gradient-primary text-white shadow-lg shadow-primary/20 scale-105"
+                  : "bg-white/5 border border-white/10 text-white/60 hover:bg-white/10"
                   }`}
               >
                 {platformLabels[platform]}
               </button>
             ))}
           </div>
-          {errors.platforms && <span className="text-red-500 text-sm">{errors.platforms}</span>}
         </div>
 
-        {/* Ratings */}
-        <div>
-          <label className="block text-sm mb-2 font-semibold">Ratings</label>
+        <div className="pt-4 border-t border-white/5">
+          <label className="text-xs font-black uppercase tracking-widest text-white/40 mb-4 ml-1 block">Ratings & Metadata</label>
           <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label className="text-xs mb-1" htmlFor="ratings.critics">Critics</label>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">Critics</label>
               <input
-                id="ratings.critics"
                 name="ratings.critics"
                 type="number"
-                placeholder="Critic Rating"
+                placeholder="0"
                 value={form.ratings.critics}
                 onChange={handleChange}
-                className="px-3 py-2 rounded border bg-background"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all font-black text-xl"
                 min={0}
                 max={100}
               />
             </div>
-            <div className="flex flex-col">
-              <label className="text-xs mb-1" htmlFor="ratings.players">Players</label>
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">Players</label>
               <input
-                id="ratings.players"
                 name="ratings.players"
                 type="number"
-                placeholder="Players Rating"
+                placeholder="0"
                 value={form.ratings.players}
                 onChange={handleChange}
-                className="px-3 py-2 rounded border bg-background"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all font-black text-xl"
                 min={0}
                 max={100}
               />
             </div>
-            <div className="flex flex-col col-span-2">
-              <label className="text-xs mb-1" htmlFor="ratings.link">OpenCritic link</label>
+            <div className="col-span-2 space-y-1.5">
+              <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">OpenCritic Link</label>
               <input
-                id="ratings.link"
                 name="ratings.link"
                 type="text"
                 value={form.ratings.link}
                 onChange={handleChange}
-                className="px-3 py-2 rounded border bg-background"
+                placeholder="https://opencritic.com/game/..."
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-xs font-mono focus:outline-none focus:border-primary/50 transition-all"
               />
             </div>
           </div>
         </div>
 
-        <div className="flex flex-row gap-3">
+        <div className="mt-8 pt-6 border-t border-white/10">
           {hasChanges && (
             <button
               type="submit"
-              className="rounded-md px-3 py-1.5 bg-gradient-primary"
+              className="w-full bg-gradient-primary py-4 rounded-xl text-white font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
             >
-              Save changes
+              Save Changes
             </button>
           )}
         </div>

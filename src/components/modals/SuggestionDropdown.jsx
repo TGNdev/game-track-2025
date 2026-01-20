@@ -45,7 +45,7 @@ const SuggestionDropdown = ({ suggestions, value, onSelect, anchorRef }) => {
   return (
     <div
       ref={dropdownRef}
-      className="absolute z-10 mt-1 w-full bg-background border rounded shadow-lg max-h-60 overflow-y-auto"
+      className="absolute z-[110] mt-2 w-full bg-black/70 border border-white/10 rounded-xl shadow-2xl overflow-y-auto max-h-60 custom-scrollbar py-2"
     >
       {filtered.map((item, idx) => (
         <div
@@ -55,10 +55,10 @@ const SuggestionDropdown = ({ suggestions, value, onSelect, anchorRef }) => {
             onSelect(item);
             setVisible(false);
           }}
-          className="px-4 py-2 hover:bg-black/20 cursor-pointer"
+          className="px-4 py-3 hover:bg-white/10 cursor-pointer transition-colors border-b border-white/5 last:border-none"
         >
-          <div className="font-medium">{item.name}</div>
-          <div className="text-xs">{item.link}</div>
+          <div className="font-bold text-white text-sm">{item.name}</div>
+          <div className="text-[10px] text-white/40 truncate">{item.link}</div>
         </div>
       ))}
     </div>

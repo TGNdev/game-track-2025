@@ -38,47 +38,66 @@ const LoginForm = ({ onSuccess }) => {
 
   return (
     <Modal title={isRegistering ? "Register" : "Login"}>
-      <form onSubmit={handleAuth} className="flex flex-col gap-4 mt-6">
-        <div className="flex flex-col gap-3">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email address"
-            className="border px-3 py-2 rounded w-full bg-background border-white/10"
-            required
-          />
-          {isRegistering && (
+      <form onSubmit={handleAuth} className="flex flex-col gap-6 mt-2">
+        <div className="flex flex-col gap-4">
+          <div className="space-y-1">
+            <label className="text-xs font-black uppercase tracking-widest text-white/40 ml-1">Email</label>
             <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
-              className="border px-3 py-2 rounded w-full bg-background border-white/10"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all"
               required
             />
+          </div>
+
+          {isRegistering && (
+            <div className="space-y-1">
+              <label className="text-xs font-black uppercase tracking-widest text-white/40 ml-1">Username</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="How should we call you ?"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all"
+                required
+              />
+            </div>
           )}
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            className="border px-3 py-2 rounded w-full bg-background border-white/10"
-            required
-          />
+
+          <div className="space-y-1">
+            <label className="text-xs font-black uppercase tracking-widest text-white/40 ml-1">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all"
+              required
+            />
+          </div>
         </div>
-        {error && <div className="text-sm bg-gradient-error py-1 px-2 rounded">{error}</div>}
-        <div className="flex flex-col gap-3">
+
+        {error && (
+          <div className="text-sm bg-red-500/10 border border-red-500/20 text-red-500 py-3 px-4 rounded-xl font-bold flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+            {error}
+          </div>
+        )}
+
+        <div className="flex flex-col gap-4 mt-2">
           <button
             type="submit"
-            className="bg-gradient-primary py-2 px-4 rounded font-medium"
+            className="w-full bg-gradient-primary py-4 rounded-xl text-white font-black uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
           >
-            {isRegistering ? "Sign Up" : "Log In"}
+            {isRegistering ? "Create Account" : "Let's Go !"}
           </button>
+
           <button
             type="button"
             onClick={() => setIsRegistering(!isRegistering)}
-            className="text-sm text-gray-400 hover:text-white transition-colors"
+            className="text-sm text-white/40 hover:text-white transition-colors font-bold"
           >
             {isRegistering
               ? "Already have an account? Log In"

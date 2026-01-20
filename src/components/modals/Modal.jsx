@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useGameUI } from "../../contexts/GameUIContext";
-import { FaPlus } from "react-icons/fa";
+import { FiX } from "react-icons/fi";
+import { motion } from "framer-motion";
 
 const Modal = ({ title, children, onClose }) => {
   const {
@@ -35,22 +36,40 @@ const Modal = ({ title, children, onClose }) => {
   const modalRef = useOutsideClick(onClose || handleCloseModal, [openButtonRef]);
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm z-[100] flex items-center justify-center">
-      <div
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="absolute inset-0 backdrop-blur-sm bg-black/10"
+        onClick={onClose || handleCloseModal}
+      />
+
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
         ref={modalRef}
-        className="bg-background border-primary rounded-lg w-full max-w-2xl relative max-h-[75%] overflow-auto transition shadow-2xl"
+        className="relative w-full max-w-2xl bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-xl overflow-hidden flex flex-col max-h-[90vh] scrollbar-hide"
       >
         <button
           onClick={onClose || handleCloseModal}
-          className="absolute top-4 right-4 text-lg rotate-45 hover:scale-105 transition"
+          className="absolute top-4 right-4 p-2 text-white/30 hover:text-white transition-colors hover:bg-white/10 rounded-full z-20"
         >
-          <FaPlus />
+          <FiX size={20} />
         </button>
-        <div className="px-8 py-5">
-          <h2 className="text-2xl font-bold mb-4">{title}</h2>
-          {children}
+
+        <div className="p-8 overflow-y-auto custom-scrollbar">
+          {title && (
+            <h2 className="text-2xl font-black text-white leading-tight mb-6">
+              {title}
+            </h2>
+          )}
+          <div className="relative">
+            {children}
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
