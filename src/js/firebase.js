@@ -210,4 +210,33 @@ export const getUserByUsername = async (username) => {
     }
 };
 
+export const setPlaytime = async (userId, gameId, stats) => {
+    try {
+        const playtimeRef = doc(db, "playtimes", `${userId}_${gameId}`);
+        await setDoc(playtimeRef, {
+            userId,
+            gameId,
+            ...stats,
+            updatedAt: new Date().toISOString()
+        }, { merge: true });
+    } catch (e) {
+        console.error("Error saving playtime: ", e);
+        throw e;
+    }
+};
+
+export const getPlaytimes = async (userId) => {
+    try {
+        const q = query(collection(db, "playtimes"), where("userId", "==", userId));
+        const snapshot = await getDocs(q);
+        return snapshot.docs.reduce((acc, doc) => {
+            acc[doc.data().gameId] = doc.data();
+            return acc;
+        }, {});
+    } catch (e) {
+        console.error("Error fetching playtimes: ", e);
+        return {};
+    }
+};
+
 export { db, auth };

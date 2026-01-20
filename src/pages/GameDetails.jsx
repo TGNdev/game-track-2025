@@ -9,11 +9,13 @@ import { useGameUI } from "../contexts/GameUIContext";
 import { useAuth } from "../contexts/AuthContext";
 import { slugify } from "../js/utils";
 import { getGameCovers, getGameScreenshots, getGameTimeToBeat } from "../js/igdb";
-import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown } from "../js/firebase";
+import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes } from "../js/firebase";
 import { toast } from "react-toastify";
 import CoverSkeleton from "../components/skeletons/CoverSkeleton";
+import ScreenshotSkeleton from "../components/skeletons/ScreenshotSkeleton";
 import he from "he";
 import { FiClock } from "react-icons/fi";
+import CompletionModal from "../components/shared/CompletionModal";
 
 const getRatingStyle = (rating) => {
   const baseClasses = "size-12 rounded-xl text-white font-bold flex items-center justify-center text-lg shadow-lg";
@@ -41,6 +43,8 @@ export default function GameDetails() {
   const [heroImagesLoaded, setHeroImagesLoaded] = useState({});
   const [sectionImagesLoaded, setSectionImagesLoaded] = useState({});
   const [galleryImageLoaded, setGalleryImageLoaded] = useState(false);
+  const [completionModalOpen, setCompletionModalOpen] = useState(false);
+  const [personalPlaytime, setPersonalPlaytime] = useState(null);
   const { userData, currentUser } = useAuth();
 
   const {
@@ -74,8 +78,12 @@ export default function GameDetails() {
       const isCurrentlyInType = type === 'played' ? isPlayed : isToPlay;
 
       if (isCurrentlyInType) {
-        await removeFromLibrary(currentUser.uid, game.id, type);
-        toast.info(`${game.name} removed from your ${type === 'played' ? 'played' : 'to play'} list`);
+        if (type === 'toPlay') {
+          setCompletionModalOpen(true);
+        } else {
+          await removeFromLibrary(currentUser.uid, game.id, type);
+          toast.info(`${game.name} removed from your ${type === 'played' ? 'played' : 'to play'} list`);
+        }
       } else {
         await removeFromLibrary(currentUser.uid, game.id, type === 'played' ? 'toPlay' : 'played');
         await addToLibrary(currentUser.uid, game.id, type);
@@ -83,6 +91,23 @@ export default function GameDetails() {
       }
     } catch (e) {
       toast.error("An error occurred. Please try again.");
+    }
+  };
+
+  const handleCompletionConfirm = async (status, hours) => {
+    try {
+      if (status === 'remove') {
+        await removeFromLibrary(currentUser.uid, game.id, 'toPlay');
+      } else {
+        const stats = { status, hours: Number(hours) };
+        await setPlaytime(currentUser.uid, game.id, stats);
+        setPersonalPlaytime(stats);
+        await removeFromLibrary(currentUser.uid, game.id, 'toPlay');
+        await addToLibrary(currentUser.uid, game.id, 'played');
+      }
+      toast.info(`Library updated for ${game.name}`);
+    } catch (e) {
+      toast.error("An error occurred");
     }
   };
 
@@ -112,6 +137,18 @@ export default function GameDetails() {
     : gameScreenshots.slice(0, 4);
   const gameCover = coverMap[game?.igdb_id];
   const canAddCountdown = game?.release_date?.seconds && game.release_date.seconds * 1000 > Date.now();
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (currentUser?.uid && game?.id) {
+        const stats = await getPlaytimes(currentUser.uid);
+        if (stats[game.id]) {
+          setPersonalPlaytime(stats[game.id]);
+        }
+      }
+    };
+    fetchStats();
+  }, [currentUser, game?.id]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -176,20 +213,11 @@ export default function GameDetails() {
     });
   };
 
-  if (loadingGames) {
-    return (
-      <Layout>
-        <div className="flex justify-center items-center min-h-[60vh]">
-          <div className="animate-pulse flex flex-col items-center">
-            <div className="w-12 h-12 bg-white/20 rounded-full mb-4"></div>
-            <p className="text-white/50 italic">Loading game details...</p>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
+  // No early return for loadingGames to avoid full-page layout shift
+  const isActuallyLoading = loadingGames || (!game && !loadingGames); // Consider it loading if we don't have a game yet
 
-  if (!game) {
+
+  if (!game && !loadingGames) {
     return (
       <Layout>
         <div className="flex flex-col justify-center items-center min-h-[60vh] gap-4">
@@ -209,20 +237,20 @@ export default function GameDetails() {
     <Layout>
       <div className="w-full flex flex-col gap-6 md:gap-8 pb-12">
         <div className="relative w-full h-[30vh] md:h-[40vh] min-h-[250px] md:min-h-[350px] overflow-hidden shadow-2xl opacity-70 bg-black/20">
-          {gameScreenshots.length > 0 ? (
-            gameScreenshots.slice(0, 6).map((shot, idx) => (
-              <div key={shot} className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentScreenshotIndex ? "opacity-100" : "opacity-0"}`}>
-                {!heroImagesLoaded[idx] && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-white/5 backdrop-blur-sm">
-                    <img src="loading.gif" alt="Loading..." className="w-12 h-12 opacity-20" />
-                  </div>
+          {(isActuallyLoading || gameScreenshots.length > 0) ? (
+            (isActuallyLoading ? [1] : gameScreenshots.slice(0, 6)).map((shot, idx) => (
+              <div key={idx} className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === currentScreenshotIndex ? "opacity-100" : "opacity-0"}`}>
+                {(isActuallyLoading || !heroImagesLoaded[idx]) && (
+                  <ScreenshotSkeleton />
                 )}
-                <img
-                  src={shot}
-                  alt={game.name}
-                  className="w-full h-full object-cover"
-                  onLoad={() => setHeroImagesLoaded(prev => ({ ...prev, [idx]: true }))}
-                />
+                {!isActuallyLoading && (
+                  <img
+                    src={shot}
+                    alt={game?.name}
+                    className="w-full h-full object-cover"
+                    onLoad={() => setHeroImagesLoaded(prev => ({ ...prev, [idx]: true }))}
+                  />
+                )}
               </div>
             ))
           ) : (
@@ -239,26 +267,47 @@ export default function GameDetails() {
         </div>
         <div className="px-4 md:px-6 -mt-20 md:mt-[-8rem] relative z-10 flex flex-col md:flex-row gap-6 md:gap-8 items-start">
           <div className="w-64 shrink-0 relative group self-center md:self-start">
-            <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-2 border-white/10 bg-background">
-              {!coverLoaded && <CoverSkeleton />}
-              {gameCover && (
+            <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-2 border-white/10 bg-background relative">
+              {(isActuallyLoading || !coverLoaded) && <CoverSkeleton />}
+              {!isActuallyLoading && gameCover && (
                 <img
                   src={gameCover}
-                  alt={`${game.name} cover`}
+                  alt={`${game?.name} cover`}
                   className={`w-full h-full object-cover transition-opacity duration-500 ${coverLoaded ? 'opacity-100' : 'opacity-0'}`}
                   onLoad={() => setCoverLoaded(true)}
                 />
               )}
+              {personalPlaytime && (
+                <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
+                  <div className={`p-2 rounded-lg backdrop-blur-md shadow-lg border border-white/10 ${personalPlaytime.status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-primary-light'}`}>
+                    {personalPlaytime.status === 'completed' ? <FaTrophy className="size-4" /> : <FaClock className="size-4" />}
+                  </div>
+                  {personalPlaytime.hours > 0 && (
+                    <div className={`${personalPlaytime.status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-primary-light'} px-2 py-1 rounded-md backdrop-blur-md text-[10px] font-black border border-white/10`}>
+                      {personalPlaytime.hours}H
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             {currentUser ? (
               <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                {isReleased(game.release_date) && (
+                {isReleased(game?.release_date) && (
                   <button
                     onClick={() => handleLibraryAction('played')}
                     title={isPlayed ? "Remove from Played" : "Add to Played"}
                     className={`p-3 rounded-full shadow-xl transition-all duration-300 hover:scale-105 ${isPlayed ? 'bg-gradient-secondary' : 'bg-gradient-primary'}`}
                   >
                     <FaCheck />
+                  </button>
+                )}
+                {isPlayed && (
+                  <button
+                    onClick={() => setCompletionModalOpen(true)}
+                    title="Add/Edit Playtime"
+                    className="p-3 rounded-full shadow-xl transition-all duration-300 hover:scale-105 bg-gradient-primary"
+                  >
+                    <FiClock className="text-white" />
                   </button>
                 )}
                 <button
@@ -290,14 +339,14 @@ export default function GameDetails() {
           </div>
           <div className="flex-1 space-y-4 md:space-y-6 pt-4 md:pt-32 w-full">
             <div>
-              <h1 className="text-3xl md:text-6xl font-black mb-3 md:mb-4 w-full md:text-left text-center leading-tight">
-                {he.decode(game.name)}
+              <h1 className="text-3xl md:text-6xl font-black mb-3 md:mb-4 w-full md:text-left text-center leading-tight min-h-[1.2em]">
+                {isActuallyLoading ? <span className="opacity-20 bg-white rounded-lg inline-block w-64 h-12 animate-pulse"></span> : he.decode(game.name)}
               </h1>
               <div className="flex flex-wrap gap-4 md:gap-6 items-center justify-center md:justify-start text-white/80">
                 <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
                   <FaCalendarAlt className="text-primary-light" />
                   <span className="font-semibold">
-                    {game.release_date?.seconds
+                    {game?.release_date?.seconds
                       ? new Date(game.release_date.seconds * 1000).toLocaleDateString("en-US", {
                         day: "numeric",
                         month: "long",
@@ -620,6 +669,15 @@ export default function GameDetails() {
           </motion.div>
         )}
       </AnimatePresence>
+      <CompletionModal
+        isOpen={completionModalOpen}
+        onClose={() => setCompletionModalOpen(false)}
+        gameName={game.name}
+        mode={isToPlay ? 'transition' : 'update'}
+        initialStatus={personalPlaytime?.status}
+        initialHours={personalPlaytime?.hours}
+        onConfirm={handleCompletionConfirm}
+      />
     </Layout>
   );
 }
