@@ -1,14 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiX, FiCheck, FiFastForward, FiTrash2, FiClock } from "react-icons/fi";
-import { FaTrophy } from "react-icons/fa";
+import { FiX, FiCheck, FiFastForward, FiTrash2, FiClock, FiChevronLeft } from "react-icons/fi";
+import { FaPen } from "react-icons/fa";
 
 const CompletionModal = ({ isOpen, onClose, onConfirm, mode = 'transition', initialStatus = null, initialHours = "" }) => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(initialStatus === 'completed' ? 2 : 1);
   const [status, setStatus] = useState(initialStatus);
   const [hours, setHours] = useState(initialHours);
 
-  document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isOpen]);
+
+  useLayoutEffect(() => {
+    if (isOpen) {
+      setStep(initialStatus === 'completed' ? 2 : 1);
+      setStatus(initialStatus);
+      setHours(initialHours);
+    }
+  }, [isOpen, initialStatus, initialHours]);
 
   const handleChoice = (selectedStatus) => {
     if (selectedStatus === 'remove') {
@@ -27,23 +40,8 @@ const CompletionModal = ({ isOpen, onClose, onConfirm, mode = 'transition', init
   };
 
   const handleClose = () => {
-    setStep(1);
-    setStatus(null);
-    setHours(initialHours);
     onClose();
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      setHours(initialHours);
-      setStatus(initialStatus);
-      if (initialStatus === 'completed') {
-        setStep(2);
-      } else {
-        setStep(1);
-      }
-    }
-  }, [isOpen, initialHours, initialStatus]);
 
   if (!isOpen) return null;
 
@@ -64,6 +62,15 @@ const CompletionModal = ({ isOpen, onClose, onConfirm, mode = 'transition', init
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           className="relative w-full max-w-md bg-white/5 border border-white/10 rounded-2xl p-8 shadow-2xl backdrop-blur-xl overflow-hidden"
         >
+          {step === 2 && (
+            <button
+              onClick={() => setStep(1)}
+              className="absolute top-2 left-2 p-2 text-white/30 hover:text-white transition-colors hover:bg-white/10 rounded-full z-20"
+              title="Go back"
+            >
+              <FiChevronLeft size={24} />
+            </button>
+          )}
           <button
             onClick={handleClose}
             className="absolute top-2 right-2 p-2 text-white/30 hover:text-white transition-colors hover:bg-white/10 rounded-full"
@@ -86,18 +93,21 @@ const CompletionModal = ({ isOpen, onClose, onConfirm, mode = 'transition', init
                       Update your playtime
                     </h2>
                   </div>
-
                   <div className="flex flex-col gap-3">
                     {initialStatus === 'completed' ? (
-                      <button
-                        onClick={() => handleChoice('completed')}
-                        className="w-full p-4 rounded-xl font-bold flex items-center justify-between"
-                      >
-                        <div className="flex items-center gap-3">
-                          <FaTrophy size={20} />
-                          <span>Update completion time</span>
-                        </div>
-                      </button>
+                      <>
+                        <p className="text-white/70 -mt-4 mb-2">
+                          You already completed the game and added your completion time !
+                        </p>                        <button
+                          onClick={() => handleChoice('completed')}
+                          className="w-full p-4 rounded-xl font-bold flex items-center justify-between bg-white/5 border border-white/10 text-white"
+                        >
+                          <div className="flex items-center gap-3">
+                            <FaPen size={18} />
+                            <span>I want to update it !</span>
+                          </div>
+                        </button>
+                      </>
                     ) : (
                       <>
                         <button
@@ -146,10 +156,10 @@ const CompletionModal = ({ isOpen, onClose, onConfirm, mode = 'transition', init
                   className="space-y-6"
                 >
                   <div className="space-y-2">
-                    <h2 className="text-2xl font-black text-white leading-tight">
-                      {status === 'completed' ? 'Congratulations !' : "You'll get there soon !"}
+                    <h2 className="text-2xl font-black leading-tight mt-4">
+                      {status === 'completed' ? 'Congrats !' : "You'll get there soon !"}
                     </h2>
-                    <p className="text-white/60">
+                    <p className="text-white/70">
                       How many hours did you spend in this world ?
                     </p>
                   </div>
@@ -175,9 +185,9 @@ const CompletionModal = ({ isOpen, onClose, onConfirm, mode = 'transition', init
 
                     <button
                       type="submit"
-                      className="w-full py-4 rounded-xl bg-gradient-primary text-white font-black uppercase tracking-widest shadow-xl text-sm"
+                      className="w-full py-4 rounded-xl bg-gradient-primary text-white font-black shadow-xl"
                     >
-                      Save Progress
+                      Save
                     </button>
                   </form>
                 </motion.div>
