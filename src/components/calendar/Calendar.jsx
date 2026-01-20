@@ -5,6 +5,8 @@ import { useGameData } from "../../contexts/GameDataContext";
 import { fetchMergedEvents } from "../../js/events";
 import Modal from "../modals/Modal";
 import EventLogoSkeleton from "../skeletons/EventLogoSkeleton";
+import { useNavigate } from "react-router-dom";
+import { slugify } from "../../js/utils";
 
 const Calendar = ({ mode = "games" }) => {
   const [currentMonthStart, setCurrentMonthStart] = useState(getMonthStart(new Date()));
@@ -15,6 +17,7 @@ const Calendar = ({ mode = "games" }) => {
   const initialMonthRef = useRef(null);
   const { isMobile } = useGameUI();
   const { games } = useGameData();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -221,6 +224,8 @@ const Calendar = ({ mode = "games" }) => {
                         if (mode === "events") {
                           setSelectedItem(item);
                           setLoadedImage(false);
+                        } else {
+                          navigate(`/game/${slugify(item.title)}`);
                         }
                       }}
                     >
@@ -276,6 +281,8 @@ const Calendar = ({ mode = "games" }) => {
                                 if (mode === "events") {
                                   setSelectedItem(item);
                                   setLoadedImage(false);
+                                } else {
+                                  navigate(`/games/${slugify(item.title)}`);
                                 }
                               }}
                             >
