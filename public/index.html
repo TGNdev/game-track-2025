@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -6,21 +6,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta name="title" content="Game Track 2025" />
-    <meta name="description" content="Game Track is a simple interface made for keeping track of games releases, reviews scores, news and leaks" />
+    <meta
+      name="description"
+      content="Game Track is a simple interface made for keeping track of games releases, reviews scores, news and leaks"
+    />
     <meta
       name="description"
       content="Game Track is a gaming-related simple interface to keep track of games releases, reviews scores, news and leaks."
     />
 
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://tgndev.github.io/game-track-2025/" />
+    <meta
+      property="og:url"
+      content="https://tgndev.github.io/game-track-2025/"
+    />
     <meta property="og:title" content="Game Track 2025" />
-    <meta property="og:description" content="Game Track is a simple interface made for keeping track of games releases, reviews scores, news and leaks" />
+    <meta
+      property="og:description"
+      content="Game Track is a simple interface made for keeping track of games releases, reviews scores, news and leaks"
+    />
 
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://tgndev.github.io/game-track-2025/" />
+    <meta
+      property="twitter:url"
+      content="https://tgndev.github.io/game-track-2025/"
+    />
     <meta property="twitter:title" content="Game Track 2025" />
-    <meta property="twitter:description" content="Game Track is a simple interface made for keeping track of games releases, reviews scores, news and leaks" />
+    <meta
+      property="twitter:description"
+      content="Game Track is a simple interface made for keeping track of games releases, reviews scores, news and leaks"
+    />
 
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
@@ -39,12 +54,22 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, rgb(68, 30, 138) 0%, rgb(29, 98, 207) 100%);
+        background: linear-gradient(
+          135deg,
+          rgb(68, 30, 138) 0%,
+          rgb(29, 98, 207) 100%
+        );
         background-attachment: fixed;
         z-index: 9999;
+        transition: opacity 0.5s ease-out;
+        will-change: opacity;
       "
     >
-      <img src="/loading.gif" alt="Loading..." style="width: 250px; height: 250px;" />
+      <img
+        src="%PUBLIC_URL%/loading.gif"
+        alt="Loading..."
+        style="width: 250px; height: 250px; object-fit: contain"
+      />
     </div>
     <div id="image-portal-root"></div>
   </body>

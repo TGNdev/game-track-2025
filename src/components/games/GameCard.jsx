@@ -6,10 +6,12 @@ import { useGameUI } from "../../contexts/GameUIContext";
 import he from "he";
 import { highlightMatch, slugify } from "../../js/utils";
 import { TAGS } from "../../js/config";
+import CoverSkeleton from "../skeletons/CoverSkeleton";
 
 const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [coverLoaded, setCoverLoaded] = useState(false);
   const {
     search,
     getPlatformsSvg,
@@ -112,11 +114,13 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
           <div className="flex flex-col">
             <div className="flex flex-row p-4 gap-4">
               {coverImage && (
-                <div className="relative flex-shrink-0 w-32 aspect-[3/4] rounded-xl overflow-hidden shadow-2xl border border-white/10">
+                <div className="relative flex-shrink-0 w-32 aspect-[3/4] rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-background">
+                  {!coverLoaded && <CoverSkeleton />}
                   <img
                     src={coverImage}
                     alt={game.name}
-                    className="w-full h-full object-cover"
+                    className={`w-full h-full object-cover transition-opacity duration-300 ${coverLoaded ? "opacity-100" : "opacity-0"}`}
+                    onLoad={() => setCoverLoaded(true)}
                   />
                 </div>
               )}

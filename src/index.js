@@ -8,8 +8,10 @@ root.render(<App />);
 
 const splash = document.getElementById("splash-screen");
 if (splash) {
-    splash.classList.add("opactity-0", "transition-opacity", "duration-500");
+    splash.style.opacity = "0";
     setTimeout(() => {
-        splash.remove();
+        if (splash.parentNode) {
+            splash.remove();
+        }
     }, 500);
 }

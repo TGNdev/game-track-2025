@@ -382,13 +382,13 @@ const GamesView = () => {
             <div className="overflow-y-auto min-w-full pb-8">
               <div className="flex flex-col gap-5">
                 {Array.from({ length: Math.min(itemsPerPage, 5) }).map((_, i) => (
-                  <div key={i} className="rounded-md overflow-hidden transition-all duration-300 relative border-primary p-4">
+                  <div key={i} className="rounded-2xl overflow-hidden transition-all duration-300 relative border border-white/10 bg-white/5 backdrop-blur-sm shadow-xl p-4">
                     <div className="flex gap-4 items-start">
-                      <div className="w-32 aspect-[3/4] bg-background animate-pulse rounded" />
-                      <div className="flex-1 space-y-2 py-1">
-                        <div className="h-6 bg-background rounded animate-pulse w-3/4" />
-                        <div className="h-4 bg-background rounded animate-pulse w-1/2" />
-                        <div className="h-3 bg-background rounded animate-pulse w-1/3" />
+                      <div className="w-32 aspect-[3/4] bg-white/10 animate-pulse rounded-xl" />
+                      <div className="flex-1 space-y-3 py-1">
+                        <div className="h-6 bg-white/10 rounded-lg animate-pulse w-3/4" />
+                        <div className="h-4 bg-white/10 rounded-lg animate-pulse w-1/2" />
+                        <div className="h-3 bg-white/10 rounded-lg animate-pulse w-1/3" />
                       </div>
                     </div>
                   </div>
@@ -425,22 +425,22 @@ const GamesView = () => {
                     {Array.from({ length: itemsPerPage }).map((_, idx) => (
                       <tr key={idx} className="animate-pulse">
                         <td className="p-3 sticky left-0 bg-sticky-column z-20 w-80">
-                          <div className="flex items-center text-left gap-8 border-r-2">
+                          <div className="flex items-center text-left gap-8 border-r">
                             <div className="relative w-24 aspect-[3/4] overflow-visible shrink-0">
-                              <div className="w-full h-full bg-background rounded" />
+                              <div className="w-full h-full bg-white/5 rounded-lg" />
                             </div>
                             <div className="flex-1">
-                              <div className="h-6 bg-background rounded w-1/2 mb-2" />
-                              <div className="h-4 bg-background rounded w-1/3" />
+                              <div className="h-6 bg-white/5 rounded-lg w-1/2 mb-2" />
+                              <div className="h-4 bg-white/5 rounded-lg w-1/3" />
                             </div>
                           </div>
                         </td>
-                        <td className="p-3"><div className="h-4 bg-background rounded w-24" /></td>
-                        <td className="p-3"><div className="h-4 bg-background rounded w-32" /></td>
-                        <td className="p-3"><div className="h-4 bg-background rounded w-28" /></td>
-                        <td className="p-3"><div className="h-4 bg-background rounded w-40" /></td>
-                        <td className="p-3"><div className="h-6 bg-background rounded w-20" /></td>
-                        {edit && <td className="p-3"><div className="h-6 bg-background rounded w-20" /></td>}
+                        <td className="p-3"><div className="h-4 bg-white/5 rounded w-24 m-auto" /></td>
+                        <td className="p-3"><div className="h-4 bg-white/5 rounded w-32 m-auto" /></td>
+                        <td className="p-3"><div className="h-4 bg-white/5 rounded w-28 m-auto" /></td>
+                        <td className="p-3"><div className="h-4 bg-white/5 rounded w-40 m-auto" /></td>
+                        <td className="p-3"><div className="h-8 bg-white/5 rounded-xl w-24 m-auto" /></td>
+                        {edit && <td className="p-3"><div className="h-8 bg-white/5 rounded-xl w-20 m-auto" /></td>}
                       </tr>
                     ))}
                   </tbody>
