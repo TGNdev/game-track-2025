@@ -48,6 +48,7 @@ export const addGameToFirestore = async (gameData) => {
         const gamesRef = collection(db, "games");
         const game = await addDoc(gamesRef, gameData);
         console.log("Game added with ID: ", game.id);
+        return game.id;
     } catch (e) {
         throw e;
     }
@@ -57,8 +58,16 @@ export const deleteGameFromFirestore = async (gameId) => {
     try {
         const gameRef = doc(db, "games", gameId);
         await deleteDoc(gameRef);
+
+        const playtimesRef = collection(db, "playtimes");
+        const q = query(playtimesRef, where("gameId", "==", gameId));
+        const querySnapshot = await getDocs(q);
+
+        const deletePromises = querySnapshot.docs.map(snap => deleteDoc(snap.ref));
+        await Promise.all(deletePromises);
     } catch (e) {
-        console.error("Error deleting document: ", e);
+        console.error("Error deleting document and related playtimes: ", e);
+        throw e;
     }
 };
 
