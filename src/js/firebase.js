@@ -248,6 +248,17 @@ export const getPlaytimes = async (userId) => {
     }
 };
 
+export const getGlobalPlaytimesForGame = async (gameId) => {
+    try {
+        const q = query(collection(db, "playtimes"), where("gameId", "==", gameId));
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => doc.data());
+    } catch (e) {
+        console.error("Error fetching global playtimes: ", e);
+        return [];
+    }
+};
+
 export const deletePlaytime = async (userId, gameId) => {
     try {
         const playtimeRef = doc(db, "playtimes", `${userId}_${gameId}`);

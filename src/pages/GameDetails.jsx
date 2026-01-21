@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { FaArrowLeft, FaClock, FaTrophy, FaCalendarAlt, FaExternalLinkAlt, FaBookmark, FaCheck, FaImage, FaExpandAlt, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaArrowLeft, FaClock, FaTrophy, FaCalendarAlt, FaExternalLinkAlt, FaBookmark, FaCheck, FaImage, FaExpandAlt, FaChevronLeft, FaChevronRight, FaShoppingCart, FaUsers } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
 import Layout from "../components/shared/Layout";
 import { useGameData } from "../contexts/GameDataContext";
@@ -9,7 +9,7 @@ import { useGameUI } from "../contexts/GameUIContext";
 import { useAuth } from "../contexts/AuthContext";
 import { slugify } from "../js/utils";
 import { getGameCovers, getGameScreenshots, getGameTimeToBeat } from "../js/igdb";
-import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes, deletePlaytime } from "../js/firebase";
+import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes, deletePlaytime, getGlobalPlaytimesForGame } from "../js/firebase";
 import { TAGS } from "../js/config";
 import { toast } from "react-toastify";
 import CoverSkeleton from "../components/skeletons/CoverSkeleton";
@@ -48,6 +48,7 @@ export default function GameDetails() {
   const [completionModalOpen, setCompletionModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [personalPlaytime, setPersonalPlaytime] = useState(null);
+  const [averagePlaytime, setAveragePlaytime] = useState(null);
   const { userData, currentUser } = useAuth();
 
   const {
@@ -163,6 +164,15 @@ export default function GameDetails() {
         const stats = await getPlaytimes(currentUser.uid);
         if (stats[game.id]) {
           setPersonalPlaytime(stats[game.id]);
+        }
+      }
+
+      if (game?.id) {
+        const globalPlaytimes = await getGlobalPlaytimesForGame(game.id);
+        const completedPlaytimes = globalPlaytimes.filter(p => p.status === 'completed' && p.hours > 0);
+        if (completedPlaytimes.length > 0) {
+          const totalHours = completedPlaytimes.reduce((acc, p) => acc + p.hours, 0);
+          setAveragePlaytime(Math.round(totalHours / completedPlaytimes.length));
         }
       }
     };
@@ -542,7 +552,7 @@ export default function GameDetails() {
                   <h2 className="text-lg md:text-xl font-black mb-4 md:mb-6">
                     Playtime
                   </h2>
-                  <div className="space-y-4 md:space-y-6">
+                  <div className="space-y-4">
                     <div className="flex justify-between items-end">
                       <p className="text-white/60 text-[10px] font-black uppercase tracking-widest -mt-2 md:-mt-4 mb-2 md:mb-3 border border-white/20 p-2 rounded-lg backdrop-blur-sm">
                         Please note that this data is contributed by the community (via <span className="text-white">IGDB</span>) and may not exactly reflect your personal playthroughs.
@@ -562,13 +572,32 @@ export default function GameDetails() {
                       </div>
                       <span className="text-xl md:text-2xl font-black text-primary-light">{gameTimeToBeat ? formatTime(gameTimeToBeat.hastily) : "..."}</span>
                     </div>
-                    <div className="flex justify-between items-end ">
+                    <div className="flex justify-between items-end">
                       <div className="flex flex-col">
                         <span className="text-white/40 text-[10px] font-black uppercase tracking-widest mb-0.5 md:mb-1">Completionist</span>
                         <span className="text-sm md:text-base text-white font-bold">100% Run</span>
                       </div>
                       <span className="text-xl md:text-2xl font-black text-primary-light">{gameTimeToBeat ? formatTime(gameTimeToBeat.completely) : "..."}</span>
                     </div>
+
+                    {averagePlaytime && (
+                      <div className="mt-4 pt-4 border-t border-white/10">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="size-10 rounded-lg bg-gradient-primary flex items-center justify-center">
+                              <FaUsers size={23} />
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-white/40 text-[10px] font-black uppercase tracking-widest mb-0.5 md:mb-1">Game Track users</span>
+                              <span className="text-sm md:text-base text-white font-bold">Completed the game</span>
+                            </div>
+                          </div>
+                          <span className="text-xl md:text-2xl font-black text-primary-light">
+                            {averagePlaytime}h
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </section>
