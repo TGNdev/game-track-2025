@@ -41,7 +41,7 @@ const Header = ({ onDrawerOpen }) => {
     ? window.location.hash.replace(/^#/, "")
     : window.location.pathname;
 
-  let canSearch = allowedSearchRoutes.includes(currentPath);
+  let canSearch = allowedSearchRoutes.includes(currentPath) || currentPath.startsWith("/profiles/");
   let viewControls = allowedContolsRoutes.includes(currentPath);
 
   return (
