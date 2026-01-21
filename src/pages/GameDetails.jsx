@@ -9,13 +9,15 @@ import { useGameUI } from "../contexts/GameUIContext";
 import { useAuth } from "../contexts/AuthContext";
 import { slugify } from "../js/utils";
 import { getGameCovers, getGameScreenshots, getGameTimeToBeat } from "../js/igdb";
-import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes } from "../js/firebase";
+import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes, deletePlaytime } from "../js/firebase";
+import { TAGS } from "../js/config";
 import { toast } from "react-toastify";
 import CoverSkeleton from "../components/skeletons/CoverSkeleton";
 import ScreenshotSkeleton from "../components/skeletons/ScreenshotSkeleton";
 import he from "he";
 import { FiClock } from "react-icons/fi";
 import CompletionModal from "../components/shared/CompletionModal";
+import ConfirmModal from "../components/modals/ConfirmModal";
 
 const getRatingStyle = (rating) => {
   const baseClasses = "size-12 rounded-xl text-white font-bold flex items-center justify-center text-lg shadow-lg";
@@ -44,6 +46,7 @@ export default function GameDetails() {
   const [sectionImagesLoaded, setSectionImagesLoaded] = useState({});
   const [galleryImageLoaded, setGalleryImageLoaded] = useState(false);
   const [completionModalOpen, setCompletionModalOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [personalPlaytime, setPersonalPlaytime] = useState(null);
   const { userData, currentUser } = useAuth();
 
@@ -81,8 +84,12 @@ export default function GameDetails() {
         if (type === 'toPlay') {
           setCompletionModalOpen(true);
         } else {
-          await removeFromLibrary(currentUser.uid, game.id, type);
-          toast.info(`${game.name} removed from your ${type === 'played' ? 'played' : 'to play'} list`);
+          if (type === 'played' && personalPlaytime) {
+            setConfirmModalOpen(true);
+          } else {
+            await removeFromLibrary(currentUser.uid, game.id, type);
+            toast.info(`${game.name} removed from your ${type === 'played' ? 'played' : 'to play'} list`);
+          }
         }
       } else {
         await removeFromLibrary(currentUser.uid, game.id, type === 'played' ? 'toPlay' : 'played');
@@ -91,6 +98,18 @@ export default function GameDetails() {
       }
     } catch (e) {
       toast.error("An error occurred. Please try again.");
+    }
+  };
+
+  const handleConfirmRemove = async () => {
+    try {
+      await removeFromLibrary(currentUser.uid, game.id, 'played');
+      await deletePlaytime(currentUser.uid, game.id);
+      setPersonalPlaytime(null);
+      toast.info(`${game.name} removed from your played list`);
+      setConfirmModalOpen(false);
+    } catch (e) {
+      toast.error("An error occurred");
     }
   };
 
@@ -136,7 +155,7 @@ export default function GameDetails() {
     ? gameScreenshots.slice(0)
     : gameScreenshots.slice(0, 4);
   const gameCover = coverMap[game?.igdb_id];
-  const canAddCountdown = game?.release_date?.seconds && game.release_date.seconds * 1000 > Date.now();
+  const canAddCountdown = game?.release_date?.seconds && (game.release_date.seconds * 1000 > Date.now());
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -153,7 +172,7 @@ export default function GameDetails() {
   useEffect(() => {
     window.scrollTo(0, 0);
     if (game) {
-      document.title = `${he.decode(game.name)} - Game Track 2025`;
+      document.title = `${he.decode(game.name || "") || "Game"} - Game Track 2025`;
     }
   }, [game]);
 
@@ -294,7 +313,10 @@ export default function GameDetails() {
               <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                 {isReleased(game?.release_date) && (
                   <button
-                    onClick={() => handleLibraryAction('played')}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleLibraryAction('played');
+                    }}
                     title={isPlayed ? "Remove from Played" : "Add to Played"}
                     className={`p-3 rounded-full shadow-xl transition-all duration-300 hover:scale-105 ${isPlayed ? 'bg-gradient-secondary' : 'bg-gradient-primary'}`}
                   >
@@ -311,7 +333,10 @@ export default function GameDetails() {
                   </button>
                 )}
                 <button
-                  onClick={() => handleLibraryAction('toPlay')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLibraryAction('toPlay');
+                  }}
                   title={isToPlay ? "Remove from To Play" : "Add to To Play"}
                   className={`p-3 rounded-full shadow-xl transition-all duration-300 hover:scale-105 ${isToPlay ? 'bg-gradient-secondary' : 'bg-gradient-primary'}`}
                 >
@@ -338,9 +363,33 @@ export default function GameDetails() {
             )}
           </div>
           <div className="flex-1 space-y-4 md:space-y-6 pt-4 md:pt-32 w-full">
-            <div>
-              <h1 className="text-3xl md:text-6xl font-black mb-3 md:mb-4 w-full md:text-left text-center leading-tight min-h-[1.2em]">
-                {isActuallyLoading ? <span className="opacity-20 bg-white rounded-lg inline-block w-64 h-12 animate-pulse"></span> : he.decode(game.name)}
+            <div className="flex flex-col items-center md:items-start gap-3">
+              <div className="flex flex-wrap gap-2">
+                {isActuallyLoading ? (
+                  <div className="bg-white/10 w-24 h-6 rounded-full animate-pulse border border-white/5" />
+                ) : (
+                  <>
+                    {isReleased(game?.release_date) ? (
+                      <div className="bg-gradient-secondary text-[10px] uppercase font-black px-3 py-1 rounded-full shadow-lg border border-white/10">
+                        Released
+                      </div>
+                    ) : (
+                      <div className="bg-gradient-tertiary text-[10px] uppercase font-black px-3 py-1 rounded-full shadow-lg border border-white/10">
+                        Coming soon
+                      </div>
+                    )}
+                    {game?.tags && Object.entries(game.tags)
+                      .filter(([_, enabled]) => enabled)
+                      .map(([key]) => (
+                        <div key={key} className="bg-gradient-primary text-[10px] uppercase font-black px-3 py-1 rounded-full shadow-lg border border-white/10 whitespace-nowrap">
+                          {TAGS[key]?.label || key}
+                        </div>
+                      ))}
+                  </>
+                )}
+              </div>
+              <h1 className="text-3xl md:text-6xl font-black w-full md:text-left text-center leading-tight min-h-[1.2em]">
+                {isActuallyLoading ? <span className="opacity-20 bg-white rounded-lg inline-block w-64 h-12 animate-pulse"></span> : he.decode(game?.name || "")}
               </h1>
               <div className="flex flex-wrap gap-4 md:gap-6 items-center justify-center md:justify-start text-white/80">
                 <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
@@ -352,49 +401,55 @@ export default function GameDetails() {
                         month: "long",
                         year: "numeric",
                       })
-                      : game.release_date || "TBA"}
+                      : game?.release_date || "TBA"}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-bold uppercase text-white/70">Available on</span>
                   <div className="flex gap-2">
-                    {Object.keys(game.platforms)
-                      .filter((p) => game.platforms[p])
-                      .map((p) => (
-                        <div key={p} className="hover:scale-110 transition duration-300">
-                          {getPlatformsSvg(p)}
-                        </div>
-                      ))}
+                    {isActuallyLoading ? (
+                      <div className="flex gap-2">
+                        {[1, 2, 3].map(i => <div key={i} className="size-5 rounded bg-white/10 animate-pulse" />)}
+                      </div>
+                    ) : (
+                      game?.platforms && Object.keys(game.platforms)
+                        .filter((p) => game.platforms[p])
+                        .map((p) => (
+                          <div key={p} className="hover:scale-110 transition duration-300">
+                            {getPlatformsSvg(p)}
+                          </div>
+                        ))
+                    )}
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="flex flex-wrap gap-4 md:gap-6 items-center justify-center md:justify-start">
-              <div className="flex gap-4 md:gap-6">
-                <div className="flex flex-col items-center gap-2">
-                  <div className={`${getRatingStyle(Number(game.ratings.critics))} scale-90 md:scale-100`}>
-                    {Number(game.ratings.critics) === 0 ? "/" : game.ratings.critics}
+              <div className="flex flex-wrap gap-4 md:gap-6 items-center justify-center md:justify-start">
+                <div className="flex gap-4 md:gap-6">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className={`${getRatingStyle(Number(game?.ratings?.critics || 0))} scale-90 md:scale-100`}>
+                      {isActuallyLoading ? "..." : (Number(game?.ratings?.critics) === 0 ? "/" : game?.ratings?.critics)}
+                    </div>
+                    <span className="text-[10px] font-bold uppercase text-white/50 text-center">Critics<br />Rating</span>
                   </div>
-                  <span className="text-[10px] font-bold uppercase text-white/50 text-center">Critics<br />Rating</span>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <div className={`${getRatingStyle(Number(game.ratings.players))} scale-90 md:scale-100`}>
-                    {Number(game.ratings.players) === 0 ? "/" : game.ratings.players}
+                  <div className="flex flex-col items-center gap-2">
+                    <div className={`${getRatingStyle(Number(game?.ratings?.players || 0))} scale-90 md:scale-100`}>
+                      {isActuallyLoading ? "..." : (Number(game?.ratings?.players) === 0 ? "/" : game?.ratings?.players)}
+                    </div>
+                    <span className="text-[10px] font-bold uppercase text-white/50 text-center">Players<br />Rating</span>
                   </div>
-                  <span className="text-[10px] font-bold uppercase text-white/50 text-center">Players<br />Rating</span>
                 </div>
-              </div>
-              <div className="flex flex-wrap gap-2 md:gap-3 justify-center">
-                {game.ratings.link && (
-                  <a
-                    href={game.ratings.link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 text-sm bg-gradient-primary px-2 py-1.5 rounded-md h-fit transition hover:scale-105 self-center font-bold shadow-lg"
-                  >
-                    OpenCritic <FaExternalLinkAlt className="text-[10px]" />
-                  </a>
-                )}
+                <div className="flex flex-wrap gap-2 md:gap-3 justify-center">
+                  {!isActuallyLoading && game?.ratings?.link && (
+                    <a
+                      href={game.ratings.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 text-sm bg-gradient-primary px-2 py-1.5 rounded-md h-fit transition hover:scale-105 self-center font-bold shadow-lg"
+                    >
+                      OpenCritic <FaExternalLinkAlt className="text-[10px]" />
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -498,21 +553,21 @@ export default function GameDetails() {
                         <span className="text-white/40 text-[10px] font-black uppercase tracking-widest mb-0.5 md:mb-1">Main Story</span>
                         <span className="text-sm md:text-base text-white font-bold">Standard Play</span>
                       </div>
-                      <span className="text-xl md:text-2xl font-black text-primary-light">{formatTime(gameTimeToBeat.normally)}</span>
+                      <span className="text-xl md:text-2xl font-black text-primary-light">{gameTimeToBeat ? formatTime(gameTimeToBeat.normally) : "..."}</span>
                     </div>
                     <div className="flex justify-between items-end border-b border-white/10 pb-3 md:pb-4">
                       <div className="flex flex-col">
                         <span className="text-white/40 text-[10px] font-black uppercase tracking-widest mb-0.5 md:mb-1">Fast Run</span>
                         <span className="text-sm md:text-base text-white font-bold">Rushed Play</span>
                       </div>
-                      <span className="text-xl md:text-2xl font-black text-primary-light">{formatTime(gameTimeToBeat.hastily)}</span>
+                      <span className="text-xl md:text-2xl font-black text-primary-light">{gameTimeToBeat ? formatTime(gameTimeToBeat.hastily) : "..."}</span>
                     </div>
                     <div className="flex justify-between items-end ">
                       <div className="flex flex-col">
                         <span className="text-white/40 text-[10px] font-black uppercase tracking-widest mb-0.5 md:mb-1">Completionist</span>
                         <span className="text-sm md:text-base text-white font-bold">100% Run</span>
                       </div>
-                      <span className="text-xl md:text-2xl font-black text-primary-light">{formatTime(gameTimeToBeat.completely)}</span>
+                      <span className="text-xl md:text-2xl font-black text-primary-light">{gameTimeToBeat ? formatTime(gameTimeToBeat.completely) : "..."}</span>
                     </div>
                   </div>
                 </div>
@@ -524,7 +579,7 @@ export default function GameDetails() {
                   Developers
                 </h3>
                 <div className="flex flex-col gap-2 md:gap-3">
-                  {game.developers.map((dev, i) => (
+                  {game?.developers?.map((dev, i) => (
                     <a
                       key={i}
                       href={dev.link}
@@ -532,7 +587,7 @@ export default function GameDetails() {
                       rel="noreferrer"
                       className="text-base md:text-lg font-black transition flex items-center flex-row gap-2 hover:scale-105"
                     >
-                      {he.decode(dev.name)}
+                      {he.decode(dev.name || "")}
                       <FaExternalLinkAlt className="text-[10px]" />
                     </a>
                   ))}
@@ -543,7 +598,7 @@ export default function GameDetails() {
                   Publishers
                 </h3>
                 <div className="flex flex-col gap-2 md:gap-3">
-                  {game.editors.map((editor, i) => (
+                  {game?.editors?.map((editor, i) => (
                     <a
                       key={i}
                       href={editor.link}
@@ -551,7 +606,7 @@ export default function GameDetails() {
                       rel="noreferrer"
                       className="text-base md:text-lg font-black transition flex items-center flex-row gap-2 hover:scale-105"
                     >
-                      {he.decode(editor.name)}
+                      {he.decode(editor.name || "")}
                       <FaExternalLinkAlt className="text-[10px]" />
                     </a>
                   ))}
@@ -560,124 +615,132 @@ export default function GameDetails() {
             </section>
           </div>
         </div>
-      </div>
-      <AnimatePresence initial={false} custom={direction}>
-        {selectedScreenshotIndex !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[999] bg-black/90 backdrop-blur-2xl flex items-center justify-center overflow-hidden"
-          >
-            <motion.button
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="absolute top-8 right-8 text-white p-4 bg-black/40 backdrop-blur-md rounded-full hover:scale-110 transition shadow-2xl border border-white/10 z-[110]"
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedScreenshotIndex(null);
-              }}
+        <AnimatePresence initial={false} custom={direction}>
+          {selectedScreenshotIndex !== null && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[999] bg-black/90 backdrop-blur-2xl flex items-center justify-center overflow-hidden"
             >
-              <FiX className="text-xl" />
-            </motion.button>
-            {gameScreenshots.length > 1 && (
-              <>
-                <button
-                  className="absolute left-4 md:left-10 text-white p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-full hover:bg-white/10 hover:scale-110 transition-all z-[110] shadow-2xl"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    paginate(-1);
-                  }}
-                >
-                  <FaChevronLeft className="text-xl" />
-                </button>
-                <button
-                  className="absolute right-4 md:right-10 text-white p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-full hover:bg-white/10 hover:scale-110 transition-all z-[110] shadow-2xl"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    paginate(1);
-                  }}
-                >
-                  <FaChevronRight className="text-xl" />
-                </button>
-              </>
-            )}
-            <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
-              <div className="relative w-full h-full flex items-center justify-center">
-                <AnimatePresence initial={false} custom={direction}>
-                  <motion.div
-                    key={selectedScreenshotIndex}
-                    custom={direction}
-                    variants={{
-                      enter: (direction) => ({
-                        x: direction > 0 ? '100%' : '-100%',
-                        opacity: 0,
-                      }),
-                      center: {
-                        zIndex: 1,
-                        x: 0,
-                        opacity: 1,
-                      },
-                      exit: (direction) => ({
-                        zIndex: 0,
-                        x: direction < 0 ? '100%' : '-100%',
-                        opacity: 0,
-                      })
+              <motion.button
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="absolute top-8 right-8 text-white p-4 bg-black/40 backdrop-blur-md rounded-full hover:scale-110 transition shadow-2xl border border-white/10 z-[110]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedScreenshotIndex(null);
+                }}
+              >
+                <FiX className="text-xl" />
+              </motion.button>
+              {gameScreenshots.length > 1 && (
+                <>
+                  <button
+                    className="absolute left-4 md:left-10 text-white p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-full hover:bg-white/10 hover:scale-110 transition-all z-[110] shadow-2xl"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      paginate(-1);
                     }}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{
-                      x: { type: "tween", duration: 0.3 },
-                      opacity: { duration: 0.2 }
-                    }}
-                    drag="x"
-                    dragConstraints={{ left: 0, right: 0 }}
-                    dragElastic={1}
-                    onDragEnd={(e, { offset, velocity }) => {
-                      const swipe = swipePower(offset.x, velocity.x);
-                      if (swipe < -swipeConfidenceThreshold) {
-                        paginate(1);
-                      } else if (swipe > swipeConfidenceThreshold) {
-                        paginate(-1);
-                      }
-                    }}
-                    className="absolute inset-0 flex items-center justify-center p-4 md:p-12 cursor-grab active:cursor-grabbing"
-                    onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      {!galleryImageLoaded && (
-                        <img src="loading.gif" alt="Loading..." className="w-16 h-16 opacity-40 animate-pulse" />
-                      )}
-                    </div>
-                    <img
-                      src={gameScreenshots[selectedScreenshotIndex]}
-                      alt={`${game.name} screen gallery`}
-                      className="max-w-full max-h-[75vh] md:max-h-[80vh] object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 transition-opacity duration-300 pointer-events-none select-none"
-                      style={{ opacity: galleryImageLoaded ? 1 : 0 }}
-                      onLoad={() => setGalleryImageLoaded(true)}
-                      onError={() => setGalleryImageLoaded(true)}
-                    />
-                  </motion.div>
-                </AnimatePresence>
+                    <FaChevronLeft className="text-xl" />
+                  </button>
+                  <button
+                    className="absolute right-4 md:right-10 text-white p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-full hover:bg-white/10 hover:scale-110 transition-all z-[110] shadow-2xl"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      paginate(1);
+                    }}
+                  >
+                    <FaChevronRight className="text-xl" />
+                  </button>
+                </>
+              )}
+              <div className="relative w-full h-full flex flex-col items-center justify-center overflow-hidden">
+                <div className="relative w-full h-full flex items-center justify-center">
+                  <AnimatePresence initial={false} custom={direction}>
+                    <motion.div
+                      key={selectedScreenshotIndex}
+                      custom={direction}
+                      variants={{
+                        enter: (direction) => ({
+                          x: direction > 0 ? '100%' : '-100%',
+                          opacity: 0,
+                        }),
+                        center: {
+                          zIndex: 1,
+                          x: 0,
+                          opacity: 1,
+                        },
+                        exit: (direction) => ({
+                          zIndex: 0,
+                          x: direction < 0 ? '100%' : '-100%',
+                          opacity: 0,
+                        })
+                      }}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      transition={{
+                        x: { type: "tween", duration: 0.3 },
+                        opacity: { duration: 0.2 }
+                      }}
+                      drag="x"
+                      dragConstraints={{ left: 0, right: 0 }}
+                      dragElastic={1}
+                      onDragEnd={(e, { offset, velocity }) => {
+                        const swipe = swipePower(offset.x, velocity.x);
+                        if (swipe < -swipeConfidenceThreshold) {
+                          paginate(1);
+                        } else if (swipe > swipeConfidenceThreshold) {
+                          paginate(-1);
+                        }
+                      }}
+                      className="absolute inset-0 flex items-center justify-center p-4 md:p-12 cursor-grab active:cursor-grabbing"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        {!galleryImageLoaded && (
+                          <img src="loading.gif" alt="Loading..." className="w-16 h-16 opacity-40 animate-pulse" />
+                        )}
+                      </div>
+                      <img
+                        src={gameScreenshots[selectedScreenshotIndex]}
+                        alt={`${game?.name || ""} screen gallery`}
+                        className="max-w-full max-h-[75vh] md:max-h-[80vh] object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 transition-opacity duration-300 pointer-events-none select-none"
+                        style={{ opacity: galleryImageLoaded ? 1 : 0 }}
+                        onLoad={() => setGalleryImageLoaded(true)}
+                        onError={() => setGalleryImageLoaded(true)}
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white/5 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 shadow-2xl flex items-center gap-3 z-[110]">
+                  <span className="text-white/40 text-[10px] font-black uppercase tracking-widest">Screenshot</span>
+                  <span className="text-white font-black">{selectedScreenshotIndex + 1} / {gameScreenshots.length}</span>
+                </div>
               </div>
-              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white/5 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 shadow-2xl flex items-center gap-3 z-[110]">
-                <span className="text-white/40 text-[10px] font-black uppercase tracking-widest">Screenshot</span>
-                <span className="text-white font-black">{selectedScreenshotIndex + 1} / {gameScreenshots.length}</span>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <CompletionModal
-        isOpen={completionModalOpen}
-        onClose={() => setCompletionModalOpen(false)}
-        gameName={game.name}
-        mode={isToPlay ? 'transition' : 'update'}
-        initialStatus={personalPlaytime?.status}
-        initialHours={personalPlaytime?.hours}
-        onConfirm={handleCompletionConfirm}
-      />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <CompletionModal
+          isOpen={completionModalOpen}
+          onClose={() => setCompletionModalOpen(false)}
+          gameName={game?.name || ""}
+          mode={isToPlay ? 'transition' : 'update'}
+          initialStatus={personalPlaytime?.status}
+          initialHours={personalPlaytime?.hours}
+          onConfirm={handleCompletionConfirm}
+        />
+        <ConfirmModal
+          isOpen={confirmModalOpen}
+          title="Warning"
+          message="By removing the game from your Played list, your current playtimes will be lost"
+          confirmText="Remove"
+          onConfirm={handleConfirmRemove}
+          onCancel={() => setConfirmModalOpen(false)}
+        />
+      </div>
     </Layout>
   );
 }

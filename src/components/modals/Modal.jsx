@@ -13,7 +13,7 @@ const Modal = ({ title, children, onClose }) => {
     const ref = useRef();
 
     useEffect(() => {
-      const handleClick = (event) => {
+      const handleMouseDown = (event) => {
         const clickedInsideModal = ref.current && ref.current.contains(event.target);
         const clickedException = exceptions.some(
           exceptionRef => exceptionRef.current && exceptionRef.current.contains(event.target)
@@ -24,9 +24,9 @@ const Modal = ({ title, children, onClose }) => {
         }
       };
 
-      document.addEventListener('click', handleClick);
+      document.addEventListener('mousedown', handleMouseDown);
       return () => {
-        document.removeEventListener('click', handleClick);
+        document.removeEventListener('mousedown', handleMouseDown);
       };
     }, [callback, exceptions]);
 
@@ -50,7 +50,7 @@ const Modal = ({ title, children, onClose }) => {
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
         ref={modalRef}
-        className="relative w-full max-w-2xl bg-white/10 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-xl overflow-hidden flex flex-col max-h-[90vh] scrollbar-hide"
+        className="relative w-full max-w-2xl bg-black/20 border border-black/20 rounded-2xl shadow-2xl backdrop-blur-xl overflow-hidden flex flex-col max-h-[90vh] scrollbar-hide"
       >
         <button
           onClick={onClose || handleCloseModal}

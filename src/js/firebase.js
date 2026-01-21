@@ -248,4 +248,14 @@ export const getPlaytimes = async (userId) => {
     }
 };
 
+export const deletePlaytime = async (userId, gameId) => {
+    try {
+        const playtimeRef = doc(db, "playtimes", `${userId}_${gameId}`);
+        await deleteDoc(playtimeRef);
+    } catch (e) {
+        console.error("Error deleting playtime: ", e);
+        throw e;
+    }
+};
+
 export { db, auth };

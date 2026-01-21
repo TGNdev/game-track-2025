@@ -1,28 +1,32 @@
 import { useAuth } from "../contexts/AuthContext";
 import { useGameData } from "../contexts/GameDataContext";
+import { useGameUI } from "../contexts/GameUIContext";
 import Layout from "../components/shared/Layout";
 import { Navigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { getGameCovers } from "../js/igdb";
 import { useNavigate } from "react-router-dom";
 import { slugify } from "../js/utils";
-import { removeFromLibrary, removeCountdown, getUserByUsername, setPlaytime, addToLibrary, getPlaytimes } from "../js/firebase";
+import { removeFromLibrary, removeCountdown, getUserByUsername, setPlaytime, addToLibrary, getPlaytimes, deletePlaytime } from "../js/firebase";
 import { FaExternalLinkAlt, FaClock, FaPlus, FaCheck, FaBookmark, FaShareAlt, FaTrophy } from "react-icons/fa";
 import { toast } from "react-toastify";
 import CountdownTimer from "../components/shared/CountdownTimer";
 import ScrollableContainer from "../components/shared/ScrollableContainer";
 import CompletionModal from "../components/shared/CompletionModal";
+import ConfirmModal from "../components/modals/ConfirmModal";
 
 const Profile = () => {
   const { username } = useParams();
   const navigate = useNavigate();
   const { userData: loggedInUserData, currentUser } = useAuth();
   const { games, coverMap, setCoverMap } = useGameData();
+  const { search } = useGameUI();
   const [view, setView] = useState('played');
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [playtimes, setPlaytimes] = useState({});
   const [completionModal, setCompletionModal] = useState({ isOpen: false, gameId: null, gameName: "", mode: 'transition' });
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, gameId: null, type: null });
 
   const isOwnProfile = !username || (loggedInUserData && loggedInUserData.username === username);
 
@@ -64,7 +68,12 @@ const Profile = () => {
     if (!profileData?.library?.played || games.length === 0) return [];
     return games
       .filter(g => profileData.library.played.includes(g.id) && playtimes[g.id]?.status !== 'completed')
-      .sort((a, b) => (a.release_date?.seconds || 0) - (b.release_date?.seconds || 0));
+      .sort((a, b) => {
+        const hasA = !!playtimes[a.id];
+        const hasB = !!playtimes[b.id];
+        if (hasA !== hasB) return hasA ? -1 : 1;
+        return (a.release_date?.seconds || 0) - (b.release_date?.seconds || 0);
+      });
   }, [profileData?.library?.played, games, playtimes]);
 
   const toPlayGames = useMemo(() => {
@@ -118,8 +127,33 @@ const Profile = () => {
       const game = games.find(g => g.id === gameId);
       setCompletionModal({ isOpen: true, gameId, gameName: game?.name || "this game", mode: 'transition' });
     } else {
-      removeFromLibrary(currentUser.uid, gameId, type);
+      if (type === 'played' && playtimes[gameId]) {
+        setConfirmModal({ isOpen: true, gameId, type: 'played' });
+      } else {
+        removeFromLibrary(currentUser.uid, gameId, type);
+        toast.success("Library updated !");
+      }
+    }
+  };
+
+  const handleConfirmRemove = async () => {
+    const { gameId, type } = confirmModal;
+    try {
+      if (type === 'played') {
+        await removeFromLibrary(currentUser.uid, gameId, 'played');
+        await deletePlaytime(currentUser.uid, gameId);
+        setPlaytimes(prev => {
+          const updated = { ...prev };
+          delete updated[gameId];
+          return updated;
+        });
+      } else {
+        await removeFromLibrary(currentUser.uid, gameId, type);
+      }
       toast.success("Library updated !");
+      setConfirmModal({ ...confirmModal, isOpen: false });
+    } catch (e) {
+      toast.error("An error occurred");
     }
   };
 
@@ -183,6 +217,52 @@ const Profile = () => {
       fetchCovers();
     }
   }, [completedGames, playedGames, toPlayGames, countdowns, setCoverMap]);
+
+  useEffect(() => {
+    if (!search || search.length < 2) return;
+    const q = search.toLowerCase();
+
+    let targetGame = null;
+    let targetView = null;
+
+    // Check current view first for efficiency/less jumping
+    const currentList = view === 'completed' ? completedGames : view === 'played' ? playedGames : toPlayGames;
+    const currentMatch = currentList.find(g => g.name.toLowerCase().includes(q));
+
+    if (currentMatch) {
+      targetGame = currentMatch;
+      targetView = view;
+    } else {
+      const matchCompleted = completedGames.find(g => g.name.toLowerCase().includes(q));
+      const matchPlayed = playedGames.find(g => g.name.toLowerCase().includes(q));
+      const matchToPlay = toPlayGames.find(g => g.name.toLowerCase().includes(q));
+
+      if (matchCompleted) {
+        targetGame = matchCompleted;
+        targetView = 'completed';
+      } else if (matchPlayed) {
+        targetGame = matchPlayed;
+        targetView = 'played';
+      } else if (matchToPlay) {
+        targetGame = matchToPlay;
+        targetView = 'toPlay';
+      }
+    }
+
+    if (targetGame && targetView) {
+      if (view !== targetView) {
+        setView(targetView);
+      }
+
+      const timer = setTimeout(() => {
+        const element = document.getElementById(`profile-game-${targetGame.id}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+        }
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [search, completedGames, playedGames, toPlayGames, view]);
 
   if (!currentUser && !username) return <Navigate to="/" />;
   if (loading) return (
@@ -281,7 +361,7 @@ const Profile = () => {
             {(view === 'completed' ? completedGames : view === 'played' ? playedGames : toPlayGames).length > 0 ? (
               <ScrollableContainer>
                 {(view === 'completed' ? completedGames : view === 'played' ? playedGames : toPlayGames).map(game => (
-                  <div key={game.id} className="w-60 h-auto shrink-0 rounded-xl shadow-sm text-center flex flex-col items-center border-primary relative">
+                  <div key={game.id} id={`profile-game-${game.id}`} className="w-60 h-auto shrink-0 rounded-xl shadow-sm text-center flex flex-col items-center border-primary relative">
                     <div className="relative w-full aspect-[12/17] overflow-hidden rounded-lg">
                       <img
                         src={coverMap[game?.igdb_id]}
@@ -323,7 +403,10 @@ const Profile = () => {
                           )}
                           <button
                             className="bg-gradient-primary py-1.5 px-2 rounded-lg my-2"
-                            onClick={() => handleRemoveFromLibrary(game.id, (view === 'played' || view === 'completed') ? 'played' : 'toPlay')}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveFromLibrary(game.id, (view === 'played' || view === 'completed') ? 'played' : 'toPlay');
+                            }}
                             title="Remove from library"
                           >
                             <FaPlus className="size-4 rotate-45" />
@@ -346,7 +429,7 @@ const Profile = () => {
                 {isOwnProfile && (
                   <p className="text-white/60 text-sm text-center">
                     {view === 'completed'
-                      ? "Mark games as completed when you reach the credits to see them here!"
+                      ? "Mark games as completed by adding your playtime when you reach the credits to see them here!"
                       : view === 'played'
                         ? "Build your played history by marking games as played from any game details page !"
                         : "Build your backlog by marking games as to play from any game details page !"}
@@ -368,7 +451,7 @@ const Profile = () => {
           </div>
           {countdowns.length > 0 && (
             <div className="flex justify-between items-end">
-              <p className="text-white/60 text-[10px] font-black uppercase tracking-widest mb-4 p-2 bg-white/5 rounded-lg w-full">
+              <p className="text-white/60 text-[10px] font-black uppercase tracking-widest mb-4 p-2 bg-white/5 rounded-lg w-full border border-white/10">
                 These countdowns are based on the release day of the game and may not be totally accurate as games tend to be available on different days (depending on the region you are in) and at a certain time during the day (the game might not usually be available directly at midnight).
               </p>
             </div>
@@ -376,7 +459,7 @@ const Profile = () => {
           {countdowns.length > 0 ? (
             <ScrollableContainer>
               {countdowns.map(game => (
-                <div key={game.id} className="w-60 h-auto shrink-0 rounded-xl shadow-sm text-center flex flex-col items-center border-primary">
+                <div key={game.id} id={`profile-game-${game.id}`} className="w-60 h-auto shrink-0 rounded-xl shadow-sm text-center flex flex-col items-center border-primary">
                   <img
                     src={coverMap[game?.igdb_id]}
                     alt={game.name}
@@ -427,6 +510,14 @@ const Profile = () => {
         initialStatus={completionModal.initialStatus}
         initialHours={completionModal.initialHours}
         onConfirm={handleCompletionConfirm}
+      />
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title="Warning"
+        message="You have registered some playtimes for this game. By removing the game from your library, all your playtimes will be lost !"
+        confirmText="Okay"
+        onConfirm={handleConfirmRemove}
+        onCancel={() => setConfirmModal({ ...confirmModal, isOpen: false })}
       />
     </Layout>
   );
