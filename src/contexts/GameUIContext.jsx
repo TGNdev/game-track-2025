@@ -166,12 +166,14 @@ export const GameUIProvider = ({ children }) => {
   }, []);
 
   const isReleased = useCallback((date) => {
+    if (!date || !date.seconds) return false;
     const today = new Date();
     const releaseDate = new Date(date.seconds * 1000);
     return releaseDate < today;
   }, []);
 
   const isComingSoon = useCallback((date) => {
+    if (!date || !date.seconds) return false;
     const now = new Date();
     const releaseDate = new Date(date.seconds * 1000);
 
