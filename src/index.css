@@ -3,13 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --bg-background: linear-gradient(135deg, rgb(68, 30, 138) 0%, rgb(29, 98, 207) 100%);
+  --bg-background: linear-gradient(
+    135deg,
+    rgb(68, 30, 138) 0%,
+    rgb(29, 98, 207) 100%
+  );
 }
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #fff;
@@ -18,8 +22,8 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 a div {
@@ -37,8 +41,14 @@ a div {
   inherits: false;
 }
 #winner::after {
-  background: conic-gradient(from var(--angle), transparent 50%, #ffe203, #ff8503, transparent);
-  content: '';
+  background: conic-gradient(
+    from var(--angle),
+    transparent 50%,
+    #ffe203,
+    #ff8503,
+    transparent
+  );
+  content: "";
   position: absolute;
   top: -10px;
   left: -10px;
@@ -69,7 +79,7 @@ a div {
     background: var(--bg-background);
     background-attachment: fixed;
   }
-    .bg-sticky-column {
+  .bg-sticky-column {
     background: var(--bg-background);
     background-attachment: fixed;
     background-position: 0 0;
@@ -99,19 +109,24 @@ a div {
     @apply border-gradient-tertiary;
   }
   .border-gradient-primary {
-    background-image: var(--bg-background), linear-gradient(to bottom right, #5a8eff, #b069ff);
+    background-image:
+      var(--bg-background), linear-gradient(to bottom right, #5a8eff, #b069ff);
     background-origin: border-box;
     background-clip: content-box, border-box;
     padding: 3.5px;
   }
   .border-gradient-secondary {
-    background-image: linear-gradient(white, white), linear-gradient(to bottom right, #7bffbb, #00b718);
+    background-image:
+      linear-gradient(white, white),
+      linear-gradient(to bottom right, #7bffbb, #00b718);
     background-origin: border-box;
     background-clip: content-box, border-box;
     padding: 3.5px;
   }
   .border-gradient-tertiary {
-    background-image: linear-gradient(white, white), linear-gradient(to bottom right, #ffd788, #ff9e43);
+    background-image:
+      linear-gradient(white, white),
+      linear-gradient(to bottom right, #ffd788, #ff9e43);
     background-origin: border-box;
     background-clip: content-box, border-box;
     padding: 3.5px;
@@ -128,5 +143,20 @@ a div {
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
   }
 }

@@ -7,6 +7,7 @@ import ReleaseCalendar from "../pages/ReleaseCalendar";
 import Welcome from "../pages/Welcome";
 import GameDetails from "../pages/GameDetails";
 import Profile from "../pages/Profile";
+import AdminTga from "../pages/AdminTga";
 
 function FirstRunGate({ children }) {
   const hasSeen = localStorage.getItem("hasSeenWelcome") === "true";
@@ -84,6 +85,14 @@ const AnimatedRoutes = () => {
           element={
             <PageFade>
               <Profile />
+            </PageFade>
+          }
+        />
+        <Route
+          path="/admin/tga"
+          element={
+            <PageFade>
+              <AdminTga />
             </PageFade>
           }
         />

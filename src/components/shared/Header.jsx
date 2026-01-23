@@ -42,7 +42,7 @@ const Header = ({ onDrawerOpen }) => {
     : window.location.pathname;
 
   let canSearch = allowedSearchRoutes.includes(currentPath) || currentPath.startsWith("/profiles/");
-  let viewControls = allowedContolsRoutes.includes(currentPath);
+  let viewControls = allowedContolsRoutes.includes(currentPath) || currentPath.startsWith("/admin/");
 
   return (
     <div className={`sticky top-0 z-30 isolation-isolate flex flex-col items-start justify-between w-full gap-6 py-4 px-6 transition-all duration-300 ${isScrolled ? "backdrop-blur-md shadow-md" : ""}`}>

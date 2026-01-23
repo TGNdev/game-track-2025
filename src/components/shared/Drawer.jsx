@@ -1,7 +1,7 @@
 import { FiX, FiHome, FiUser, FiLogOut } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useGameUI } from "../../contexts/GameUIContext";
-import { FaTrophy, FaCalendar } from "react-icons/fa";
+import { FaTrophy, FaCalendar, FaShieldAlt } from "react-icons/fa";
 import { useAuth } from "../../contexts/AuthContext";
 
 const Drawer = ({ open, setOpen }) => {
@@ -84,6 +84,19 @@ const Drawer = ({ open, setOpen }) => {
                   <FiUser className="size-5" />
                 </div>
                 <span className="font-semibold">My Profile</span>
+              </Link>
+            )}
+
+            {isLogged && userData?.isAdmin && (
+              <Link
+                to="/admin/tga"
+                className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                <div className="p-2 rounded-lg bg-gradient-tertiary transition-colors">
+                  <FaShieldAlt className="size-5" />
+                </div>
+                <span className="font-semibold">TGA Administration</span>
               </Link>
             )}
           </nav>

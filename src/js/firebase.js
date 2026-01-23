@@ -142,6 +142,23 @@ export const getTgaFromFirestore = async () => {
     }
 };
 
+export const saveTgaYear = async (yearData, docId = null) => {
+    try {
+        if (docId) {
+            const tgaRef = doc(db, "tga", docId);
+            await setDoc(tgaRef, yearData, { merge: true });
+            return docId;
+        } else {
+            const tgaRef = collection(db, "tga");
+            const docRef = await addDoc(tgaRef, yearData);
+            return docRef.id;
+        }
+    } catch (e) {
+        console.error("Error saving TGA year: ", e);
+        throw e;
+    }
+};
+
 export const addToLibrary = async (userId, gameId, type = "played") => {
     try {
         const userRef = doc(db, "users", userId);
