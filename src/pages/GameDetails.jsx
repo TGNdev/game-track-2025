@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { FaArrowLeft, FaClock, FaTrophy, FaCalendarAlt, FaExternalLinkAlt, FaBookmark, FaCheck, FaImage, FaExpandAlt, FaChevronLeft, FaChevronRight, FaShoppingCart, FaUsers } from "react-icons/fa";
+import { FaArrowLeft, FaClock, FaTrophy, FaCalendarAlt, FaExternalLinkAlt, FaBookmark, FaCheck, FaImage, FaExpandAlt, FaChevronLeft, FaChevronRight, FaUsers } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
 import Layout from "../components/shared/Layout";
 import { useGameData } from "../contexts/GameDataContext";
