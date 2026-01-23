@@ -1,14 +1,11 @@
 import { useState } from "react";
-import { useGameUI } from "../../contexts/GameUIContext";
+import { useNavigate } from "react-router-dom";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
+import { slugify } from "../../js/utils";
 
 const FeaturedGame = ({ featured, cover }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
-  const {
-    setFeaturedOpen,
-    setSearch,
-    setOpenSearch,
-  } = useGameUI();
+  const navigate = useNavigate();
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-2xl p-4 shadow-2xl relative overflow-hidden flex flex-row gap-3">
@@ -46,9 +43,7 @@ const FeaturedGame = ({ featured, cover }) => {
         <div className="flex flex-row items-center justify-between">
           <button
             onClick={() => {
-              setOpenSearch(true);
-              setSearch(featured.name);
-              setFeaturedOpen(featured.id);
+              navigate(`/games/${slugify(featured.name)}`);
             }}
             className="self-start bg-gradient-primary text-sm px-3 py-1.5 rounded-md"
           >
