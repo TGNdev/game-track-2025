@@ -6,7 +6,7 @@ import { Navigate, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { getGameCovers } from "../js/igdb";
 import { useNavigate } from "react-router-dom";
-import { slugify } from "../js/utils";
+import { slugify, matchesSearch } from "../js/utils";
 import { removeFromLibrary, removeCountdown, getUserByUsername, setPlaytime, addToLibrary, getPlaytimes, deletePlaytime } from "../js/firebase";
 import { FaExternalLinkAlt, FaClock, FaPlus, FaCheck, FaBookmark, FaShareAlt, FaTrophy } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -220,22 +220,21 @@ const Profile = () => {
 
   useEffect(() => {
     if (!search || search.length < 2) return;
-    const q = search.toLowerCase();
 
     let targetGame = null;
     let targetView = null;
 
     // Check current view first for efficiency/less jumping
     const currentList = view === 'completed' ? completedGames : view === 'played' ? playedGames : toPlayGames;
-    const currentMatch = currentList.find(g => g.name.toLowerCase().includes(q));
+    const currentMatch = currentList.find(g => matchesSearch(g.name, search));
 
     if (currentMatch) {
       targetGame = currentMatch;
       targetView = view;
     } else {
-      const matchCompleted = completedGames.find(g => g.name.toLowerCase().includes(q));
-      const matchPlayed = playedGames.find(g => g.name.toLowerCase().includes(q));
-      const matchToPlay = toPlayGames.find(g => g.name.toLowerCase().includes(q));
+      const matchCompleted = completedGames.find(g => matchesSearch(g.name, search));
+      const matchPlayed = playedGames.find(g => matchesSearch(g.name, search));
+      const matchToPlay = toPlayGames.find(g => matchesSearch(g.name, search));
 
       if (matchCompleted) {
         targetGame = matchCompleted;

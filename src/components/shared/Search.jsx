@@ -44,7 +44,7 @@ const Search = () => {
             <input
               className="px-4 bg-transparent h-full w-full focus:outline-none"
               type="text"
-              placeholder="Search a game's name, developper(s) or editor(s)"
+              placeholder="Search username, game name, developer or editor"
               value={search}
               name="search"
               onChange={e => setSearch(e.target.value)}

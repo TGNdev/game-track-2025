@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { matchesSearch } from "../../js/utils";
 
 const SuggestionDropdown = ({ suggestions, value, onSelect, anchorRef }) => {
   const [searchTerm, setSearchTerm] = useState(value || "");
@@ -18,7 +19,7 @@ const SuggestionDropdown = ({ suggestions, value, onSelect, anchorRef }) => {
     }
 
     const filteredSuggestions = suggestions.filter((sugg) =>
-      sugg.name.toLowerCase().includes(searchTerm.toLowerCase())
+      matchesSearch(sugg.name, searchTerm)
     );
 
     setFiltered(filteredSuggestions);

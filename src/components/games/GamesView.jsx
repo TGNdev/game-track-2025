@@ -7,7 +7,7 @@ import { FaFilter } from "react-icons/fa";
 import FeaturedGames from "./FeaturedGames";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
 import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
-import { getPaginationRange } from "../../js/utils";
+import { getPaginationRange, matchesSearch } from "../../js/utils";
 import FilterButton from "../shared/FilterButton";
 import { PLATFORMS } from "../../js/config";
 import { useGameData } from "../../contexts/GameDataContext";
@@ -117,7 +117,6 @@ const GamesView = () => {
 
     const now = new Date();
     const currentYear = now.getFullYear();
-    const q = search.toLowerCase();
 
     return games
       .filter((game) => {
@@ -125,10 +124,10 @@ const GamesView = () => {
         return typeof game.release_date === "string";
       })
       .filter((game) => {
-        const matchesSearch =
-          game.name.toLowerCase().includes(q) ||
-          game.developers.some((dev) => dev.name.toLowerCase().includes(q)) ||
-          game.editors.some((editor) => editor.name.toLowerCase().includes(q));
+        const matchesSearchValue =
+          matchesSearch(game.name, search) ||
+          game.developers.some((dev) => matchesSearch(dev.name, search)) ||
+          game.editors.some((editor) => matchesSearch(editor.name, search));
 
         const matchesPlatform =
           selectedPlatforms.length === 0 ||
@@ -157,7 +156,7 @@ const GamesView = () => {
           }
         }
 
-        return matchesSearch && matchesPlatform && matchesReleaseStatus && matchesYear;
+        return matchesSearchValue && matchesPlatform && matchesReleaseStatus && matchesYear;
       })
       .sort((a, b) => {
         const aSort = getSortValue(a.release_date);
@@ -169,8 +168,7 @@ const GamesView = () => {
 
   const filteredUsers = useMemo(() => {
     if (!search || search.length < 2) return [];
-    const q = search.toLowerCase();
-    return users.filter(user => user.username.toLowerCase().includes(q));
+    return users.filter(user => matchesSearch(user.username, search));
   }, [users, search]);
 
   useEffect(() => {
