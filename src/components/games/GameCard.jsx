@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiChevronDown } from "react-icons/fi";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { useGameUI } from "../../contexts/GameUIContext";
 import he from "he";
 import { highlightMatch, slugify } from "../../js/utils";
-import { TAGS } from "../../js/config";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
 
 const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
@@ -15,24 +14,20 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
   const {
     search,
     getPlatformsSvg,
-    isReleased,
     opened,
     edit,
     setIsModalOpen,
-    setGameToEdit
+    setGameToEdit,
+    activeTags
   } = useGameUI();
-  const enabledTags = Object.keys(game.tags || {})
-    .filter(t => game.tags && game.tags[t])
-    .sort((a, b) => a.localeCompare(b));
+
+  const gameTags = useMemo(() => activeTags(game), [activeTags, game]);
 
   useEffect(() => {
     setIsOpen(opened || forceOpen);
   }, [opened, forceOpen]);
 
   const platforms = Object.keys(game.platforms).filter(p => game.platforms[p]);
-  const tagsLabels = Object.fromEntries(
-    Object.keys(TAGS).map((key) => [key, TAGS[key].label])
-  );
 
   return (
     <div
@@ -42,29 +37,23 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
     >
       <div className="absolute top-0 left-0 flex flex-row justify-between w-full p-2 z-20 pointer-events-none">
         <div className="flex flex-row gap-2">
-          {isReleased(game.release_date) ? (
-            <div className="bg-gradient-secondary text-[10px] uppercase font-black px-2 py-0.5 rounded-full shadow-lg">
-              Released
+          {gameTags.filter(t => t.key.startsWith('_')).map((tag) => (
+            <div key={tag.key} className={`${tag.color} text-[10px] uppercase font-black px-2 py-0.5 rounded-full shadow-lg`}>
+              {tag.label}
             </div>
-          ) : (
-            <div className="bg-gradient-tertiary text-[10px] uppercase font-black px-2 py-0.5 rounded-full shadow-lg">
-              Coming soon
-            </div>
-          )}
+          ))}
         </div>
-        {enabledTags.length > 0 && (
-          <div className="flex gap-1">
-            {enabledTags.slice(0, 2).map((tag, idx) => (
-              <span
-                key={idx}
-                className="whitespace-nowrap text-[10px] uppercase font-black bg-gradient-primary px-2 py-0.5 rounded-full shadow-lg"
-                title={tag}
-              >
-                {tagsLabels[tag]}
-              </span>
-            ))}
-          </div>
-        )}
+        <div className="flex gap-1">
+          {gameTags.filter(t => !t.key.startsWith('_')).slice(0, 2).map((tag) => (
+            <span
+              key={tag.key}
+              className="whitespace-nowrap text-[10px] uppercase font-black bg-gradient-primary px-2 py-0.5 rounded-full shadow-lg"
+              title={tag.label}
+            >
+              {tag.label}
+            </span>
+          ))}
+        </div>
       </div>
 
       <button

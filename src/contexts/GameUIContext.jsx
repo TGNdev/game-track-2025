@@ -16,6 +16,8 @@ import { ReactComponent as PsIcon } from "../assets/icons/ps.svg";
 import { ReactComponent as PcIcon } from "../assets/icons/pc.svg";
 import { ReactComponent as SwitchIcon } from "../assets/icons/switch.svg";
 import { ReactComponent as Switch2Icon } from "../assets/icons/switch_2.svg";
+import { TAGS } from "../js/config";
+import { useGameData } from "./GameDataContext";
 
 const GameUIContext = createContext(null);
 
@@ -37,6 +39,10 @@ const safeLocalStorageSet = (key, value) => {
   } catch { }
 };
 
+const tagsLabels = Object.fromEntries(
+  Object.keys(TAGS).map((key) => [key, TAGS[key].label])
+);
+
 export const GameUIProvider = ({ children }) => {
   const [viewGames, setViewGames] = useState(true);
   const [search, setSearch] = useState("");
@@ -52,6 +58,7 @@ export const GameUIProvider = ({ children }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [openSearch, setOpenSearch] = useState(false);
   const [isAwardsModalOpen, setIsAwardsModalOpen] = useState(false);
+  const { hasWonAward } = useGameData();
 
   const savedFilters = (() => {
     try {
@@ -185,6 +192,47 @@ export const GameUIProvider = ({ children }) => {
     return releaseDate <= threeMonthsLater;
   }, []);
 
+  const activeTags = useCallback((game) => {
+    if (!game) return [];
+    return [
+      ...(isReleased(game.release_date)
+        ? [
+          {
+            key: "_release",
+            label: "Released",
+            color: "bg-gradient-secondary",
+          },
+        ]
+        : isComingSoon(game.release_date)
+          ? [
+            {
+              key: "_coming_soon",
+              label: "Coming soon",
+              color: "bg-gradient-tertiary",
+            },
+          ]
+          : []),
+
+      ...Object.keys(game.tags || {})
+        .filter((tag) => game.tags[tag])
+        .sort((a, b) => a.localeCompare(b))
+        .map((tag) => ({
+          key: tag,
+          label: tagsLabels[tag] || tag,
+          color: "bg-gradient-primary",
+        })),
+      ...(hasWonAward(game.id)
+        ? [
+          {
+            key: "_award",
+            label: "Game Award Winner",
+            color: "bg-gradient-tertiary",
+          },
+        ]
+        : []),
+    ];
+  }, [isReleased, isComingSoon, hasWonAward]);
+
   const value = useMemo(
     () => ({
       viewGames,
@@ -235,6 +283,7 @@ export const GameUIProvider = ({ children }) => {
       setShowThisYearOnly,
       filtersVisible,
       setFiltersVisible,
+      activeTags,
     }),
     [
       viewGames,
@@ -267,6 +316,7 @@ export const GameUIProvider = ({ children }) => {
       withRelease,
       showThisYearOnly,
       filtersVisible,
+      activeTags,
     ]
   );
 

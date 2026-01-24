@@ -119,6 +119,7 @@ export const getPaginationRange = (length, itemsPerPage, currentPage) => {
 
   return range;
 }
+
 export const matchesSearch = (target, search) => {
   if (!search || search.length < 2) return true;
 

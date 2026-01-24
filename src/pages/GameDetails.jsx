@@ -10,7 +10,6 @@ import { useAuth } from "../contexts/AuthContext";
 import { slugify } from "../js/utils";
 import { getGameCovers, getGameScreenshots, getGameTimeToBeat } from "../js/igdb";
 import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes, deletePlaytime, getGlobalPlaytimesForGame } from "../js/firebase";
-import { TAGS } from "../js/config";
 import { toast } from "react-toastify";
 import CoverSkeleton from "../components/skeletons/CoverSkeleton";
 import ScreenshotSkeleton from "../components/skeletons/ScreenshotSkeleton";
@@ -63,11 +62,13 @@ export default function GameDetails() {
     setTimesToBeat
   } = useGameData();
 
-  const { getPlatformsSvg, isReleased } = useGameUI();
+  const { getPlatformsSvg, isReleased, activeTags } = useGameUI();
 
   const game = useMemo(() => {
     return games.find(g => slugify(g.name) === gameSlug);
   }, [games, gameSlug]);
+
+  const gameTags = useMemo(() => activeTags(game), [activeTags, game]);
 
   const isPlayed = useMemo(() => userData?.library?.played?.includes(game?.id), [userData?.library?.played, game?.id]);
   const isToPlay = useMemo(() => userData?.library?.toPlay?.includes(game?.id), [userData?.library?.toPlay, game?.id]);
@@ -379,22 +380,11 @@ export default function GameDetails() {
                   <div className="bg-white/10 w-24 h-6 rounded-full animate-pulse border border-white/5" />
                 ) : (
                   <>
-                    {isReleased(game?.release_date) ? (
-                      <div className="bg-gradient-secondary text-[10px] uppercase font-black px-3 py-1 rounded-full shadow-lg border border-white/10">
-                        Released
+                    {gameTags.map((tag) => (
+                      <div key={tag.key} className={`${tag.color} text-[10px] uppercase font-black px-3 py-1 rounded-full shadow-lg border border-white/10 whitespace-nowrap`}>
+                        {tag.label}
                       </div>
-                    ) : (
-                      <div className="bg-gradient-tertiary text-[10px] uppercase font-black px-3 py-1 rounded-full shadow-lg border border-white/10">
-                        Coming soon
-                      </div>
-                    )}
-                    {game?.tags && Object.entries(game.tags)
-                      .filter(([_, enabled]) => enabled)
-                      .map(([key]) => (
-                        <div key={key} className="bg-gradient-primary text-[10px] uppercase font-black px-3 py-1 rounded-full shadow-lg border border-white/10 whitespace-nowrap">
-                          {TAGS[key]?.label || key}
-                        </div>
-                      ))}
+                    ))}
                   </>
                 )}
               </div>

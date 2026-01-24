@@ -1,63 +1,19 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useGameUI } from "../../contexts/GameUIContext";
 import he from "he";
 import { highlightMatch } from "../../js/utils";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
-import { TAGS } from "../../js/config";
-import { useGameData } from "../../contexts/GameDataContext";
 import { slugify } from "../../js/utils";
 
-function GameCell({ game, coverImage, screenshots }) {
+function GameCell({ game, coverImage }) {
   const navigate = useNavigate();
   const tagRefs = useRef([]);
   const imgRef = useRef(null);
   const [tagLefts, setTagLefts] = useState([]);
   const [coverLoaded, setCoverLoaded] = useState(false);
-  const { search, isReleased, isComingSoon } = useGameUI();
-  const { hasWonAward } = useGameData();
-
-  const tagsLabels = Object.fromEntries(
-    Object.keys(TAGS).map((key) => [key, TAGS[key].label])
-  );
-
-  const activeTags = [
-    ...(isReleased(game.release_date)
-      ? [
-        {
-          key: "_release",
-          label: "Released",
-          color: "bg-gradient-secondary",
-        },
-      ]
-      : isComingSoon(game.release_date)
-        ? [
-          {
-            key: "_coming_soon",
-            label: "Coming soon",
-            color: "bg-gradient-tertiary",
-          },
-        ]
-        : []),
-
-    ...Object.keys(game.tags || {})
-      .filter((tag) => game.tags[tag])
-      .sort((a, b) => a.localeCompare(b))
-      .map((tag) => ({
-        key: tag,
-        label: tagsLabels[tag] || tag,
-        color: "bg-gradient-primary",
-      })),
-    ...(hasWonAward(game.id)
-      ? [
-        {
-          key: "_award",
-          label: "Game Award Winner",
-          color: "bg-gradient-tertiary",
-        },
-      ]
-      : []),
-  ];
+  const { search, activeTags } = useGameUI();
+  const gameTags = useMemo(() => activeTags(game), [activeTags, game]);
 
   useEffect(() => {
     const lefts = [];
@@ -69,7 +25,7 @@ function GameCell({ game, coverImage, screenshots }) {
       }
     });
     setTagLefts(lefts);
-  }, [game.tags, game.release_date]);
+  }, [gameTags]);
 
   const handleGameNavigate = (e) => {
     e.stopPropagation();
@@ -82,7 +38,7 @@ function GameCell({ game, coverImage, screenshots }) {
     <td className="p-3 sticky left-0 bg-sticky-column z-20 w-80">
       <div className="relative flex items-center text-left gap-3 border-r">
         <div className="absolute -top-1 left-0 z-30">
-          {activeTags.map((tag, index) => (
+          {gameTags.map((tag, index) => (
             <div
               key={tag.key}
               ref={(el) => (tagRefs.current[index] = el)}
