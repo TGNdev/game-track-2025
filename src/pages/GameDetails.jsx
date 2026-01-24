@@ -13,6 +13,7 @@ import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlay
 import { toast } from "react-toastify";
 import CoverSkeleton from "../components/skeletons/CoverSkeleton";
 import ScreenshotSkeleton from "../components/skeletons/ScreenshotSkeleton";
+import GameTag from "../components/games/GameTag";
 import he from "he";
 import { FiClock } from "react-icons/fi";
 import CompletionModal from "../components/shared/CompletionModal";
@@ -381,9 +382,7 @@ export default function GameDetails() {
                 ) : (
                   <>
                     {gameTags.map((tag) => (
-                      <div key={tag.key} className={`${tag.color} text-[10px] uppercase font-black px-3 py-1 rounded-full shadow-lg border border-white/10 whitespace-nowrap`}>
-                        {tag.label}
-                      </div>
+                      <GameTag key={tag.key} tag={tag} size="md" />
                     ))}
                   </>
                 )}

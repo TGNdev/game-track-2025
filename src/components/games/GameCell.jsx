@@ -6,6 +6,8 @@ import { highlightMatch } from "../../js/utils";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
 import { slugify } from "../../js/utils";
 
+import GameTag from "./GameTag";
+
 function GameCell({ game, coverImage }) {
   const navigate = useNavigate();
   const tagRefs = useRef([]);
@@ -39,17 +41,15 @@ function GameCell({ game, coverImage }) {
       <div className="relative flex items-center text-left gap-3 border-r">
         <div className="absolute -top-1 left-0 z-30">
           {gameTags.map((tag, index) => (
-            <div
+            <GameTag
               key={tag.key}
+              tag={tag}
+              variant="rotated"
               ref={(el) => (tagRefs.current[index] = el)}
-              className={`absolute ${tag.color} whitespace-nowrap text-xs font-bold px-2 py-1 rounded transform -rotate-12 shadow-lg`}
               style={{
                 left: `${tagLefts[index] || 0}px`,
-                transformOrigin: "left top",
               }}
-            >
-              {tag.label}
-            </div>
+            />
           ))}
         </div>
 

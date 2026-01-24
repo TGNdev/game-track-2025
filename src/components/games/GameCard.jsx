@@ -6,6 +6,7 @@ import { useGameUI } from "../../contexts/GameUIContext";
 import he from "he";
 import { highlightMatch, slugify } from "../../js/utils";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
+import GameTag from "./GameTag";
 
 const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
   const navigate = useNavigate();
@@ -38,20 +39,12 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
       <div className="absolute top-0 left-0 flex flex-row justify-between w-full p-2 z-20 pointer-events-none">
         <div className="flex flex-row gap-2">
           {gameTags.filter(t => t.key.startsWith('_')).map((tag) => (
-            <div key={tag.key} className={`${tag.color} text-[10px] uppercase font-black px-2 py-0.5 rounded-full shadow-lg`}>
-              {tag.label}
-            </div>
+            <GameTag key={tag.key} tag={tag} />
           ))}
         </div>
         <div className="flex gap-1">
           {gameTags.filter(t => !t.key.startsWith('_')).slice(0, 2).map((tag) => (
-            <span
-              key={tag.key}
-              className="whitespace-nowrap text-[10px] uppercase font-black bg-gradient-primary px-2 py-0.5 rounded-full shadow-lg"
-              title={tag.label}
-            >
-              {tag.label}
-            </span>
+            <GameTag key={tag.key} tag={tag} />
           ))}
         </div>
       </div>
