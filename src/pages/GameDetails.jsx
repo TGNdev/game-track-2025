@@ -1,14 +1,14 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { FaArrowLeft, FaClock, FaTrophy, FaCalendarAlt, FaExternalLinkAlt, FaBookmark, FaCheck, FaImage, FaExpandAlt, FaChevronLeft, FaChevronRight, FaUsers } from "react-icons/fa";
+import { FaArrowLeft, FaClock, FaTrophy, FaCalendarAlt, FaExternalLinkAlt, FaBookmark, FaCheck, FaImage, FaExpandAlt, FaChevronLeft, FaChevronRight, FaUsers, FaPlay } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
 import Layout from "../components/shared/Layout";
 import { useGameData } from "../contexts/GameDataContext";
 import { useGameUI } from "../contexts/GameUIContext";
 import { useAuth } from "../contexts/AuthContext";
 import { slugify } from "../js/utils";
-import { getGameCovers, getGameScreenshots, getGameTimeToBeat } from "../js/igdb";
+import { getGameCovers, getGameScreenshots, getGameTimeToBeat, getGameVideos } from "../js/igdb";
 import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes, deletePlaytime, getGlobalPlaytimesForGame } from "../js/firebase";
 import { toast } from "react-toastify";
 import CoverSkeleton from "../components/skeletons/CoverSkeleton";
@@ -40,7 +40,8 @@ export default function GameDetails() {
   const [coverLoaded, setCoverLoaded] = useState(false);
   const [currentScreenshotIndex, setCurrentScreenshotIndex] = useState(0);
   const [showAllScreenshots, setShowAllScreenshots] = useState(false);
-  const [selectedScreenshotIndex, setSelectedScreenshotIndex] = useState(null);
+  const [showAllVideos, setShowAllVideos] = useState(false);
+  const [selectedMediaIndex, setSelectedMediaIndex] = useState(null);
   const [direction, setDirection] = useState(0);
   const [heroImagesLoaded, setHeroImagesLoaded] = useState({});
   const [sectionImagesLoaded, setSectionImagesLoaded] = useState({});
@@ -59,6 +60,8 @@ export default function GameDetails() {
     setCoverMap,
     screenshotsMap,
     setScreenshotsMap,
+    videosMap,
+    setVideosMap,
     timesToBeat,
     setTimesToBeat
   } = useGameData();
@@ -154,10 +157,22 @@ export default function GameDetails() {
   const gameAwards = awardsPerGame[game?.id] || [];
   const gameTimeToBeat = timesToBeat[game?.igdb_id];
   const gameScreenshots = useMemo(() => screenshotsMap[game?.igdb_id] || [], [screenshotsMap, game?.igdb_id]);
+  const gameVideos = useMemo(() => videosMap[game?.igdb_id] || [], [videosMap, game?.igdb_id]);
   const displayedScreenshots = showAllScreenshots
     ? gameScreenshots.slice(0)
     : gameScreenshots.slice(0, 4);
+  const displayedVideos = showAllVideos
+    ? gameVideos.slice(0)
+    : gameVideos.slice(0, 4);
   const gameCover = coverMap[game?.igdb_id];
+
+  const combinedMedia = useMemo(() => {
+    const media = [];
+    gameVideos.forEach((v) => media.push({ type: 'video', id: v.video_id, name: v.name }));
+    gameScreenshots.forEach((s) => media.push({ type: 'screenshot', url: s }));
+    return media;
+  }, [gameVideos, gameScreenshots]);
+
   const canAddCountdown = game?.release_date?.seconds && (game.release_date.seconds * 1000 > Date.now());
 
   useEffect(() => {
@@ -216,6 +231,13 @@ export default function GameDetails() {
         }
       }
 
+      if (!videosMap[id]) {
+        const videos = await getGameVideos([id]);
+        if (Object.keys(videos).length > 0) {
+          setVideosMap(prev => ({ ...prev, ...videos }));
+        }
+      }
+
       if (!timesToBeat[id]) {
         const times = await getGameTimeToBeat([id]);
         if (Object.keys(times).length > 0) {
@@ -236,11 +258,11 @@ export default function GameDetails() {
   const paginate = (newDirection) => {
     setGalleryImageLoaded(false);
     setDirection(newDirection);
-    setSelectedScreenshotIndex((prev) => {
+    setSelectedMediaIndex((prev) => {
       if (newDirection === 1) {
-        return (prev + 1) % gameScreenshots.length;
+        return (prev + 1) % combinedMedia.length;
       }
-      return (prev - 1 + gameScreenshots.length) % gameScreenshots.length;
+      return (prev - 1 + combinedMedia.length) % combinedMedia.length;
     });
   };
 
@@ -482,7 +504,54 @@ export default function GameDetails() {
                 </div>
               </section>
             )}
-            {gameScreenshots.length > 1 && (
+            {gameVideos.length > 0 && (
+              <section className="space-y-4 md:space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl md:text-3xl font-black flex items-center gap-3 md:gap-4">
+                    <div className="p-2 md:p-3 bg-gradient-tertiary rounded-lg shrink-0 shadow-lg">
+                      <FaPlay className="text-lg" />
+                    </div>
+                    Videos ({gameVideos.length})
+                  </h2>
+                  {gameVideos.length >= 5 && (
+                    <button
+                      onClick={() => setShowAllVideos(!showAllVideos)}
+                      className="text-xs md:text-sm font-semibold bg-gradient-primary px-3 py-1.5 rounded-md transition hover:scale-105 shadow-md"
+                    >
+                      {showAllVideos ? "See Less" : "See All"}
+                    </button>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                  {displayedVideos.map((video, i) => (
+                    <div
+                      key={i}
+                      className="rounded-[2rem] overflow-hidden aspect-video border border-white/10 shadow-xl group relative cursor-pointer bg-white/5"
+                      onClick={() => {
+                        setGalleryImageLoaded(false);
+                        setSelectedMediaIndex(i);
+                      }}
+                    >
+                      <img
+                        src={`https://img.youtube.com/vi/${video.video_id}/maxresdefault.jpg`}
+                        alt={video.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-700 ease-out"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-colors duration-300">
+                        <div className="size-16 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <FaPlay className="text-white text-2xl ml-1" />
+                        </div>
+                      </div>
+                      <div className="absolute bottom-4 left-6 right-6">
+                        <p className="text-white font-bold truncate text-sm shadow-black drop-shadow-lg">{video.name}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+            {gameScreenshots.length > 0 && (
               <section className="space-y-4 md:space-y-6">
                 <div className="flex items-center justify-between">
                   <h2 className="text-2xl md:text-3xl font-black flex items-center gap-3 md:gap-4">
@@ -491,7 +560,7 @@ export default function GameDetails() {
                     </div>
                     Screenshots ({gameScreenshots.length})
                   </h2>
-                  {gameScreenshots.length > 5 && (
+                  {gameScreenshots.length >= 5 && (
                     <button
                       onClick={() => setShowAllScreenshots(!showAllScreenshots)}
                       className="text-xs md:text-sm font-semibold bg-gradient-primary px-3 py-1.5 rounded-md transition hover:scale-105 shadow-md"
@@ -507,7 +576,7 @@ export default function GameDetails() {
                       className="rounded-[2rem] overflow-hidden aspect-video border border-white/10 shadow-xl group relative cursor-pointer bg-white/5"
                       onClick={() => {
                         setGalleryImageLoaded(false);
-                        setSelectedScreenshotIndex(i);
+                        setSelectedMediaIndex(gameVideos.length + i);
                       }}
                     >
                       {!sectionImagesLoaded[i] && (
@@ -634,7 +703,7 @@ export default function GameDetails() {
           </div>
         </div>
         <AnimatePresence initial={false} custom={direction}>
-          {selectedScreenshotIndex !== null && (
+          {selectedMediaIndex !== null && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -647,12 +716,12 @@ export default function GameDetails() {
                 className="absolute top-8 right-8 text-white p-4 bg-black/40 backdrop-blur-md rounded-full hover:scale-110 transition shadow-2xl border border-white/10 z-[110]"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setSelectedScreenshotIndex(null);
+                  setSelectedMediaIndex(null);
                 }}
               >
                 <FiX className="text-xl" />
               </motion.button>
-              {gameScreenshots.length > 1 && (
+              {combinedMedia.length > 1 && (
                 <>
                   <button
                     className="absolute left-4 md:left-10 text-white p-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-full hover:bg-white/10 hover:scale-110 transition-all z-[110] shadow-2xl"
@@ -678,7 +747,7 @@ export default function GameDetails() {
                 <div className="relative w-full h-full flex items-center justify-center">
                   <AnimatePresence initial={false} custom={direction}>
                     <motion.div
-                      key={selectedScreenshotIndex}
+                      key={selectedMediaIndex}
                       custom={direction}
                       variants={{
                         enter: (direction) => ({
@@ -714,28 +783,42 @@ export default function GameDetails() {
                           paginate(-1);
                         }
                       }}
-                      className="absolute inset-0 flex items-center justify-center p-4 md:p-12 cursor-grab active:cursor-grabbing"
+                      className="absolute inset-0 flex items-center justify-center p-4 md:p-12"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        {!galleryImageLoaded && (
-                          <img src="loading.gif" alt="Loading..." className="w-16 h-16 opacity-40 animate-pulse" />
-                        )}
-                      </div>
-                      <img
-                        src={gameScreenshots[selectedScreenshotIndex]}
-                        alt={`${game?.name || ""} screen gallery`}
-                        className="max-w-full max-h-[75vh] md:max-h-[80vh] object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 transition-opacity duration-300 pointer-events-none select-none"
-                        style={{ opacity: galleryImageLoaded ? 1 : 0 }}
-                        onLoad={() => setGalleryImageLoaded(true)}
-                        onError={() => setGalleryImageLoaded(true)}
-                      />
+                      {combinedMedia[selectedMediaIndex].type === 'video' ? (
+                        <div className="w-full max-w-5xl aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                          <iframe
+                            src={`https://www.youtube.com/embed/${combinedMedia[selectedMediaIndex].id}?autoplay=1`}
+                            title={combinedMedia[selectedMediaIndex].name}
+                            className="w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          ></iframe>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            {!galleryImageLoaded && (
+                              <img src="loading.gif" alt="Loading..." className="w-16 h-16 opacity-40 animate-pulse" />
+                            )}
+                          </div>
+                          <img
+                            src={combinedMedia[selectedMediaIndex].url}
+                            alt={`${game?.name || ""} screen gallery`}
+                            className="max-w-full max-h-[75vh] md:max-h-[80vh] object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 transition-opacity duration-300 pointer-events-none select-none"
+                            style={{ opacity: galleryImageLoaded ? 1 : 0 }}
+                            onLoad={() => setGalleryImageLoaded(true)}
+                            onError={() => setGalleryImageLoaded(true)}
+                          />
+                        </>
+                      )}
                     </motion.div>
                   </AnimatePresence>
                 </div>
                 <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white/5 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 shadow-2xl flex items-center gap-3 z-[110]">
-                  <span className="text-white/40 text-[10px] font-black uppercase tracking-widest">Screenshot</span>
-                  <span className="text-white font-black">{selectedScreenshotIndex + 1} / {gameScreenshots.length}</span>
+                  <span className="text-white/40 text-[10px] font-black uppercase tracking-widest">{combinedMedia[selectedMediaIndex].type}</span>
+                  <span className="text-white font-black">{selectedMediaIndex + 1} / {combinedMedia.length}</span>
                 </div>
               </div>
             </motion.div>

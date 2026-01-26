@@ -49,6 +49,7 @@ export const GameDataProvider = ({ children }) => {
 
   const [coverMap, setCoverMap] = useState({});
   const [screenshotsMap, setScreenshotsMap] = useState({});
+  const [videosMap, setVideosMap] = useState({});
   const [timesToBeat, setTimesToBeat] = useState({});
 
   const hasWonAward = useCallback(
@@ -219,6 +220,8 @@ export const GameDataProvider = ({ children }) => {
       setCoverMap,
       screenshotsMap,
       setScreenshotsMap,
+      videosMap,
+      setVideosMap,
       timesToBeat,
       setTimesToBeat,
     }),
@@ -235,6 +238,7 @@ export const GameDataProvider = ({ children }) => {
       hasWonAward,
       coverMap,
       screenshotsMap,
+      videosMap,
       timesToBeat,
     ]
   );

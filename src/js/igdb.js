@@ -14,30 +14,38 @@ export const getGameCovers = async (gameIds) => {
     }
 
     if (uncachedIds.length > 0) {
-        const query = `fields id, cover.image_id; where id = (${uncachedIds.join(",")}); limit ${uncachedIds.length};`;
+        const BATCH_SIZE = 100;
+        for (let i = 0; i < uncachedIds.length; i += BATCH_SIZE) {
+            const batch = uncachedIds.slice(i, i + BATCH_SIZE);
+            const query = `fields id, cover.image_id; where id = (${batch.join(",")}); limit ${batch.length};`;
 
-        const res = await fetch("/api/igdb", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                query,
-                destination: "igdb",
-                endpoint: "games",
-            }),
-        });
+            try {
+                const res = await fetch("/api/igdb", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        query,
+                        destination: "igdb",
+                        endpoint: "games",
+                    }),
+                });
 
-        if (!res.ok) return coverMap;
+                if (!res.ok) continue;
 
-        const data = await res.json();
+                const data = await res.json();
 
-        if (Array.isArray(data)) {
-            data.forEach((game) => {
-                if (game.cover) {
-                    const url = `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`;
-                    coverMap[game.id] = url;
-                    setCachedValue(game.id, "cover", url);
+                if (Array.isArray(data)) {
+                    data.forEach((game) => {
+                        if (game.cover) {
+                            const url = `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`;
+                            coverMap[game.id] = url;
+                            setCachedValue(game.id, "cover", url);
+                        }
+                    });
                 }
-            });
+            } catch (err) {
+                console.error("Error fetching covers batch:", err);
+            }
         }
     }
 
@@ -58,36 +66,95 @@ export const getGameScreenshots = async (gameIds) => {
     }
 
     if (uncachedIds.length > 0) {
-        const query = `fields id, screenshots.image_id; where id = (${uncachedIds.join(",")}); limit ${uncachedIds.length};`;
+        const BATCH_SIZE = 100;
+        for (let i = 0; i < uncachedIds.length; i += BATCH_SIZE) {
+            const batch = uncachedIds.slice(i, i + BATCH_SIZE);
+            const query = `fields id, screenshots.image_id; where id = (${batch.join(",")}); limit ${batch.length};`;
 
-        const res = await fetch("/api/igdb", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                query,
-                destination: "igdb",
-                endpoint: "games",
-            }),
-        });
+            try {
+                const res = await fetch("/api/igdb", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        query,
+                        destination: "igdb",
+                        endpoint: "games",
+                    }),
+                });
 
-        if (!res.ok) return screenshotMap;
+                if (!res.ok) continue;
 
-        const data = await res.json();
+                const data = await res.json();
 
-        if (Array.isArray(data)) {
-            data.forEach((game) => {
-                if (game.screenshots?.length > 0) {
-                    const urls = game.screenshots.map(
-                        (s) => `https://images.igdb.com/igdb/image/upload/t_1080p/${s.image_id}.jpg`
-                    );
-                    screenshotMap[game.id] = urls;
-                    setCachedValue(game.id, "screenshots", urls);
+                if (Array.isArray(data)) {
+                    data.forEach((game) => {
+                        if (game.screenshots?.length > 0) {
+                            const urls = game.screenshots.map(
+                                (s) => `https://images.igdb.com/igdb/image/upload/t_1080p/${s.image_id}.jpg`
+                            );
+                            screenshotMap[game.id] = urls;
+                            setCachedValue(game.id, "screenshots", urls);
+                        }
+                    });
                 }
-            });
+            } catch (err) {
+                console.error("Error fetching screenshots batch:", err);
+            }
         }
     }
 
     return screenshotMap;
+};
+
+export const getGameVideos = async (gameIds) => {
+    const videoMap = {};
+    const uncachedIds = [];
+
+    for (const id of gameIds) {
+        const cached = getCachedValue(id, "videos");
+        if (cached) {
+            videoMap[id] = cached;
+        } else {
+            uncachedIds.push(id);
+        }
+    }
+
+    if (uncachedIds.length > 0) {
+        const BATCH_SIZE = 100;
+        for (let i = 0; i < uncachedIds.length; i += BATCH_SIZE) {
+            const batch = uncachedIds.slice(i, i + BATCH_SIZE);
+            const query = `fields id, videos.video_id, videos.name; where id = (${batch.join(",")}); limit ${batch.length};`;
+
+            try {
+                const res = await fetch("/api/igdb", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        query,
+                        destination: "igdb",
+                        endpoint: "games",
+                    }),
+                });
+
+                if (!res.ok) continue;
+
+                const data = await res.json();
+
+                if (Array.isArray(data)) {
+                    data.forEach((game) => {
+                        if (game.videos?.length > 0) {
+                            videoMap[game.id] = game.videos;
+                            setCachedValue(game.id, "videos", game.videos);
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error("Error fetching videos batch:", err);
+            }
+        }
+    }
+
+    return videoMap;
 };
 
 export const getGameTimeToBeat = async (gameIds) => {
@@ -104,40 +171,48 @@ export const getGameTimeToBeat = async (gameIds) => {
     }
 
     if (uncachedIds.length > 0) {
-        const query = `fields game_id, completely, hastily, normally; where game_id = (${uncachedIds.join(",")}); limit ${uncachedIds.length};`;
+        const BATCH_SIZE = 100;
+        for (let i = 0; i < uncachedIds.length; i += BATCH_SIZE) {
+            const batch = uncachedIds.slice(i, i + BATCH_SIZE);
+            const query = `fields game_id, completely, hastily, normally; where game_id = (${batch.join(",")}); limit ${batch.length};`;
 
-        const res = await fetch("/api/igdb", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                query,
-                destination: "igdb",
-                endpoint: "game_time_to_beats",
-            }),
-        });
+            try {
+                const res = await fetch("/api/igdb", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        query,
+                        destination: "igdb",
+                        endpoint: "game_time_to_beats",
+                    }),
+                });
 
-        if (!res.ok) return timeToBeatMap;
+                if (!res.ok) continue;
 
-        const data = await res.json();
+                const data = await res.json();
 
-        if (Array.isArray(data)) {
-            data.forEach((entry) => {
-                if (
-                    entry &&
-                    (entry.completely !== undefined ||
-                        entry.hastily !== undefined ||
-                        entry.normally !== undefined)
-                ) {
-                    const timeToBeat = {
-                        completely: entry.completely,
-                        hastily: entry.hastily,
-                        normally: entry.normally,
-                    };
+                if (Array.isArray(data)) {
+                    data.forEach((entry) => {
+                        if (
+                            entry &&
+                            (entry.completely !== undefined ||
+                                entry.hastily !== undefined ||
+                                entry.normally !== undefined)
+                        ) {
+                            const timeToBeat = {
+                                completely: entry.completely,
+                                hastily: entry.hastily,
+                                normally: entry.normally,
+                            };
 
-                    timeToBeatMap[entry.game_id] = timeToBeat;
-                    setCachedValue(entry.game_id, "time_to_beat", timeToBeat);
+                            timeToBeatMap[entry.game_id] = timeToBeat;
+                            setCachedValue(entry.game_id, "time_to_beat", timeToBeat);
+                        }
+                    });
                 }
-            });
+            } catch (err) {
+                console.error("Error fetching time-to-beat batch:", err);
+            }
         }
     }
 
