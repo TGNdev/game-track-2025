@@ -5,10 +5,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Timestamp } from "firebase/firestore";
 import { FaFilter } from "react-icons/fa";
 import FeaturedGames from "./FeaturedGames";
-import { FaChevronRight, FaChevronLeft } from "react-icons/fa6";
-import { MdKeyboardDoubleArrowRight, MdKeyboardDoubleArrowLeft } from "react-icons/md";
-import { getPaginationRange, matchesSearch } from "../../js/utils";
+import { matchesSearch } from "../../js/utils";
 import FilterButton from "../shared/FilterButton";
+import Pagination from "../shared/Pagination";
 import { PLATFORMS } from "../../js/config";
 import { useGameData } from "../../contexts/GameDataContext";
 import { useGameUI } from "../../contexts/GameUIContext";
@@ -26,6 +25,7 @@ const GamesView = () => {
     itemsPerPage,
     currentPage,
     setCurrentPage,
+    setItemsPerPage,
     isMobile,
     selectedPlatforms,
     showOnlyUpcoming,
@@ -221,7 +221,7 @@ const GamesView = () => {
       return;
     }
     setCurrentPage(1);
-  }, [search, selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly, setCurrentPage]);
+  }, [search, selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly, itemsPerPage, setCurrentPage]);
 
   return (
     <div className="px-6 w-full flex flex-col gap-6 pb-4">
@@ -468,39 +468,14 @@ const GamesView = () => {
                   />
                 ))}
             </div>
-            <div className="flex justify-center items-center gap-3 mt-10">
-              <button
-                className="px-3 py-1 bg-gradient-primary rounded disabled:opacity-50"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(1)}
-              >
-                <MdKeyboardDoubleArrowLeft />
-              </button>
-              <button
-                className="px-3 py-1 border rounded text-sm disabled:opacity-50"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(currentPage - 1)}
-              >
-                <FaChevronLeft />
-              </button>
-              <span className="text-sm">
-                {currentPage} / {Math.ceil(filtered.length / itemsPerPage)}
-              </span>
-              <button
-                className="px-3 py-1 border rounded text-sm disabled:opacity-50"
-                disabled={currentPage === Math.ceil(filtered.length / itemsPerPage)}
-                onClick={() => setCurrentPage(currentPage + 1)}
-              >
-                <FaChevronRight />
-              </button>
-              <button
-                className="px-3 py-1 bg-gradient-primary rounded text-sm flex disabled:opacity-50"
-                disabled={currentPage === Math.ceil(filtered.length / itemsPerPage)}
-                onClick={() => setCurrentPage(Math.ceil(filtered.length / itemsPerPage))}
-              >
-                <MdKeyboardDoubleArrowRight />
-              </button>
-            </div>
+            <Pagination
+              totalItems={filtered.length}
+              itemsPerPage={itemsPerPage}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+              onItemsPerPageChange={setItemsPerPage}
+              isMobile={isMobile}
+            />
           </div>
         ) : (
           <>
@@ -545,52 +520,19 @@ const GamesView = () => {
                 </table>
               </div>
             </div>
-            {filtered.length > itemsPerPage && (
-              <div className="flex justify-center mt-6 gap-2 flex-wrap">
-                <button
-                  className="px-3 py-1 bg-gradient-primary rounded disabled:opacity-50"
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                >
-                  <FaChevronLeft />
-                </button>
-
-                {getPaginationRange(filtered.length, itemsPerPage, currentPage).map((page, i) =>
-                  page === '...' ? (
-                    <span key={i} className="px-3 py-1">
-                      ...
-                    </span>
-                  ) : (
-                    <button
-                      key={i}
-                      onClick={() => setCurrentPage(page)}
-                      className={`size-9 rounded ${currentPage === page ? 'bg-gradient-primary' : 'border-primary'
-                        }`}
-                      disabled={currentPage === page}
-                    >
-                      {page}
-                    </button>
-                  )
-                )}
-
-                <button
-                  className="px-3 py-1 bg-gradient-primary rounded disabled:opacity-50"
-                  onClick={() =>
-                    setCurrentPage(prev =>
-                      Math.min(prev + 1, Math.ceil(filtered.length / itemsPerPage))
-                    )
-                  }
-                  disabled={currentPage === Math.ceil(filtered.length / itemsPerPage)}
-                >
-                  <FaChevronRight />
-                </button>
-              </div>
-            )}
+            <Pagination
+              totalItems={filtered.length}
+              itemsPerPage={itemsPerPage}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+              onItemsPerPageChange={setItemsPerPage}
+              isMobile={isMobile}
+            />
           </>
         )
       )}
     </div>
-  )
-}
+  );
+};
 
 export default GamesView;
