@@ -10,7 +10,7 @@ import { useGameUI } from "../contexts/GameUIContext";
 import { useAuth } from "../contexts/AuthContext";
 import { slugify } from "../js/utils";
 import { getGameCovers, getGameScreenshots, getGameTimeToBeat, getGameVideos } from "../js/igdb";
-import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes, deletePlaytime, getGlobalPlaytimesForGame, addWatchToFirestore, editWatchFromFirestore, deleteWatchFromFirestore } from "../js/firebase";
+import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes, deletePlaytime, getGlobalPlaytimesForGame, addWatchToFirestore, editWatchFromFirestore } from "../js/firebase";
 import { toast } from "react-toastify";
 import CoverSkeleton from "../components/skeletons/CoverSkeleton";
 import ScreenshotSkeleton from "../components/skeletons/ScreenshotSkeleton";
@@ -278,16 +278,6 @@ export default function GameDetails() {
       }
     } catch (e) {
       toast.error("Error saving news");
-    }
-  };
-
-  const handleDeleteWatch = async (id) => {
-    try {
-      await deleteWatchFromFirestore(id);
-      setWatch(prev => prev.filter(a => a.id !== id));
-      toast.info("Article removed");
-    } catch (e) {
-      toast.error("Error deleting news");
     }
   };
 

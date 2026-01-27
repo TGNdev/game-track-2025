@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
-import { FiExternalLink, FiUser, FiCalendar, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { FiExternalLink, FiCalendar } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import { slugify } from "../../js/utils";
 
 const categoryColors = {
   Rumor: "bg-amber-500/20 text-amber-500 border-amber-500/20",
