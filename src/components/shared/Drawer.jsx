@@ -1,4 +1,4 @@
-import { FiX, FiHome, FiUser, FiLogOut } from "react-icons/fi";
+import { FiX, FiHome, FiUser, FiLogOut, FiActivity } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useGameUI } from "../../contexts/GameUIContext";
 import { FaTrophy, FaCalendar, FaShieldAlt } from "react-icons/fa";
@@ -72,6 +72,17 @@ const Drawer = ({ open, setOpen }) => {
                 <FaCalendar className="size-5" />
               </div>
               <span className="font-semibold">Releases & Events Calendar</span>
+            </Link>
+
+            <Link
+              to="/industry-watch"
+              className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+              onClick={() => setOpen(false)}
+            >
+              <div className="p-2 rounded-lg bg-gradient-primary transition-colors">
+                <FiActivity className="size-5" />
+              </div>
+              <span className="font-semibold">Industry Watch</span>
             </Link>
 
             {isLogged && (

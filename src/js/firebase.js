@@ -159,6 +159,54 @@ export const saveTgaYear = async (yearData, docId = null) => {
     }
 };
 
+export const getWatchFromFirestore = async () => {
+    try {
+        const watchRef = collection(db, "watch");
+        const querySnapshot = await getDocs(watchRef);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (e) {
+        console.error("Error fetching watch data: ", e);
+        throw e;
+    }
+};
+
+export const addWatchToFirestore = async (watchData) => {
+    try {
+        const watchRef = collection(db, "watch");
+        const docRef = await addDoc(watchRef, {
+            ...watchData,
+            createdAt: new Date().toISOString()
+        });
+        return docRef.id;
+    } catch (e) {
+        console.error("Error adding watch article: ", e);
+        throw e;
+    }
+};
+
+export const editWatchFromFirestore = async (watchId, watchData) => {
+    try {
+        const watchRef = doc(db, "watch", watchId);
+        await updateDoc(watchRef, {
+            ...watchData,
+            updatedAt: new Date().toISOString()
+        });
+    } catch (e) {
+        console.error("Error editing watch article: ", e);
+        throw e;
+    }
+};
+
+export const deleteWatchFromFirestore = async (watchId) => {
+    try {
+        const watchRef = doc(db, "watch", watchId);
+        await deleteDoc(watchRef);
+    } catch (e) {
+        console.error("Error deleting watch article: ", e);
+        throw e;
+    }
+};
+
 export const addToLibrary = async (userId, gameId, type = "played") => {
     try {
         const userRef = doc(db, "users", userId);

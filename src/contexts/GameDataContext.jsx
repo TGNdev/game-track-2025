@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { getTgaFromFirestore, getGamesFromFirestore, getUsersFromFirestore } from "../js/firebase";
+import { getTgaFromFirestore, getGamesFromFirestore, getUsersFromFirestore, getWatchFromFirestore } from "../js/firebase";
 import { slugify } from "../js/utils";
 import { TTL } from "../js/cache";
 
@@ -37,15 +37,23 @@ export const GameDataProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
   const [loadingGames, setLoadingGames] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [loadingWatch, setLoadingWatch] = useState(false);
   const [gamesError, setGamesError] = useState(null);
 
   const gamesLoadPromiseRef = useRef(null);
   const usersLoadPromiseRef = useRef(null);
+  const watchLoadPromiseRef = useRef(null);
   const didAttemptInitialGamesLoadRef = useRef(false);
   const didAttemptInitialUsersLoadRef = useRef(false);
+  const didAttemptInitialWatchLoadRef = useRef(false);
+  const gamesLoadedRef = useRef(false);
+  const usersLoadedRef = useRef(false);
+  const watchLoadedRef = useRef(false);
 
   const [awardWinners, setAwardWinners] = useState(new Set());
   const [awardsPerGame, setAwardsPerGame] = useState({});
+
+  const [watch, setWatch] = useState([]);
 
   const [coverMap, setCoverMap] = useState({});
   const [screenshotsMap, setScreenshotsMap] = useState({});
@@ -140,7 +148,7 @@ export const GameDataProvider = ({ children }) => {
   }, [loadAwardData]);
 
   const ensureGamesLoaded = useCallback(async () => {
-    if (games.length > 0) return games;
+    if (gamesLoadedRef.current) return games;
 
     if (!gamesLoadPromiseRef.current) {
       gamesLoadPromiseRef.current = (async () => {
@@ -149,6 +157,7 @@ export const GameDataProvider = ({ children }) => {
           setLoadingGames(true);
           const list = await getGamesFromFirestore();
           setGames(list);
+          gamesLoadedRef.current = true;
           return list;
         } catch (e) {
           setGamesError(e);
@@ -170,7 +179,7 @@ export const GameDataProvider = ({ children }) => {
   }, [ensureGamesLoaded]);
 
   const ensureUsersLoaded = useCallback(async () => {
-    if (users.length > 0) return users;
+    if (usersLoadedRef.current) return users;
 
     if (!usersLoadPromiseRef.current) {
       usersLoadPromiseRef.current = (async () => {
@@ -178,6 +187,7 @@ export const GameDataProvider = ({ children }) => {
           setLoadingUsers(true);
           const list = await getUsersFromFirestore();
           setUsers(list);
+          usersLoadedRef.current = true;
           return list;
         } catch (e) {
           console.error("Failed to load users:", e);
@@ -198,6 +208,36 @@ export const GameDataProvider = ({ children }) => {
     ensureUsersLoaded().catch(() => { });
   }, [ensureUsersLoaded]);
 
+  const ensureWatchLoaded = useCallback(async () => {
+    if (watchLoadedRef.current) return watch;
+
+    if (!watchLoadPromiseRef.current) {
+      watchLoadPromiseRef.current = (async () => {
+        try {
+          setLoadingWatch(true);
+          const list = await getWatchFromFirestore();
+          setWatch(list);
+          watchLoadedRef.current = true;
+          return list;
+        } catch (e) {
+          console.error("Failed to load watch data:", e);
+          throw e;
+        } finally {
+          setLoadingWatch(false);
+          watchLoadPromiseRef.current = null;
+        }
+      })();
+    }
+
+    return watchLoadPromiseRef.current;
+  }, [watch]);
+
+  useEffect(() => {
+    if (didAttemptInitialWatchLoadRef.current) return;
+    didAttemptInitialWatchLoadRef.current = true;
+    ensureWatchLoaded().catch(() => { });
+  }, [ensureWatchLoaded]);
+
   const value = useMemo(
     () => ({
       games,
@@ -209,6 +249,11 @@ export const GameDataProvider = ({ children }) => {
       users,
       loadingUsers,
       ensureUsersLoaded,
+
+      watch,
+      setWatch,
+      loadingWatch,
+      ensureWatchLoaded,
 
       awardWinners,
       setAwardWinners,
@@ -233,6 +278,9 @@ export const GameDataProvider = ({ children }) => {
       users,
       loadingUsers,
       ensureUsersLoaded,
+      watch,
+      loadingWatch,
+      ensureWatchLoaded,
       awardWinners,
       awardsPerGame,
       hasWonAward,

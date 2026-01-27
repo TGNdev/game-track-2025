@@ -8,6 +8,7 @@ import Welcome from "../pages/Welcome";
 import GameDetails from "../pages/GameDetails";
 import Profile from "../pages/Profile";
 import AdminTga from "../pages/AdminTga";
+import IndustryWatch from "../pages/IndustryWatch";
 
 function FirstRunGate({ children }) {
   const hasSeen = localStorage.getItem("hasSeenWelcome") === "true";
@@ -93,6 +94,14 @@ const AnimatedRoutes = () => {
           element={
             <PageFade>
               <AdminTga />
+            </PageFade>
+          }
+        />
+        <Route
+          path="/industry-watch"
+          element={
+            <PageFade>
+              <IndustryWatch />
             </PageFade>
           }
         />

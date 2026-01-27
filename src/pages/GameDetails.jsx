@@ -2,14 +2,15 @@ import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaArrowLeft, FaClock, FaTrophy, FaCalendarAlt, FaExternalLinkAlt, FaBookmark, FaCheck, FaImage, FaExpandAlt, FaChevronLeft, FaChevronRight, FaUsers, FaPlay } from "react-icons/fa";
-import { FiX } from "react-icons/fi";
+import { FiX, FiActivity, FiPlus } from "react-icons/fi";
 import Layout from "../components/shared/Layout";
+import WatchModal from "../components/watch/WatchModal";
 import { useGameData } from "../contexts/GameDataContext";
 import { useGameUI } from "../contexts/GameUIContext";
 import { useAuth } from "../contexts/AuthContext";
 import { slugify } from "../js/utils";
 import { getGameCovers, getGameScreenshots, getGameTimeToBeat, getGameVideos } from "../js/igdb";
-import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes, deletePlaytime, getGlobalPlaytimesForGame } from "../js/firebase";
+import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes, deletePlaytime, getGlobalPlaytimesForGame, addWatchToFirestore, editWatchFromFirestore, deleteWatchFromFirestore } from "../js/firebase";
 import { toast } from "react-toastify";
 import CoverSkeleton from "../components/skeletons/CoverSkeleton";
 import ScreenshotSkeleton from "../components/skeletons/ScreenshotSkeleton";
@@ -18,6 +19,7 @@ import he from "he";
 import { FiClock } from "react-icons/fi";
 import CompletionModal from "../components/shared/CompletionModal";
 import ConfirmModal from "../components/modals/ConfirmModal";
+import WatchCardSmall from "../components/watch/WatchCardSmall";
 
 const getRatingStyle = (rating) => {
   const baseClasses = "size-12 rounded-xl text-white font-bold flex items-center justify-center text-lg shadow-lg";
@@ -50,6 +52,8 @@ export default function GameDetails() {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [personalPlaytime, setPersonalPlaytime] = useState(null);
   const [averagePlaytime, setAveragePlaytime] = useState(null);
+  const [watchModalOpen, setWatchModalOpen] = useState(false);
+  const [editingArticle, setEditingArticle] = useState(null);
   const { userData, currentUser } = useAuth();
 
   const {
@@ -63,7 +67,10 @@ export default function GameDetails() {
     videosMap,
     setVideosMap,
     timesToBeat,
-    setTimesToBeat
+    setTimesToBeat,
+    watch,
+    setWatch,
+    ensureWatchLoaded
   } = useGameData();
 
   const { getPlatformsSvg, isReleased, activeTags } = useGameUI();
@@ -173,6 +180,12 @@ export default function GameDetails() {
     return media;
   }, [gameVideos, gameScreenshots]);
 
+  const relatedArticles = useMemo(() => {
+    if (!watch || !game) return [];
+    return watch.filter(a => a.gameId === game.id || a.gameName === game.name)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }, [watch, game]);
+
   const canAddCountdown = game?.release_date?.seconds && (game.release_date.seconds * 1000 > Date.now());
 
   useEffect(() => {
@@ -201,7 +214,8 @@ export default function GameDetails() {
     if (game) {
       document.title = `${he.decode(game.name || "") || "Game"} - Game Track 2025`;
     }
-  }, [game]);
+    ensureWatchLoaded();
+  }, [game, ensureWatchLoaded]);
 
   useEffect(() => {
     if (gameScreenshots.length > 1) {
@@ -249,6 +263,33 @@ export default function GameDetails() {
     fetchMedia();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game?.igdb_id]);
+
+  const handleSaveWatch = async (data) => {
+    try {
+      if (editingArticle) {
+        await editWatchFromFirestore(editingArticle.id, data);
+        setWatch(prev => prev.map(a => a.id === editingArticle.id ? { ...a, ...data } : a));
+        toast.success("Article updated!");
+      } else {
+        const newId = await addWatchToFirestore(data);
+        const newArticle = { id: newId, ...data, createdAt: new Date().toISOString() };
+        setWatch(prev => [newArticle, ...prev]);
+        toast.success("News added to Industry Watch!");
+      }
+    } catch (e) {
+      toast.error("Error saving news");
+    }
+  };
+
+  const handleDeleteWatch = async (id) => {
+    try {
+      await deleteWatchFromFirestore(id);
+      setWatch(prev => prev.filter(a => a.id !== id));
+      toast.info("Article removed");
+    } catch (e) {
+      toast.error("Error deleting news");
+    }
+  };
 
   const swipeConfidenceThreshold = 10000;
   const swipePower = (offset, velocity) => {
@@ -599,6 +640,54 @@ export default function GameDetails() {
                 </div>
               </section>
             )}
+            {relatedArticles.length > 0 && (
+              <section className="space-y-4 md:space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl md:text-3xl font-black flex items-center gap-3 md:gap-4">
+                    <div className="p-2 md:p-3 bg-gradient-primary rounded-lg shrink-0 shadow-lg">
+                      <FiActivity className="text-lg" />
+                    </div>
+                    Related Industry Watch ({relatedArticles.length})
+                  </h2>
+                  {userData?.isAdmin && (
+                    <button
+                      onClick={() => {
+                        setEditingArticle(null);
+                        setWatchModalOpen(true);
+                      }}
+                      className="text-xs md:text-sm font-semibold bg-gradient-primary px-3 py-1.5 rounded-md transition hover:scale-105 shadow-md flex items-center gap-2"
+                    >
+                      <FiPlus /> Add Related News
+                    </button>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {relatedArticles.map((article) => (
+                    <WatchCardSmall
+                      key={article.id}
+                      article={article}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+            {relatedArticles.length === 0 && userData?.isAdmin && (
+              <section className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center space-y-4">
+                <div className="flex flex-col items-center gap-2 opacity-40">
+                  <FiActivity size={32} />
+                  <p className="font-bold">No news related to this game yet.</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setEditingArticle(null);
+                    setWatchModalOpen(true);
+                  }}
+                  className="bg-gradient-primary px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg mx-auto flex items-center gap-2"
+                >
+                  <FiPlus /> Create first news
+                </button>
+              </section>
+            )}
           </div>
           <div className="space-y-6 md:space-y-8 mt-2 md:mt-6">
             {gameTimeToBeat && (
@@ -840,6 +929,18 @@ export default function GameDetails() {
           confirmText="Remove"
           onConfirm={handleConfirmRemove}
           onCancel={() => setConfirmModalOpen(false)}
+        />
+        <WatchModal
+          key={editingArticle?.id || 'new'}
+          isOpen={watchModalOpen}
+          initialGameId={game?.id}
+          initialGameName={game?.name}
+          initialData={editingArticle}
+          onClose={() => {
+            setWatchModalOpen(false);
+            setEditingArticle(null);
+          }}
+          onSave={handleSaveWatch}
         />
       </div>
     </Layout>
