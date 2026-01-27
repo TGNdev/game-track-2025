@@ -113,7 +113,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                     required
                     type="text"
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                     className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 transition-all font-bold"
                     placeholder="E.g. Sony acquires FromSoftware"
                   />
@@ -131,7 +131,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                     required
                     type="url"
                     value={formData.source}
-                    onChange={(e) => setFormData({ ...formData, source: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, source: e.target.value }))}
                     className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 transition-all font-bold"
                     placeholder="https://..."
                   />
@@ -149,7 +149,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                     required
                     type="text"
                     value={formData.author}
-                    onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, author: e.target.value }))}
                     className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 transition-all font-bold"
                     placeholder="Jason Schreier"
                   />
@@ -161,7 +161,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                 <label className="text-xs font-black uppercase tracking-widest text-white/40 ml-1">Category</label>
                 <select
                   value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
                   className="w-full bg-[#2a2a2a] border border-white/10 rounded-xl py-4 px-4 text-white focus:outline-none focus:border-primary/50 transition-all font-bold appearance-none cursor-pointer"
                 >
                   {CATEGORIES.map(cat => (
@@ -207,7 +207,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                       <div className="max-h-60 overflow-y-auto custom-scrollbar">
                         <div
                           onClick={() => {
-                            setFormData({ ...formData, gameId: "", gameName: "" });
+                            setFormData(prev => ({ ...prev, gameId: "", gameName: "" }));
                             setShowGames(false);
                             setSearch("");
                           }}
@@ -219,7 +219,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                           <div
                             key={game.id}
                             onClick={() => {
-                              setFormData({ ...formData, gameId: game.id, gameName: game.name });
+                              setFormData(prev => ({ ...prev, gameId: game.id, gameName: game.name }));
                               setShowGames(false);
                               setSearch("");
                             }}
@@ -246,7 +246,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                     <input
                       type="text"
                       value={formData.gameName}
-                      onChange={(e) => setFormData({ ...formData, gameName: e.target.value })}
+                      onChange={(e) => setFormData(prev => ({ ...prev, gameName: e.target.value }))}
                       className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 transition-all font-bold"
                       placeholder="E.g. GTA VI"
                     />
@@ -261,7 +261,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                   <ReactQuill
                     theme="snow"
                     value={formData.summary}
-                    onChange={(content) => setFormData({ ...formData, summary: content })}
+                    onChange={(content) => setFormData(prev => ({ ...prev, summary: content }))}
                     placeholder="Write a brief summary of the news..."
                     modules={{
                       toolbar: [
