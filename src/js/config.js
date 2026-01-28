@@ -8,20 +8,24 @@ export const PLATFORMS = {
     slug: "ps",
   },
   xbox: {
-    label: "Xbox Series",
+    label: "Xbox",
     slug: "xbox",
   },
   switch: {
-    label: "Nintendo Switch",
+    label: "Switch",
     slug: "switch",
   },
   switch_2: {
-    label: "Nintendo Switch 2",
+    label: "Switch 2",
     slug: "switch_2",
   },
   wii_u: {
     label: "Wii U",
     slug: "wii_u",
+  },
+  mobile: {
+    label: "Mobile",
+    slug: "mobile",
   },
 };
 

@@ -11,14 +11,12 @@ import { auth } from "../js/firebase";
 import { signOut } from "firebase/auth";
 import { toast } from "react-toastify";
 import { useAuth } from "./AuthContext";
-import { ReactComponent as XboxIcon } from "../assets/icons/xbox.svg";
-import { ReactComponent as PsIcon } from "../assets/icons/ps.svg";
-import { ReactComponent as PcIcon } from "../assets/icons/pc.svg";
-import { ReactComponent as SwitchIcon } from "../assets/icons/switch.svg";
 import { ReactComponent as Switch2Icon } from "../assets/icons/switch_2.svg";
-import { ReactComponent as WiiUIcon } from "../assets/icons/wii_u.svg";
 import { TAGS } from "../js/config";
 import { useGameData } from "./GameDataContext";
+import { CiMobile3 } from "react-icons/ci";
+import { FaXbox, FaPlaystation, FaComputer } from "react-icons/fa6";
+import { SiWiiu, SiNintendoswitch } from "react-icons/si";
 
 const GameUIContext = createContext(null);
 
@@ -159,17 +157,19 @@ export const GameUIProvider = ({ children }) => {
 
     switch (platform) {
       case "xbox":
-        return <XboxIcon className={`${base} bg-green-500`} fill="white" />;
+        return <FaXbox className={`${base} bg-green-500`} fill="white" />;
       case "ps":
-        return <PsIcon className={`${base} bg-blue-500`} fill="white" />;
+        return <FaPlaystation className={`${base} bg-blue-500`} fill="white" />;
       case "pc":
-        return <PcIcon className={`${base} bg-slate-400`} fill="white" />;
+        return <FaComputer className={`${base} bg-slate-400`} fill="white" />;
       case "switch":
-        return <SwitchIcon className={`${base} bg-red-500`} fill="white" />;
+        return <SiNintendoswitch className={`${base} bg-red-500`} fill="white" />;
       case "switch_2":
         return <Switch2Icon className={`${base} bg-red-500`} fill="white" />;
       case "wii_u":
-        return <WiiUIcon className={`${base} bg-blue-400`} fill="white" />;
+        return <SiWiiu className={`${base} bg-blue-400`} fill="white" />;
+      case "mobile":
+        return <CiMobile3 className={`${base} bg-black`} fill="white" />;
       default:
         return null;
     }
