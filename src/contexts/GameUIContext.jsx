@@ -16,6 +16,7 @@ import { ReactComponent as PsIcon } from "../assets/icons/ps.svg";
 import { ReactComponent as PcIcon } from "../assets/icons/pc.svg";
 import { ReactComponent as SwitchIcon } from "../assets/icons/switch.svg";
 import { ReactComponent as Switch2Icon } from "../assets/icons/switch_2.svg";
+import { ReactComponent as WiiUIcon } from "../assets/icons/wii_u.svg";
 import { TAGS } from "../js/config";
 import { useGameData } from "./GameDataContext";
 
@@ -167,6 +168,8 @@ export const GameUIProvider = ({ children }) => {
         return <SwitchIcon className={`${base} bg-red-500`} fill="white" />;
       case "switch_2":
         return <Switch2Icon className={`${base} bg-red-500`} fill="white" />;
+      case "wii_u":
+        return <WiiUIcon className={`${base} bg-blue-400`} fill="white" />;
       default:
         return null;
     }

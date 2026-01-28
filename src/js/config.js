@@ -19,6 +19,10 @@ export const PLATFORMS = {
     label: "Nintendo Switch 2",
     slug: "switch_2",
   },
+  wii_u: {
+    label: "Wii U",
+    slug: "wii_u",
+  },
 };
 
 export const TAGS = {
