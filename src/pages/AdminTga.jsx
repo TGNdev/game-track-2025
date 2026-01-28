@@ -12,7 +12,7 @@ import { matchesSearch } from "../js/utils";
 
 const AdminTga = () => {
   const { userData, loading: authLoading } = useAuth();
-  const { games, loadingGames } = useGameData();
+  const { games, loadingGames, refreshTgaData } = useGameData();
   const [tgaYears, setTgaYears] = useState([]);
   const [selectedYearDoc, setSelectedYearDoc] = useState(null);
   const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
@@ -162,6 +162,7 @@ const AdminTga = () => {
     try {
       const docId = selectedYearDoc.id === "new" ? null : selectedYearDoc.id;
       await saveTgaYear(yearData, docId);
+      await refreshTgaData();
       toast.success("TGA data saved successfully!");
       clearPersistence();
       const data = await getTgaFromFirestore();

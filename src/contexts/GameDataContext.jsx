@@ -31,6 +31,12 @@ const safeLocalStorageSet = (key, value) => {
     window.localStorage.setItem(key, value);
   } catch { }
 };
+const safeLocalStorageRemove = (key) => {
+  if (!hasWindow) return;
+  try {
+    window.localStorage.removeItem(key);
+  } catch { }
+};
 
 export const GameDataProvider = ({ children }) => {
   const [games, setGames] = useState([]);
@@ -131,6 +137,15 @@ export const GameDataProvider = ({ children }) => {
       return { winners: new Set(), perGame: {} };
     }
   }, []);
+
+  const refreshTgaData = useCallback(async () => {
+    safeLocalStorageRemove(AWARD_WINNERS_CACHE_KEY);
+    safeLocalStorageRemove(AWARDS_PER_GAME_CACHE_KEY);
+    const { winners, perGame } = await loadAwardData();
+    setAwardWinners(winners);
+    setAwardsPerGame(perGame);
+  }, [loadAwardData]);
+
 
   useEffect(() => {
     let cancelled = false;
@@ -269,6 +284,7 @@ export const GameDataProvider = ({ children }) => {
       setVideosMap,
       timesToBeat,
       setTimesToBeat,
+      refreshTgaData,
     }),
     [
       games,
@@ -288,6 +304,7 @@ export const GameDataProvider = ({ children }) => {
       screenshotsMap,
       videosMap,
       timesToBeat,
+      refreshTgaData,
     ]
   );
 
