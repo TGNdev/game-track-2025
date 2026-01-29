@@ -130,9 +130,9 @@ export default function Welcome() {
         >
           <div className="max-w-4xl mx-auto text-center flex flex-col items-center gap-8 md:gap-12 bg-white/5 backdrop-blur-3xl border border-white/10 p-8 md:p-20 rounded-3xl md:rounded-[3rem] shadow-2xl opacity-0 feature-text">
             <div className="space-y-4 md:space-y-6">
-              <h2 className="text-3xl md:text-7xl font-black tracking-tight leading-tight">Ready to play?</h2>
+              <h2 className="text-3xl md:text-7xl font-black tracking-tight leading-tight">Ready to play ?</h2>
               <p className="text-sm md:text-xl text-white/60 font-medium leading-relaxed max-w-2xl mx-auto">
-                Game Track is a personal labor of love and passion for the industry. No ads, no fluff—just the data you care about, presented beautifully. Join our community and start tracking.
+                Game Track is a personal labor of love and passion for the industry. No ads, no fluff—just the data we and you, care about. Join our community and start tracking !
               </p>
             </div>
 

@@ -150,15 +150,26 @@ export const GameDataProvider = ({ children }) => {
   useEffect(() => {
     let cancelled = false;
 
-    (async () => {
+    const performLoad = async () => {
       const { winners, perGame } = await loadAwardData();
       if (cancelled) return;
       setAwardWinners(winners);
       setAwardsPerGame(perGame);
-    })();
+    };
+
+    performLoad();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        performLoad();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       cancelled = true;
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [loadAwardData]);
 
@@ -191,6 +202,19 @@ export const GameDataProvider = ({ children }) => {
     if (didAttemptInitialGamesLoadRef.current) return;
     didAttemptInitialGamesLoadRef.current = true;
     ensureGamesLoaded().catch(() => { });
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        getGamesFromFirestore()
+          .then(list => {
+            setGames(list);
+            gamesLoadedRef.current = true;
+          })
+          .catch(e => console.warn("Background refresh failed:", e));
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
   }, [ensureGamesLoaded]);
 
   const ensureUsersLoaded = useCallback(async () => {
@@ -217,12 +241,6 @@ export const GameDataProvider = ({ children }) => {
     return usersLoadPromiseRef.current;
   }, [users]);
 
-  useEffect(() => {
-    if (didAttemptInitialUsersLoadRef.current) return;
-    didAttemptInitialUsersLoadRef.current = true;
-    ensureUsersLoaded().catch(() => { });
-  }, [ensureUsersLoaded]);
-
   const ensureWatchLoaded = useCallback(async () => {
     if (watchLoadedRef.current) return watch;
 
@@ -246,6 +264,26 @@ export const GameDataProvider = ({ children }) => {
 
     return watchLoadPromiseRef.current;
   }, [watch]);
+
+  useEffect(() => {
+    if (didAttemptInitialUsersLoadRef.current) return;
+    didAttemptInitialUsersLoadRef.current = true;
+    ensureUsersLoaded().catch(() => { });
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        getUsersFromFirestore()
+          .then(list => {
+            setUsers(list);
+            usersLoadedRef.current = true;
+          })
+          .catch(() => { });
+        ensureWatchLoaded().catch(() => { }); // Also check watch data
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [ensureUsersLoaded, ensureWatchLoaded]);
 
   useEffect(() => {
     if (didAttemptInitialWatchLoadRef.current) return;
