@@ -11,7 +11,6 @@ const YearSelector = ({ tga, onSelectYear }) => {
       transition={{ duration: 0.4, ease: "easeInOut" }}
       className="px-4 py-6"
     >
-      <h3 className="text-xl font-bold self-start mb-6">Choose a Game Awards year</h3>
       <div className="flex flex-wrap gap-4 justify-center mb-8">
         {tgaSorted.map((yearData) => (
           <button
