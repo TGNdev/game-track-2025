@@ -256,34 +256,38 @@ const GamesView = () => {
         </section>
       )}
 
-      <div className="w-full flex justify-center">
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-1 shadow-2xl relative overflow-hidden">
-          <div className="flex flex-row gap-4 items-center justify-center p-2 rounded-md">
-            <button
-              className={`${withRelease && "bg-gradient-primary"} disabled:scale-100 w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base`}
-              onClick={() => setWithRelease(true)}
-              disabled={withRelease}
-            >
-              With release date
-            </button>
-            <button
-              className={`${!withRelease && "bg-gradient-primary"} disabled:scale-100 w-fit px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-sm sm:text-base`}
-              onClick={() => setWithRelease(false)}
-              disabled={!withRelease}
-            >
-              Without release date
-            </button>
-          </div>
+      <div className="w-full flex justify-center mt-4">
+        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-1.5 shadow-2xl flex items-center gap-1">
+          <button
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${withRelease
+              ? "bg-gradient-primary text-white shadow-lg shadow-[#b069ff]/20"
+              : "text-white/40 hover:text-white hover:bg-white/5"
+              }`}
+            onClick={() => setWithRelease(true)}
+            disabled={withRelease}
+          >
+            With release date
+          </button>
+          <button
+            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${!withRelease
+              ? "bg-gradient-primary text-white shadow-lg shadow-[#b069ff]/20"
+              : "text-white/40 hover:text-white hover:bg-white/5"
+              }`}
+            onClick={() => setWithRelease(false)}
+            disabled={!withRelease}
+          >
+            Without release date
+          </button>
         </div>
       </div>
 
       <div className="w-full flex flex-col items-center">
         <button
-          className="flex items-center text-sm gap-2 px-2 py-1.5 bg-gradient-primary rounded-md hover:scale-105 transition-transform shadow-lg z-10"
+          className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 hover:border-white/20 transition-all shadow-xl backdrop-blur-sm group"
           onClick={() => setFiltersVisible(prev => !prev)}
         >
-          <FaFilter />
-          {filtersVisible ? "Hide Filters" : "Show Filters"}
+          <FaFilter className={`size-3 transition-colors ${filtersVisible ? 'text-[#b069ff]' : 'text-white/40 group-hover:text-white'}`} />
+          <span>{filtersVisible ? "Hide Filters" : "Show Filters"}</span>
         </button>
         <AnimatePresence>
           {filtersVisible && (
@@ -336,20 +340,14 @@ const GamesView = () => {
                         <FilterButton
                           isVisible={filtersVisible}
                           filterCondition={showOnlyUpcoming === true}
-                          onClick={() => setShowOnlyUpcoming(true)}
+                          onClick={() => setShowOnlyUpcoming(showOnlyUpcoming === true ? null : true)}
                           text="Upcoming only"
                         />
                         <FilterButton
                           isVisible={filtersVisible}
                           filterCondition={showOnlyUpcoming === false}
-                          onClick={() => setShowOnlyUpcoming(false)}
+                          onClick={() => setShowOnlyUpcoming(showOnlyUpcoming === false ? null : false)}
                           text="Already released"
-                        />
-                        <FilterButton
-                          isVisible={filtersVisible}
-                          filterCondition={showOnlyUpcoming === null}
-                          onClick={() => setShowOnlyUpcoming(null)}
-                          text="All"
                         />
                       </div>
                     </div>
@@ -394,61 +392,81 @@ const GamesView = () => {
               </div>
             </div>
           ) : (
-            <div className="flex-col max-w-full overflow-x-auto flex">
-              <div className="relative">
-                <table className="w-full border-collapse min-w-[1200px]">
-                  <thead className="border-b">
-                    <tr>
-                      <th className="p-3 sticky left-0 bg-sticky-column z-10 flex flex-col items-center">
-                        <div>Name</div>
-                        <div className="text-xs opacity-50">Click to open details</div>
-                      </th>
-                      <th className="p-3">Release Date</th>
-                      <th className="p-3">Developers</th>
-                      <th className="p-3">Editors</th>
-                      <th className="p-3">Platforms</th>
-                      <th className="p-3 flex flex-col">
-                        <div>Ratings</div>
-                        <div className="flex flex-row gap-x-3 justify-center">
-                          <div className="text-xs opacity-50">Critics</div>
-                          <div className="text-xs opacity-50">Players</div>
+            <div className="w-full max-w-full overflow-x-auto custom-scrollbar bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] shadow-2xl relative">
+              <table className="w-full border-collapse min-w-[1200px]">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="px-6 py-8 sticky left-0 bg-sticky-column z-30 text-left">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Game</span>
+                        <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest italic opacity-60">Click for details</span>
+                      </div>
+                    </th>
+                    <th className="px-6 py-8">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Release Date</span>
+                    </th>
+                    <th className="px-6 py-8">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Developers</span>
+                    </th>
+                    <th className="px-6 py-8">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Editors</span>
+                    </th>
+                    <th className="px-6 py-8">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Platforms</span>
+                    </th>
+                    <th className="px-6 py-8">
+                      <div className="flex flex-col gap-1 items-center">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Ratings</span>
+                        <div className="flex gap-4 text-[8px] font-bold uppercase tracking-widest text-white/20">
+                          <span>Critics</span>
+                          <span>Players</span>
                         </div>
+                      </div>
+                    </th>
+                    {edit && (
+                      <th className="px-6 py-8 sticky right-0 bg-sticky-column z-30">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Actions</span>
                       </th>
-                      {edit && (
-                        <th className="p-3 sticky right-0 bg-sticky-column z-10">Edit actions</th>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Array.from({ length: itemsPerPage }).map((_, idx) => (
-                      <tr key={idx} className="animate-pulse">
-                        <td className="p-3 sticky left-0 bg-sticky-column z-20 w-80">
-                          <div className="flex items-center text-left gap-8 border-r">
-                            <div className="relative w-24 aspect-[3/4] overflow-visible shrink-0">
-                              <div className="w-full h-full bg-white/5 rounded-lg" />
-                            </div>
-                            <div className="flex-1">
-                              <div className="h-6 bg-white/5 rounded-lg w-1/2 mb-2" />
-                              <div className="h-4 bg-white/5 rounded-lg w-1/3" />
-                            </div>
+                    )}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {Array.from({ length: itemsPerPage }).map((_, idx) => (
+                    <tr key={idx} className="animate-pulse">
+                      <td className="px-6 py-6 sticky left-0 bg-sticky-column z-20">
+                        <div className="flex items-center gap-6">
+                          <div className="w-16 aspect-[3/4] bg-white/5 rounded-lg shrink-0 shadow-inner" />
+                          <div className="space-y-2 flex-1">
+                            <div className="h-4 bg-white/5 rounded-full w-32" />
+                            <div className="h-3 bg-white/5 rounded-full w-20" />
                           </div>
-                        </td>
-                        <td className="p-3"><div className="h-4 bg-white/5 rounded w-24 m-auto" /></td>
-                        <td className="p-3"><div className="h-4 bg-white/5 rounded w-32 m-auto" /></td>
-                        <td className="p-3"><div className="h-4 bg-white/5 rounded w-28 m-auto" /></td>
-                        <td className="p-3"><div className="h-4 bg-white/5 rounded w-40 m-auto" /></td>
-                        <td className="p-3"><div className="h-8 bg-white/5 rounded-xl w-24 m-auto" /></td>
-                        {edit && <td className="p-3"><div className="h-8 bg-white/5 rounded-xl w-20 m-auto" /></td>}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-6"><div className="h-4 bg-white/5 rounded-full w-24 mx-auto" /></td>
+                      <td className="px-6 py-6"><div className="h-4 bg-white/5 rounded-full w-32 mx-auto" /></td>
+                      <td className="px-6 py-6"><div className="h-4 bg-white/5 rounded-full w-28 mx-auto" /></td>
+                      <td className="px-6 py-6 border-l border-white/5"><div className="h-8 bg-white/5 rounded-xl w-24 mx-auto" /></td>
+                      {edit && <td className="px-6 py-6 sticky right-0 bg-sticky-column z-20"><div className="h-10 bg-white/5 rounded-xl w-20 mx-auto" /></td>}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )
         ) : (
-          <div className="w-full flex justify-center items-center">
-            <p className="text-center italic">No games found with the current filters !</p>
+          <div className="w-full py-20 flex flex-col items-center justify-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] gap-4">
+            <p className="text-center italic text-white/40 font-bold uppercase tracking-widest text-xs">No games found with the current filters !</p>
+            <button
+              onClick={() => {
+                setSelectedPlatforms([]);
+                setShowOnlyUpcoming(null);
+                setShowThisYearOnly(false);
+                localStorage.removeItem('gameFilters');
+              }}
+              className="text-[10px] font-black uppercase tracking-widest px-4 py-2 bg-white/5 hover:bg-white/10 rounded-full border border-white/10 transition-colors"
+            >
+              Clear all filters
+            </button>
           </div>
         )
       ) : (
@@ -479,55 +497,69 @@ const GamesView = () => {
           </div>
         ) : (
           <>
-            <div className="flex-col max-w-full overflow-x-auto flex">
-              <div className="relative">
-                <table className="w-full border-collapse min-w-[1200px]">
-                  <thead className="border-b">
-                    <tr>
-                      <th className="p-3 sticky left-0 bg-sticky-column z-10 flex flex-col items-center">
-                        <div>Name</div>
-                        <div className="text-xs opacity-50">Click to open details</div>
-                      </th>
-                      <th className="p-3">Release Date</th>
-                      <th className="p-3">Developers</th>
-                      <th className="p-3">Editors</th>
-                      <th className="p-3">Platforms</th>
-                      <th className="p-3 flex flex-col">
-                        <div>Ratings</div>
-                        <div className="flex flex-row gap-x-3 justify-center">
-                          <div className="text-xs opacity-50">Critics</div>
-                          <div className="text-xs opacity-50">Players</div>
+            <div className="w-full max-w-full overflow-x-auto custom-scrollbar bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] shadow-2xl relative">
+              <table className="w-full border-collapse min-w-[1200px]">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="px-6 py-8 sticky left-0 bg-sticky-column z-20 text-left">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Game</span>
+                        <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest italic opacity-60">Click for details</span>
+                      </div>
+                    </th>
+                    <th className="px-6 py-8">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Release Date</span>
+                    </th>
+                    <th className="px-6 py-8">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Developers</span>
+                    </th>
+                    <th className="px-6 py-8">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Editors</span>
+                    </th>
+                    <th className="px-6 py-8">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Platforms</span>
+                    </th>
+                    <th className="px-6 py-8">
+                      <div className="flex flex-col gap-1 items-center">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Ratings</span>
+                        <div className="flex gap-4 text-[8px] font-bold uppercase tracking-widest text-white/20">
+                          <span>Critics</span>
+                          <span>Players</span>
                         </div>
+                      </div>
+                    </th>
+                    {edit && (
+                      <th className="px-6 py-8 sticky right-0 bg-sticky-column z-30">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Actions</span>
                       </th>
-                      {edit && (
-                        <th className="p-3 sticky right-0 bg-sticky-column z-10">Edit actions</th>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtered
-                      .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-                      .map((game, index) => (
-                        <GameRow
-                          ref={index === 0 ? firstItemRef : null}
-                          key={game.id}
-                          game={game}
-                          coverImage={coverMap ? coverMap[game.igdb_id] : []}
-                          screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
-                        />
-                      ))}
-                  </tbody>
-                </table>
-              </div>
+                    )}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {filtered
+                    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                    .map((game, index) => (
+                      <GameRow
+                        ref={index === 0 ? firstItemRef : null}
+                        key={game.id}
+                        game={game}
+                        coverImage={coverMap ? coverMap[game.igdb_id] : []}
+                        screenshots={screenshotsMap ? screenshotsMap[game.igdb_id] : []}
+                      />
+                    ))}
+                </tbody>
+              </table>
             </div>
-            <Pagination
-              totalItems={filtered.length}
-              itemsPerPage={itemsPerPage}
-              currentPage={currentPage}
-              onPageChange={setCurrentPage}
-              onItemsPerPageChange={setItemsPerPage}
-              isMobile={isMobile}
-            />
+            <div className="mt-8">
+              <Pagination
+                totalItems={filtered.length}
+                itemsPerPage={itemsPerPage}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+                onItemsPerPageChange={setItemsPerPage}
+                isMobile={isMobile}
+              />
+            </div>
           </>
         )
       )}

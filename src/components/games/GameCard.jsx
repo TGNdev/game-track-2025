@@ -36,21 +36,23 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
       id={`gamecard-${game.id}`}
       className="rounded-2xl overflow-hidden transition-all duration-300 relative border border-white/10 bg-white/5 backdrop-blur-sm shadow-xl"
     >
-      <div className="absolute top-0 left-0 flex flex-row justify-between w-full p-2 z-20 pointer-events-none">
-        <div className="flex flex-row gap-2">
-          {gameTags.filter(t => t.key.startsWith('_')).map((tag) => (
-            <GameTag key={tag.key} tag={tag} />
-          ))}
+      {gameTags.length > 0 && (
+        <div className="absolute top-0 left-0 flex flex-row justify-between w-full p-2 z-20 pointer-events-none">
+          <div className="flex flex-row gap-2">
+            {gameTags.filter(t => t.key.startsWith('_')).map((tag) => (
+              <GameTag key={tag.key} tag={tag} />
+            ))}
+          </div>
+          <div className="flex gap-1">
+            {gameTags.filter(t => !t.key.startsWith('_')).slice(0, 2).map((tag) => (
+              <GameTag key={tag.key} tag={tag} />
+            ))}
+          </div>
         </div>
-        <div className="flex gap-1">
-          {gameTags.filter(t => !t.key.startsWith('_')).slice(0, 2).map((tag) => (
-            <GameTag key={tag.key} tag={tag} />
-          ))}
-        </div>
-      </div>
+      )}
 
       <button
-        className="w-full flex justify-between items-center px-6 pt-10 pb-4 text-left hover:scale-[1.02] active:scale-[0.98]"
+        className={`w-full flex justify-between items-center px-6 pb-4 text-left hover:scale-[1.02] active:scale-[0.98] ${gameTags.length > 0 ? "pt-10" : "pt-5"}`}
         onClick={() => {
           const closing = isOpen && forceOpen;
           setIsOpen(prev => !prev);
@@ -67,6 +69,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
             <span className="text-xs font-bold opacity-80">
               {game.release_date?.seconds
                 ? new Date(game.release_date.seconds * 1000).toLocaleDateString("en-EN", {
+                  day: "numeric",
                   month: "long",
                   year: "numeric",
                 })

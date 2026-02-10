@@ -34,12 +34,12 @@ function GameCell({ game, coverImage }) {
     sessionStorage.setItem("lastClickedId", game.id);
     var gameId = slugify(game.name);
     navigate(`/games/${gameId}`);
-  }
+  };
 
   return (
-    <td className="p-3 sticky left-0 bg-sticky-column z-20 w-80">
-      <div className="relative flex items-center text-left gap-3 border-r">
-        <div className="absolute -top-1 left-0 z-30">
+    <td className="px-4 py-3 sticky left-0 bg-sticky-column z-20 w-96 group/cell cursor-pointer" onClick={handleGameNavigate}>
+      <div className="relative flex items-center text-left gap-6">
+        <div className="absolute -top-3 left-0 z-30 flex gap-1">
           {gameTags.map((tag, index) => (
             <GameTag
               key={tag.key}
@@ -52,28 +52,27 @@ function GameCell({ game, coverImage }) {
             />
           ))}
         </div>
-
         <div
           ref={imgRef}
-          className="relative w-24 aspect-[3/4] overflow-visible shrink-0"
+          className="relative w-36 aspect-[3/4] overflow-visible shadow-xl"
         >
+          <div className="absolute inset-0 bg-gradient-primary blur-lg opacity-0 group-hover/cell:opacity-30 transition-opacity rounded-lg" />
           {!coverLoaded && <CoverSkeleton />}
           {coverImage && (
             <img
               src={coverImage}
               loading="lazy"
               alt={`${game.name} cover`}
-              className="absolute w-full h-full object-cover rounded shadow-md transition-opacity duration-300"
+              className="relative w-full h-full object-cover rounded-lg shadow-2xl transition-all duration-300 ring-1 ring-white/10"
               onLoad={() => setCoverLoaded(true)}
             />
           )}
         </div>
-
-        <button onClick={handleGameNavigate}>
-          <div className="text-base text-left px-2">
+        <div className="flex flex-col w-full">
+          <h3 className="text-base font-black leading-tight tracking-tight group-hover/cell:scale-105 transition-transform text-ellipsis">
             {highlightMatch(he.decode(game.name), search)}
-          </div>
-        </button>
+          </h3>
+        </div>
       </div>
     </td>
   );
