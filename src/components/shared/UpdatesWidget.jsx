@@ -75,9 +75,7 @@ const UpdatesWidget = () => {
                   <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
                 </h4>
                 <p className="font-bold text-sm truncate">{latestUpdate.gameName}</p>
-                <p className="text-xs text-white/60 line-clamp-2 leading-relaxed italic">
-                  "{latestUpdate.message}"
-                </p>
+                <div className="text-xs text-white/60 line-clamp-2 leading-relaxed italic" dangerouslySetInnerHTML={{ __html: latestUpdate.message }} />
               </div>
               <button
                 onClick={(e) => {
@@ -141,9 +139,7 @@ const UpdatesWidget = () => {
                       </Link>
                     </div>
                     <h4 className="font-black text-sm tracking-tight">{update.gameName}</h4>
-                    <p className="text-xs text-white/50 leading-relaxed line-clamp-2">
-                      {update.message}
-                    </p>
+                    <div className="text-xs text-white/50 leading-relaxed line-clamp-2" dangerouslySetInnerHTML={{ __html: update.message }} />
                   </div>
                 ))
               )}
