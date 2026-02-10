@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { addGameToFirestore } from "../../js/firebase";
+import { addGameToFirestore, addUpdateToFirestore } from "../../js/firebase";
 import { Timestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import SuggestionDropdown from "./SuggestionDropdown";
@@ -8,6 +8,7 @@ import Modal from "./Modal";
 import { useGameData } from "../../contexts/GameDataContext";
 import { PLATFORMS, TAGS } from "../../js/config";
 import { FiTrash2 } from "react-icons/fi";
+import ReactQuill from "react-quill-new";
 
 const platformOptions = Object.keys(PLATFORMS);
 const platformLabels = Object.fromEntries(
@@ -30,6 +31,7 @@ const AddGameForm = ({ games, onSuccess }) => {
     tags: tagsOptions.reduce((acc, tag) => ({ ...acc, [tag]: false }), {}),
     cover: null,
     igdb_id: "",
+    updateMessage: "",
   });
   const [form, setForm] = useState(getInitialFormState());
   const [errors, setErrors] = useState({});
@@ -152,6 +154,15 @@ const AddGameForm = ({ games, onSuccess }) => {
         igdb_id: form.igdb_id,
       });
 
+      if (form.updateMessage.trim()) {
+        const message = form.updateMessage.replace(/&nbsp;/g, " ");
+        await addUpdateToFirestore({
+          gameId: newGameId,
+          gameName: form.name,
+          message: message,
+        });
+      }
+
       const newGameObject = {
         id: newGameId,
         name: form.name,
@@ -190,7 +201,7 @@ const AddGameForm = ({ games, onSuccess }) => {
           <div className="flex flex-col">
             <label className="text-xs font-black uppercase tracking-widest text-white/40 mb-2 ml-1">Game Name</label>
             <input
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#b069ff]/50 transition-all"
               name="name"
               value={form.name}
               placeholder="e.g. Final Fantasy VII Rebirth"
@@ -202,7 +213,7 @@ const AddGameForm = ({ games, onSuccess }) => {
           <div className="flex flex-col">
             <label className="text-xs font-black uppercase tracking-widest text-white/40 mb-2 ml-1">Website Link</label>
             <input
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all font-mono text-sm"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#b069ff]/50 transition-all font-mono text-sm"
               name="link"
               placeholder="https://..."
               value={form.link}
@@ -218,7 +229,7 @@ const AddGameForm = ({ games, onSuccess }) => {
                 type={`${releaseTba ? "text" : "date"}`}
                 placeholder={`${releaseTba ? "'TBA 2026' or 'Q4 2025'" : ""}`}
                 name="releaseDate"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#b069ff]/50 transition-all"
                 value={form.releaseDate}
                 onChange={handleChange}
               />
@@ -260,7 +271,7 @@ const AddGameForm = ({ games, onSuccess }) => {
                 <div className={`relative flex-1 ${suggestionTarget?.type === "developers" && suggestionTarget?.index === i ? "z-50" : ""}`}>
                   <input
                     placeholder="Studio Name"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[#b069ff]/50 transition-all"
                     value={dev.name}
                     onFocus={() => {
                       if (!dev.name) setSuggestionTarget({ type: "developers", index: i, field: "name" });
@@ -283,7 +294,7 @@ const AddGameForm = ({ games, onSuccess }) => {
                 </div>
                 <input
                   placeholder="Website"
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-primary/50 transition-all"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-[#b069ff]/50 transition-all"
                   value={dev.link}
                   onChange={(e) => updateEntry("developers", i, "link", e.target.value)}
                 />
@@ -318,7 +329,7 @@ const AddGameForm = ({ games, onSuccess }) => {
                 <div className={`relative flex-1 ${suggestionTarget?.type === "editors" && suggestionTarget?.index === i ? "z-50" : ""}`}>
                   <input
                     placeholder="Company Name"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-primary/50 transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-[#b069ff]/50 transition-all"
                     value={ed.name}
                     onFocus={() => {
                       if (!ed.name) setSuggestionTarget({ type: "editors", index: i, field: "name" });
@@ -341,7 +352,7 @@ const AddGameForm = ({ games, onSuccess }) => {
                 </div>
                 <input
                   placeholder="Website"
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-primary/50 transition-all"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white font-mono text-xs focus:outline-none focus:border-[#b069ff]/50 transition-all"
                   value={ed.link}
                   onChange={(e) => updateEntry("editors", i, "link", e.target.value)}
                 />
@@ -397,7 +408,7 @@ const AddGameForm = ({ games, onSuccess }) => {
                 placeholder="0"
                 value={form.ratings.critics}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all font-black text-xl"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#b069ff]/50 transition-all font-black text-xl"
                 min={0}
                 max={100}
               />
@@ -410,7 +421,7 @@ const AddGameForm = ({ games, onSuccess }) => {
                 placeholder="0"
                 value={form.ratings.players}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all font-black text-xl"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#b069ff]/50 transition-all font-black text-xl"
                 min={0}
                 max={100}
               />
@@ -423,7 +434,7 @@ const AddGameForm = ({ games, onSuccess }) => {
                 value={form.ratings.link}
                 onChange={handleChange}
                 placeholder="https://opencritic.com/game/..."
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-xs font-mono focus:outline-none focus:border-primary/50 transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-xs font-mono focus:outline-none focus:border-[#b069ff]/50 transition-all"
               />
             </div>
           </div>
@@ -432,13 +443,25 @@ const AddGameForm = ({ games, onSuccess }) => {
         <div className="pt-4 border-t border-white/5">
           <label className="text-xs font-black uppercase tracking-widest text-white/40 mb-2 ml-1 block">IGDB ID</label>
           <input
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-primary/50 transition-all"
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-[#b069ff]/50 transition-all"
             name="igdb_id"
             value={form.igdb_id}
             placeholder="e.g. 119171"
             onChange={handleChange}
           />
           {errors.igdb_id && <div className="text-red-500 text-xs font-bold mt-1 ml-1">{errors.igdb_id}</div>}
+        </div>
+
+        <div className="pt-4 border-t border-white/10">
+          <label className="text-xs font-black uppercase tracking-widest text-white/40 mb-4 ml-1 block">Update Message (Optional)</label>
+          <div className="relative rich-text-editor">
+            <ReactQuill
+              theme="snow"
+              value={form.updateMessage}
+              onChange={(content) => setForm(prev => ({ ...prev, updateMessage: content }))}
+              placeholder="e.g. Starfield is now available on PS5!"
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-8 pt-4 border-t border-white/10">

@@ -9,6 +9,7 @@ import GameDetails from "../pages/GameDetails";
 import Profile from "../pages/Profile";
 import AdminTga from "../pages/AdminTga";
 import IndustryWatch from "../pages/IndustryWatch";
+import WhatsNew from "../pages/WhatsNew";
 
 function FirstRunGate({ children }) {
   const hasSeen = localStorage.getItem("hasSeenWelcome") === "true";
@@ -102,6 +103,14 @@ const AnimatedRoutes = () => {
           element={
             <PageFade>
               <IndustryWatch />
+            </PageFade>
+          }
+        />
+        <Route
+          path="/whats-new"
+          element={
+            <PageFade>
+              <WhatsNew />
             </PageFade>
           }
         />

@@ -1,4 +1,4 @@
-import { FiX, FiHome, FiUser, FiLogOut, FiActivity } from "react-icons/fi";
+import { FiX, FiHome, FiUser, FiLogOut, FiActivity, FiMessageSquare } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useGameUI } from "../../contexts/GameUIContext";
 import { FaTrophy, FaCalendar, FaShieldAlt } from "react-icons/fa";
@@ -40,10 +40,10 @@ const Drawer = ({ open, setOpen }) => {
             </button>
           </div>
 
-          <nav className="flex-1 p-2 space-y-2">
+          <nav className="flex flex-col gap-2 flex-1 p-2">
             <Link
               to="/"
-              className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+              className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
               onClick={() => setOpen(false)}
             >
               <div className="p-2 rounded-lg bg-gradient-primary transition-colors">
@@ -54,7 +54,7 @@ const Drawer = ({ open, setOpen }) => {
 
             <Link
               to="/game-awards-history"
-              className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+              className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
               onClick={() => setOpen(false)}
             >
               <div className="p-2 rounded-lg bg-gradient-primary transition-colors">
@@ -65,7 +65,7 @@ const Drawer = ({ open, setOpen }) => {
 
             <Link
               to="/release-calendar"
-              className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+              className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
               onClick={() => setOpen(false)}
             >
               <div className="p-2 rounded-lg bg-gradient-primary transition-colors">
@@ -76,7 +76,7 @@ const Drawer = ({ open, setOpen }) => {
 
             <Link
               to="/industry-watch"
-              className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+              className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
               onClick={() => setOpen(false)}
             >
               <div className="p-2 rounded-lg bg-gradient-primary transition-colors">
@@ -85,10 +85,23 @@ const Drawer = ({ open, setOpen }) => {
               <span className="font-semibold">Industry Watch</span>
             </Link>
 
+            <Link
+              to="/whats-new"
+              className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+              onClick={() => setOpen(false)}
+            >
+              <div className="p-2 rounded-lg bg-gradient-primary transition-colors">
+                <FiMessageSquare className="size-5" />
+              </div>
+              <span className="font-semibold">What's New on Game Track</span>
+            </Link>
+
+            <div className="h-[2px] bg-white/10 my-4"></div>
+
             {isLogged && (
               <Link
                 to={`/profiles/${userData?.username}`}
-                className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+                className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
                 onClick={() => setOpen(false)}
               >
                 <div className="p-2 rounded-lg bg-gradient-primary transition-colors">
@@ -101,7 +114,7 @@ const Drawer = ({ open, setOpen }) => {
             {isLogged && userData?.isAdmin && (
               <Link
                 to="/admin/tga"
-                className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+                className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
                 onClick={() => setOpen(false)}
               >
                 <div className="p-2 rounded-lg bg-gradient-tertiary transition-colors">

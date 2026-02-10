@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { getTgaFromFirestore, getGamesFromFirestore, getUsersFromFirestore, getWatchFromFirestore } from "../js/firebase";
+import { getTgaFromFirestore, getGamesFromFirestore, getUsersFromFirestore, getWatchFromFirestore, getUpdatesFromFirestore, subscribeToUpdates } from "../js/firebase";
 import { slugify } from "../js/utils";
 import { TTL } from "../js/cache";
 
@@ -44,22 +44,27 @@ export const GameDataProvider = ({ children }) => {
   const [loadingGames, setLoadingGames] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [loadingWatch, setLoadingWatch] = useState(false);
+  const [loadingUpdates, setLoadingUpdates] = useState(false);
   const [gamesError, setGamesError] = useState(null);
 
   const gamesLoadPromiseRef = useRef(null);
   const usersLoadPromiseRef = useRef(null);
   const watchLoadPromiseRef = useRef(null);
+  const updatesLoadPromiseRef = useRef(null);
   const didAttemptInitialGamesLoadRef = useRef(false);
   const didAttemptInitialUsersLoadRef = useRef(false);
   const didAttemptInitialWatchLoadRef = useRef(false);
+  const didAttemptInitialUpdatesLoadRef = useRef(false);
   const gamesLoadedRef = useRef(false);
   const usersLoadedRef = useRef(false);
   const watchLoadedRef = useRef(false);
+  const updatesLoadedRef = useRef(false);
 
   const [awardWinners, setAwardWinners] = useState(new Set());
   const [awardsPerGame, setAwardsPerGame] = useState({});
 
   const [watch, setWatch] = useState([]);
+  const [updates, setUpdates] = useState([]);
 
   const [coverMap, setCoverMap] = useState({});
   const [screenshotsMap, setScreenshotsMap] = useState({});
@@ -265,6 +270,30 @@ export const GameDataProvider = ({ children }) => {
     return watchLoadPromiseRef.current;
   }, [watch]);
 
+  const ensureUpdatesLoaded = useCallback(async () => {
+    if (updatesLoadedRef.current) return updates;
+
+    if (!updatesLoadPromiseRef.current) {
+      updatesLoadPromiseRef.current = (async () => {
+        try {
+          setLoadingUpdates(true);
+          const list = await getUpdatesFromFirestore();
+          setUpdates(list);
+          updatesLoadedRef.current = true;
+          return list;
+        } catch (e) {
+          console.error("Failed to load updates:", e);
+          throw e;
+        } finally {
+          setLoadingUpdates(false);
+          updatesLoadPromiseRef.current = null;
+        }
+      })();
+    }
+
+    return updatesLoadPromiseRef.current;
+  }, [updates]);
+
   useEffect(() => {
     if (didAttemptInitialUsersLoadRef.current) return;
     didAttemptInitialUsersLoadRef.current = true;
@@ -279,17 +308,32 @@ export const GameDataProvider = ({ children }) => {
           })
           .catch(() => { });
         ensureWatchLoaded().catch(() => { }); // Also check watch data
+        ensureUpdatesLoaded().catch(() => { }); // Also check updates
       }
     };
     document.addEventListener("visibilitychange", handleVisibility);
     return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, [ensureUsersLoaded, ensureWatchLoaded]);
+  }, [ensureUsersLoaded, ensureWatchLoaded, ensureUpdatesLoaded]);
 
   useEffect(() => {
     if (didAttemptInitialWatchLoadRef.current) return;
     didAttemptInitialWatchLoadRef.current = true;
     ensureWatchLoaded().catch(() => { });
   }, [ensureWatchLoaded]);
+
+  useEffect(() => {
+    if (didAttemptInitialUpdatesLoadRef.current) return;
+    didAttemptInitialUpdatesLoadRef.current = true;
+
+    setLoadingUpdates(true);
+    const unsubscribe = subscribeToUpdates((list) => {
+      setUpdates(list);
+      setLoadingUpdates(false);
+      updatesLoadedRef.current = true;
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -323,6 +367,11 @@ export const GameDataProvider = ({ children }) => {
       timesToBeat,
       setTimesToBeat,
       refreshTgaData,
+
+      updates,
+      setUpdates,
+      loadingUpdates,
+      ensureUpdatesLoaded,
     }),
     [
       games,
@@ -343,6 +392,9 @@ export const GameDataProvider = ({ children }) => {
       videosMap,
       timesToBeat,
       refreshTgaData,
+      updates,
+      loadingUpdates,
+      ensureUpdatesLoaded,
     ]
   );
 

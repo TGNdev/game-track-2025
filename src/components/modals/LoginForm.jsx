@@ -47,7 +47,7 @@ const LoginForm = ({ onSuccess }) => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#b069ff]/50 transition-all"
               required
             />
           </div>
@@ -60,7 +60,7 @@ const LoginForm = ({ onSuccess }) => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="How should we call you ?"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#b069ff]/50 transition-all"
                 required
               />
             </div>
@@ -73,7 +73,7 @@ const LoginForm = ({ onSuccess }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary/50 transition-all"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#b069ff]/50 transition-all"
               required
             />
           </div>

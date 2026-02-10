@@ -159,4 +159,44 @@ a div {
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.2);
   }
+
+  .rich-text-editor .ql-container {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    color: white;
+    font-family: inherit;
+    font-size: 16px;
+    min-height: 150px;
+  }
+  .rich-text-editor .ql-toolbar {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    padding: 8px;
+  }
+  .rich-text-editor .ql-stroke {
+    stroke: rgba(255, 255, 255, 0.6) !important;
+  }
+  .rich-text-editor .ql-fill {
+    fill: rgba(255, 255, 255, 0.6) !important;
+  }
+  .rich-text-editor .ql-picker {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+  .rich-text-editor .ql-editor.ql-blank::before {
+    color: rgba(255, 255, 255, 0.2) !important;
+    font-style: normal;
+  }
+  .rich-text-editor .ql-editor {
+    padding: 16px;
+  }
+  .rich-text-editor .ql-snow.ql-toolbar button:hover .ql-stroke {
+    stroke: #b069ff !important;
+  }
+  .rich-text-editor .ql-snow.ql-toolbar button.ql-active .ql-stroke {
+    stroke: #b069ff !important;
+  }
 }
