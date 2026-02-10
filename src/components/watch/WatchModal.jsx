@@ -90,7 +90,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          className="relative w-full max-w-2xl bg-[#1a1a1a] border border-white/10 rounded-3xl p-8 shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
+          className="relative w-full max-w-2xl bg-white/10 border border-white/10 rounded-3xl p-8 shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar"
         >
           <button
             onClick={onClose}
@@ -114,7 +114,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 transition-all font-bold"
+                    className="w-full bg-white/10 border border-white/10 rounded-xl py-4 px-4 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 transition-all font-bold"
                     placeholder="E.g. Sony acquires FromSoftware"
                   />
                 </div>
@@ -132,7 +132,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                     type="url"
                     value={formData.source}
                     onChange={(e) => setFormData(prev => ({ ...prev, source: e.target.value }))}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 transition-all font-bold"
+                    className="w-full bg-white/10 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 transition-all font-bold"
                     placeholder="https://..."
                   />
                 </div>
@@ -150,7 +150,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                     type="text"
                     value={formData.author}
                     onChange={(e) => setFormData(prev => ({ ...prev, author: e.target.value }))}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 transition-all font-bold"
+                    className="w-full bg-white/10 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 transition-all font-bold"
                     placeholder="Jason Schreier"
                   />
                 </div>
@@ -162,7 +162,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                  className="w-full bg-[#2a2a2a] border border-white/10 rounded-xl py-4 px-4 text-white focus:outline-none focus:border-primary/50 transition-all font-bold appearance-none cursor-pointer"
+                  className="w-full bg-white/10 border border-white/10 rounded-xl py-4 px-4 text-white focus:outline-none focus:border-primary/50 transition-all font-bold appearance-none cursor-pointer"
                 >
                   {CATEGORIES.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -174,7 +174,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                 <label className="text-xs font-black uppercase tracking-widest text-white/40 ml-1">Related Game</label>
                 <div
                   onClick={() => setShowGames(!showGames)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl py-4 px-4 cursor-pointer text-white focus:outline-none focus:border-primary/50 transition-all font-bold flex items-center justify-between group hover:border-white/20"
+                  className="w-full bg-white/10 border border-white/10 rounded-xl py-4 px-4 cursor-pointer text-white focus:outline-none focus:border-primary/50 transition-all font-bold flex items-center justify-between group hover:border-white/20"
                 >
                   <span className={formData.gameName ? "text-white" : "text-white/20"}>
                     {formData.gameName || "Select a game (or type a name below)..."}
@@ -199,7 +199,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search games in database..."
-                            className="w-full bg-white/5 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none border border-white/5 focus:border-white/10 transition-all"
+                            className="w-full bg-white/10 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none border border-white/5 focus:border-white/10 transition-all"
                             onClick={(e) => e.stopPropagation()}
                           />
                         </div>
@@ -247,7 +247,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                       type="text"
                       value={formData.gameName}
                       onChange={(e) => setFormData(prev => ({ ...prev, gameName: e.target.value }))}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 transition-all font-bold"
+                      className="w-full bg-white/10 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 transition-all font-bold"
                       placeholder="E.g. GTA VI"
                     />
                   </div>
@@ -273,53 +273,11 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                   />
                 </div>
               </div>
-
-              <style>{`
-                .rich-text-editor .ql-container {
-                  background: rgba(255, 255, 255, 0.05);
-                  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-                  border-bottom-left-radius: 12px;
-                  border-bottom-right-radius: 12px;
-                  color: white;
-                  font-family: inherit;
-                  font-size: 16px;
-                  min-height: 150px;
-                }
-                .rich-text-editor .ql-toolbar {
-                  background: rgba(255, 255, 255, 0.08);
-                  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-                  border-top-left-radius: 12px;
-                  border-top-right-radius: 12px;
-                  padding: 8px;
-                }
-                .rich-text-editor .ql-stroke {
-                  stroke: rgba(255, 255, 255, 0.6) !important;
-                }
-                .rich-text-editor .ql-fill {
-                  fill: rgba(255, 255, 255, 0.6) !important;
-                }
-                .rich-text-editor .ql-picker {
-                  color: rgba(255, 255, 255, 0.6) !important;
-                }
-                .rich-text-editor .ql-editor.ql-blank::before {
-                  color: rgba(255, 255, 255, 0.2) !important;
-                  font-style: normal;
-                }
-                .rich-text-editor .ql-editor {
-                   padding: 16px;
-                }
-                .rich-text-editor .ql-snow.ql-toolbar button:hover .ql-stroke {
-                  stroke: #b069ff !important;
-                }
-                .rich-text-editor .ql-snow.ql-toolbar button.ql-active .ql-stroke {
-                  stroke: #b069ff !important;
-                }
-              `}</style>
             </div>
 
             <button
               type="submit"
-              className="w-full py-5 rounded-2xl bg-gradient-to-r from-primary to-primary-light text-white font-black text-lg shadow-xl hover:scale-[1.02] active:scale-95 transition-all mt-4"
+              className="w-full py-5 rounded-2xl bg-gradient-primary text-white font-black text-lg shadow-xl hover:scale-[1.02] active:scale-95 transition-all mt-4"
             >
               {initialData ? "Update Article" : "Publish to Industry Watch"}
             </button>
