@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaUserAlt, FaMask, FaTrophy } from 'react-icons/fa';
+import { FaTrophy } from 'react-icons/fa';
 
-const NomineeCard = ({ nominee, game, cover, shouldShowOpacity, isWinner }) => {
-  const [showCharacter, setShowCharacter] = useState(false);
+const NomineeCard = ({ nominee, game, cover, shouldShowOpacity, isWinner, showCharacterOverride }) => {
   const [imageLoading, setImageLoading] = useState(true);
 
   const isRoleBased = !!nominee.role;
   const imageUrl = isRoleBased
-    ? (showCharacter ? (nominee.role.as.image || nominee.role.actor.image) : nominee.role.actor.image)
+    ? (showCharacterOverride ? (nominee.role.as.image || nominee.role.actor.image) : nominee.role.actor.image)
     : cover;
+
+  useEffect(() => {
+    setImageLoading(true);
+  }, [imageUrl]);
 
   return (
     <div
@@ -41,7 +44,7 @@ const NomineeCard = ({ nominee, game, cover, shouldShowOpacity, isWinner }) => {
 
             <AnimatePresence mode='wait'>
               <motion.img
-                key={showCharacter ? 'char' : 'actor'}
+                key={showCharacterOverride ? 'char' : 'actor'}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: imageLoading ? 0 : 1 }}
                 exit={{ opacity: 0 }}
@@ -49,7 +52,7 @@ const NomineeCard = ({ nominee, game, cover, shouldShowOpacity, isWinner }) => {
                 src={imageUrl}
                 onLoad={() => setImageLoading(false)}
                 onError={() => setImageLoading(false)}
-                alt={showCharacter ? nominee.role.as.name : nominee.role.actor.name}
+                alt={showCharacterOverride ? nominee.role.as.name : nominee.role.actor.name}
                 referrerPolicy="no-referrer"
                 className="object-cover h-full w-full absolute inset-0 transition-transform duration-1000"
               />
@@ -57,19 +60,7 @@ const NomineeCard = ({ nominee, game, cover, shouldShowOpacity, isWinner }) => {
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-50" />
 
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setImageLoading(true);
-                setShowCharacter(!showCharacter);
-              }}
-              className="absolute bottom-5 right-5 z-20 bg-white/20 backdrop-blur-2xl p-3 rounded-2xl border border-white/30 transition-all shadow-xl text-white active:scale-90"
-              title={showCharacter ? "Switch to Actor" : "Switch to Character"}
-            >
-              {showCharacter ? <FaUserAlt className="size-4" /> : <FaMask className="size-4" />}
-            </button>
-
-            {((!nominee.role.actor.image && !showCharacter) || (!nominee.role.as.image && showCharacter)) && !imageLoading && (
+            {((!nominee.role.actor.image && !showCharacterOverride) || (!nominee.role.as.image && showCharacterOverride)) && !imageLoading && (
               <div className="flex items-center justify-center h-full w-full text-white/10 uppercase font-black tracking-[0.2em] text-[10px] italic">
                 No Image Available
               </div>
