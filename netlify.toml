@@ -7,3 +7,8 @@
   from = "/api/igdb"
   to = "/.netlify/functions/igdb"
   status = 200
+
+[[redirects]]
+  from = "/api/sync-rss"
+  to = "/.netlify/functions/sync-rss-manual"
+  status = 200

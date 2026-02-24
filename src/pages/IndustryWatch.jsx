@@ -7,7 +7,7 @@ import WatchModal from "../components/watch/WatchModal";
 import { addWatchToFirestore, editWatchFromFirestore, deleteWatchFromFirestore } from "../js/firebase";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiPlus, FiActivity, FiSearch, FiFrown } from "react-icons/fi";
+import { FiPlus, FiActivity, FiSearch, FiFrown, FiRefreshCw } from "react-icons/fi";
 import ConfirmModal from "../components/modals/ConfirmModal";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -21,6 +21,23 @@ const IndustryWatch = () => {
   const [editingArticle, setEditingArticle] = useState(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [articleToDelete, setArticleToDelete] = useState(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleManualSync = async () => {
+    setIsSyncing(true);
+    try {
+      const res = await fetch("/api/sync-rss", { method: "POST" });
+      if (!res.ok) throw new Error("Sync failed");
+      const data = await res.json();
+      toast.success(`News Synchronized! Added: ${data.addedCount}, Grouped: ${data.groupedCount}`);
+      // Since it writes to Firestore directly, wait a moment and reload the context data
+      setTimeout(() => ensureWatchLoaded(), 1000);
+    } catch (e) {
+      toast.error("Failed to sync news manually.");
+      console.error(e);
+    }
+    setIsSyncing(false);
+  };
 
   useEffect(() => {
     ensureWatchLoaded();
@@ -124,16 +141,26 @@ const IndustryWatch = () => {
             />
           </div>
           {userData?.isAdmin && (
-            <button
-              onClick={() => {
-                setEditingArticle(null);
-                setModalOpen(true);
-              }}
-              className="whitespace-nowrap px-6 py-4 bg-gradient-primary rounded-2xl text-white font-black uppercase tracking-widest flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-[0_10px_20px_rgba(176,105,255,0.3)]"
-            >
-              <FiPlus size={20} />
-              <span>Add News</span>
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={handleManualSync}
+                disabled={isSyncing}
+                className="whitespace-nowrap px-6 py-4 bg-white/5 hover:bg-white/10 rounded-2xl text-white font-black uppercase tracking-widest flex items-center gap-3 transition-all border border-white/10 disabled:opacity-50 hover:scale-105 active:scale-95 shadow-xl"
+              >
+                <FiRefreshCw size={20} className={isSyncing ? "animate-spin" : ""} />
+                <span>{isSyncing ? "Syncing..." : "Sync News"}</span>
+              </button>
+              <button
+                onClick={() => {
+                  setEditingArticle(null);
+                  setModalOpen(true);
+                }}
+                className="whitespace-nowrap px-6 py-4 bg-gradient-primary rounded-2xl text-white font-black uppercase tracking-widest flex items-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-[0_10px_20px_rgba(176,105,255,0.3)]"
+              >
+                <FiPlus size={20} />
+                <span>Add News</span>
+              </button>
+            </div>
           )}
         </div>
         <div className="relative min-h-[400px]">
