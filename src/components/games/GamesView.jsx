@@ -29,14 +29,14 @@ const GamesView = () => {
     isMobile,
     selectedPlatforms,
     showOnlyUpcoming,
-    showThisYearOnly,
+    selectedYear,
     withRelease,
     setWithRelease,
     filtersVisible,
     setFiltersVisible,
     setSelectedPlatforms,
     setShowOnlyUpcoming,
-    setShowThisYearOnly,
+    setSelectedYear,
   } = useGameUI();
   const {
     games,
@@ -57,10 +57,10 @@ const GamesView = () => {
       selectedPlatforms,
       showOnlyUpcoming,
       withRelease,
-      showThisYearOnly,
+      selectedYear,
     };
     localStorage.setItem('gameFilters', JSON.stringify(filters));
-  }, [selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly]);
+  }, [selectedPlatforms, showOnlyUpcoming, withRelease, selectedYear]);
 
   const getPlatformArray = (platformsObj) => {
     if (Array.isArray(platformsObj)) return platformsObj;
@@ -80,6 +80,20 @@ const GamesView = () => {
     acc[key.toLowerCase()] = PLATFORMS[key].label;
     return acc;
   }, {});
+
+  const allYears = useMemo(() => {
+    const years = games.map(game => {
+      if (game.release_date instanceof Timestamp) {
+        return new Date(game.release_date.seconds * 1000).getFullYear();
+      }
+      if (typeof game.release_date === "string") {
+        const yearMatch = game.release_date.match(/\b(\d{4})\b/);
+        return yearMatch ? parseInt(yearMatch[1]) : null;
+      }
+      return null;
+    }).filter(year => year !== null);
+    return Array.from(new Set(years)).sort((a, b) => b - a);
+  }, [games]);
 
   const filtered = useMemo(() => {
     const quarterWeight = { Q1: 1, Q2: 2, Q3: 3, Q4: 4 };
@@ -116,7 +130,6 @@ const GamesView = () => {
     };
 
     const now = new Date();
-    const currentYear = now.getFullYear();
 
     return games
       .filter((game) => {
@@ -144,13 +157,13 @@ const GamesView = () => {
         }
 
         let matchesYear = true;
-        if (showThisYearOnly) {
+        if (selectedYear) {
           if (isTimestamp) {
             const release = new Date(game.release_date.seconds * 1000);
-            matchesYear = release.getFullYear() === currentYear;
+            matchesYear = release.getFullYear() === selectedYear;
           } else if (typeof game.release_date === "string") {
             const yearMatch = game.release_date.match(/\b(\d{4})\b/);
-            matchesYear = yearMatch ? parseInt(yearMatch[1]) === currentYear : false;
+            matchesYear = yearMatch ? parseInt(yearMatch[1]) === selectedYear : false;
           } else {
             matchesYear = false;
           }
@@ -164,7 +177,7 @@ const GamesView = () => {
         if (aSort !== bSort) return aSort - bSort;
         return a.name.localeCompare(b.name);
       });
-  }, [games, search, selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly]);
+  }, [games, search, selectedPlatforms, showOnlyUpcoming, withRelease, selectedYear]);
 
   const filteredUsers = useMemo(() => {
     if (!search || search.length < 2) return [];
@@ -221,7 +234,7 @@ const GamesView = () => {
       return;
     }
     setCurrentPage(1);
-  }, [search, selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly, itemsPerPage, setCurrentPage]);
+  }, [search, selectedPlatforms, showOnlyUpcoming, withRelease, selectedYear, itemsPerPage, setCurrentPage]);
 
   return (
     <div className="px-6 w-full flex flex-col gap-6 pb-4">
@@ -303,13 +316,16 @@ const GamesView = () => {
                   {withRelease && (
                     <div className="flex flex-col items-center gap-1">
                       <span className="text-xs font-bold uppercase tracking-wider opacity-50">Release Year</span>
-                      <div className="flex justify-center gap-2">
-                        <FilterButton
-                          isVisible={filtersVisible}
-                          filterCondition={showThisYearOnly}
-                          onClick={() => setShowThisYearOnly(prev => !prev)}
-                          text="This year"
-                        />
+                      <div className="flex flex-wrap justify-center gap-2">
+                        {allYears.map(year => (
+                          <FilterButton
+                            key={year}
+                            isVisible={filtersVisible}
+                            filterCondition={selectedYear === year}
+                            onClick={() => setSelectedYear(prev => prev === year ? null : year)}
+                            text={year.toString()}
+                          />
+                        ))}
                       </div>
                     </div>
                   )}
@@ -357,7 +373,7 @@ const GamesView = () => {
                       onClick={() => {
                         setSelectedPlatforms([]);
                         setShowOnlyUpcoming(null);
-                        setShowThisYearOnly(false);
+                        setSelectedYear(null);
                         setCurrentPage(1);
                         localStorage.removeItem('gameFilters');
                       }}
@@ -460,7 +476,7 @@ const GamesView = () => {
               onClick={() => {
                 setSelectedPlatforms([]);
                 setShowOnlyUpcoming(null);
-                setShowThisYearOnly(false);
+                setSelectedYear(null);
                 localStorage.removeItem('gameFilters');
               }}
               className="text-[10px] font-black uppercase tracking-widest px-4 py-2 bg-white/5 hover:bg-white/10 rounded-full border border-white/10 transition-colors"
