@@ -10,9 +10,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiPlus, FiActivity, FiSearch, FiFrown, FiRefreshCw } from "react-icons/fi";
 import ConfirmModal from "../components/modals/ConfirmModal";
 import { useAuth } from "../contexts/AuthContext";
+import Pagination from "../components/shared/Pagination";
+import { useGameUI } from "../contexts/GameUIContext";
 
 const IndustryWatch = () => {
-  const { watch, watchStories, setWatch, loadingWatch, ensureWatchLoaded } = useGameData();
+  const { watch, watchStories, setWatch, loadingWatch, ensureWatchLoaded, refreshWatchData } = useGameData();
+  const {
+    itemsPerPage,
+    currentPage,
+    setCurrentPage,
+    setItemsPerPage,
+  } = useGameUI();
   const { userData } = useAuth();
   const [searchParams] = useSearchParams();
   const targetId = searchParams.get("id");
@@ -30,8 +38,7 @@ const IndustryWatch = () => {
       if (!res.ok) throw new Error("Sync failed");
       const data = await res.json();
       toast.success(`News Synchronized! Added: ${data.addedCount}, Grouped: ${data.groupedCount}`);
-      // Since it writes to Firestore directly, wait a moment and reload the context data
-      setTimeout(() => ensureWatchLoaded(), 1000);
+      await refreshWatchData();
     } catch (e) {
       toast.error("Failed to sync news manually.");
       console.error(e);
@@ -75,6 +82,13 @@ const IndustryWatch = () => {
       (a.articles && a.articles.some(art => art.source.toLowerCase().includes(s)))
     );
   }, [watch, watchStories, searchTerm]);
+
+  const currentArticles = useMemo(() => {
+    return filteredArticles.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
+  }, [filteredArticles, currentPage, itemsPerPage]);
 
   const handleSave = async (data) => {
     try {
@@ -171,26 +185,36 @@ const IndustryWatch = () => {
               ))}
             </div>
           ) : filteredArticles.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-8">
-              <AnimatePresence mode="popLayout">
-                {filteredArticles.map(article => (
-                  <WatchCard
-                    key={article.id}
-                    article={article}
-                    isHighlighted={article.id === targetId}
-                    canEdit={userData?.isAdmin}
-                    onEdit={(a) => {
-                      setEditingArticle(a);
-                      setModalOpen(true);
-                    }}
-                    onDelete={(id) => {
-                      setArticleToDelete(id);
-                      setDeleteConfirmOpen(true);
-                    }}
-                  />
-                ))}
-              </AnimatePresence>
-            </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-8">
+                <AnimatePresence mode="popLayout">
+                  {currentArticles.map(article => (
+                    <WatchCard
+                      key={article.id}
+                      article={article}
+                      isHighlighted={article.id === targetId}
+                      canEdit={userData?.isAdmin}
+                      onEdit={(a) => {
+                        setEditingArticle(a);
+                        setModalOpen(true);
+                      }}
+                      onDelete={(id) => {
+                        setArticleToDelete(id);
+                        setDeleteConfirmOpen(true);
+                      }}
+                    />
+                  ))}
+                </AnimatePresence>
+              </div>
+              <Pagination
+                totalItems={filteredArticles.length}
+                itemsPerPage={itemsPerPage}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+                onItemsPerPageChange={setItemsPerPage}
+                itemsText="News"
+              />
+            </>
           ) : (
             <motion.div
               initial={{ opacity: 0 }}

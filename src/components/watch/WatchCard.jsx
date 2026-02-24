@@ -1,8 +1,10 @@
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useSpring } from "framer-motion";
 import { FiExternalLink, FiUser, FiCalendar, FiEdit2, FiTrash2, FiLink } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { slugify } from "../../js/utils";
+import DOMPurify from "dompurify";
 
 const categoryColors = {
   Rumor: "bg-amber-500/20 text-amber-500 border-amber-500/20",
@@ -16,6 +18,10 @@ const categoryColors = {
 };
 
 const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
+  const scrollRef = useRef(null);
+  const { scrollYProgress } = useScroll({ container: scrollRef });
+  const scaleX = useSpring(scrollYProgress, { stiffness: 200 });
+
   const formattedDate = new Date(article.createdAt).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -33,16 +39,15 @@ const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
       id={article.id}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className={`group relative border rounded-3xl p-6 md:p-8 hover:bg-white/[0.08] transition-all duration-500 shadow-xl scroll-mt-32 min-w-0 flex flex-col ${isHighlighted
+      className={`group relative border rounded-3xl p-4 md:p-6 hover:bg-white/[0.08] transition-all duration-500 shadow-xl scroll-mt-32 min-w-0 flex flex-col h-[480px] md:h-[520px] ${isHighlighted
         ? "border-primary-light bg-white/[0.1] shadow-[0_0_30px_rgba(176,105,255,0.2)]"
         : "bg-white/5 border-white/10"
         }`}
     >
       <div className="flex flex-col h-full space-y-4">
-        {/* Header */}
         <div className="flex items-center justify-between shrink-0">
-          <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${article._type === 'rss' ? categoryColors.Other : (categoryColors[article.category] || categoryColors.Other)}`}>
-            {article._type === 'rss' ? "News" : article.category}
+          <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${article._type === 'rss' && (!article.category || article.category === 'Other') ? categoryColors.Other : (categoryColors[article.category] || categoryColors.Other)}`}>
+            {article._type === 'rss' && (!article.category || article.category === 'Other') ? "Aggregated" : article.category}
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-white/30 text-[10px] font-black uppercase tracking-widest">
@@ -79,7 +84,6 @@ const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
           </div>
         </div>
 
-        {/* Title & Game Section - Fixed height area */}
         <div className="shrink-0 space-y-3">
           {article.gameName && (
             article.gameId ? (
@@ -109,27 +113,32 @@ const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
                 : article.author}
             </span></span>
           </div>
+
+          <div className="h-[5px] w-full bg-white/10 overflow-hidden rounded-full mt-4">
+            <motion.div
+              className="h-full bg-gradient-primary origin-left"
+              style={{ scaleX: scaleX }}
+            />
+          </div>
         </div>
 
-        {/* Summary - Scrollable area */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 min-h-0">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
           <div
-            className="prose prose-invert text-white/70 text-sm md:text-base prose-p:leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: article.summary }}
+            className="prose max-w-none prose-invert text-white/70 text-sm md:text-base pb-2"
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.summary) }}
           />
         </div>
 
-        {/* Footer - Sticky bottom */}
         <div className="pt-4 border-t border-white/10 flex items-center justify-between gap-4 shrink-0">
           {article._type === 'rss' ? (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {article.articles?.map((a, i) => (
                 <a
                   key={i}
                   href={a.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/10 transition-all"
+                  className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/5 text-[9px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/10 transition-all"
                 >
                   <span>{a.source}</span>
                   <FiExternalLink size={10} />

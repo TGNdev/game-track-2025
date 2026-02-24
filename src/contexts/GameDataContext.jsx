@@ -270,6 +270,12 @@ export const GameDataProvider = ({ children }) => {
     return watchLoadPromiseRef.current;
   }, [watch]);
 
+  const refreshWatchData = useCallback(async () => {
+    watchLoadedRef.current = false;
+    watchLoadPromiseRef.current = null;
+    return await ensureWatchLoaded();
+  }, [ensureWatchLoaded]);
+
   useEffect(() => {
     if (didAttemptInitialUsersLoadRef.current) return;
     didAttemptInitialUsersLoadRef.current = true;
@@ -314,6 +320,7 @@ export const GameDataProvider = ({ children }) => {
       setWatchStories,
       loadingWatch,
       ensureWatchLoaded,
+      refreshWatchData,
 
       awardWinners,
       setAwardWinners,
@@ -343,6 +350,7 @@ export const GameDataProvider = ({ children }) => {
       watchStories,
       loadingWatch,
       ensureWatchLoaded,
+      refreshWatchData,
       awardWinners,
       awardsPerGame,
       hasWonAward,

@@ -9,7 +9,8 @@ const Pagination = ({
   currentPage,
   onPageChange,
   onItemsPerPageChange,
-  isMobile
+  isMobile,
+  itemsText = "Games"
 }) => {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -61,7 +62,7 @@ const Pagination = ({
               </button>
             ))}
           </div>
-          <span className="text-[10px] uppercase font-black tracking-widest text-white/40 border-l border-white/10 pl-3">Games per page</span>
+          <span className="text-[10px] uppercase font-black tracking-widest text-white/40 border-l border-white/10 pl-3">{itemsText} per page</span>
         </div>
       )}
 
@@ -105,7 +106,7 @@ const Pagination = ({
       {/* Total Info */}
       <div className="flex items-center gap-3 text-[10px] uppercase font-black tracking-[0.2em] text-white/30">
         <span className="w-12 h-px bg-white/10" />
-        <span>Page {currentPage} of {totalPages} ({totalItems} Games)</span>
+        <span>Page {currentPage} of {totalPages} ({totalItems} {itemsText})</span>
         <span className="w-12 h-px bg-white/10" />
       </div>
     </div>

@@ -6,6 +6,27 @@ const parser = new Parser();
 
 const STOP_WORDS = new Set(["the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for", "with", "by", "about", "as", "of", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "do", "does", "did", "out", "up", "down", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now", "new", "first", "game", "games", "review", "trailer", "gameplay"]);
 
+const CATEGORY_KEYWORDS = {
+  Rumor: ["rumor", "report:", "reportedly", "sources say", "unannounced", "leak", "leaker", "insider", "datamine"],
+  Confirmation: ["confirmed", "announces", "reveals", "unveiled", "goes gold", "release date"],
+  Layoffs: ["layoff", "laid off", "job cut", "cuts jobs", "downsizing", "restructuring", "let go", "depart"],
+  Closure: ["shut down", "shuts down", "closing", "shutting down", "closed its doors", "ceases operations", "winding down"],
+  Acquisition: ["acquire", "acquired", "acquisition", "buyout", "merger", "buying", "purchases", "purchased by"],
+  Legal: ["lawsuit", "sued", "sues", "court", "legal action", "judge", "settlement", "nlrb", "union"],
+  Financial: ["revenue", "earnings", "financial", "q1", "q2", "q3", "q4", "sales", "million copies", "million units", "stock"]
+};
+
+function determineCategory(title, summary) {
+  const text = (title + " " + summary).toLowerCase();
+  for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+    if (keywords.some(kw => text.includes(kw.toLowerCase()))) {
+      return category;
+    }
+  }
+  return "Other";
+}
+
+// Ensure the calculateSimilarity functions below use lowercase
 function getWords(text) {
   return text
     .toLowerCase()
@@ -27,10 +48,8 @@ function calculateSimilarity(title1, title2) {
 }
 
 const SOURCES = [
-  { name: "IGN", url: "https://feeds.feedburner.com/ign/news" },
-  { name: "Kotaku", url: "https://kotaku.com/rss" },
-  { name: "Polygon", url: "https://www.polygon.com/rss/index.xml" },
-  { name: "GameSpot", url: "https://www.gamespot.com/feeds/news/" }
+  { name: "IGN", url: "https://www.ign.com/rss/articles/feed?tags=games&count=20" },
+  { name: "Game Informer", url: "https://gameinformer.com/news.xml?_gl=1*11rz65v*_up*MQ..*_ga*MTkxODIzOTI0MS4xNzcxOTQxNjIy*_ga_PX9YKWLVPB*czE3NzE5NDE2MjEkbzEkZzAkdDE3NzE5NDE2MjEkajYwJGwwJGgw" }
 ];
 
 export const handler = schedule("@hourly", async (event) => {
@@ -60,7 +79,7 @@ export const handler = schedule("@hourly", async (event) => {
             source: source.name,
             title: item.title,
             link: item.link,
-            summary: (item.contentSnippet || item.content || item.description || "").replace(/<[^>]*>?/gm, '').substring(0, 300),
+            summary: item['content:encoded'] || item.content || item.description || "",
             pubDate: new Date(item.pubDate || item.isoDate).toISOString()
           });
         });
@@ -115,8 +134,8 @@ export const handler = schedule("@hourly", async (event) => {
         }
       }
 
-      // 35% word overlap threshold for similarity
-      if (bestMatch && highestSimilarity > 0.35) {
+      // 25% word overlap threshold for similarity to catch more
+      if (bestMatch && highestSimilarity > 0.25) {
         // Add to existing story
         bestMatch.articles.push(article);
         bestMatch.updatedAt = new Date().toISOString();
@@ -131,6 +150,7 @@ export const handler = schedule("@hourly", async (event) => {
         const newStory = {
           title: article.title, // Primary title
           summary: article.summary,
+          category: determineCategory(article.title, article.summary),
           createdAt: article.pubDate,
           updatedAt: new Date().toISOString(),
           articles: [article],
