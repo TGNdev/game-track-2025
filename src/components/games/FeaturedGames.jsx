@@ -90,7 +90,7 @@ const FeaturedGames = ({ games }) => {
           </div>
         </div>
 
-        <div className="max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+        <div className="max-h-[500px] overflow-y-auto custom-scrollbar">
           <div className="flex flex-wrap gap-4 w-full">
             {featuredGames.map(featured => (
               <div key={featured.id} className="min-w-[300px] md:min-w-[400px] flex-1">

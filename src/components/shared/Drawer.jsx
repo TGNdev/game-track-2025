@@ -85,17 +85,6 @@ const Drawer = ({ open, setOpen }) => {
               <span className="font-semibold">Industry Watch</span>
             </Link>
 
-            <Link
-              to="/whats-new"
-              className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
-              onClick={() => setOpen(false)}
-            >
-              <div className="p-2 rounded-lg bg-gradient-primary transition-colors">
-                <FiMessageSquare className="size-5" />
-              </div>
-              <span className="font-semibold">What's New on Game Track</span>
-            </Link>
-
             <div className="h-[2px] bg-white/10 my-4"></div>
 
             {isLogged && (
