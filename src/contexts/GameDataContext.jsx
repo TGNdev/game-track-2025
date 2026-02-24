@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { getTgaFromFirestore, getGamesFromFirestore, getUsersFromFirestore, getWatchFromFirestore, getUpdatesFromFirestore, subscribeToUpdates } from "../js/firebase";
+import { getTgaFromFirestore, getGamesFromFirestore, getUsersFromFirestore, getWatchFromFirestore } from "../js/firebase";
 import { slugify } from "../js/utils";
 import { TTL } from "../js/cache";
 
@@ -270,30 +270,6 @@ export const GameDataProvider = ({ children }) => {
     return watchLoadPromiseRef.current;
   }, [watch]);
 
-  const ensureUpdatesLoaded = useCallback(async () => {
-    if (updatesLoadedRef.current) return updates;
-
-    if (!updatesLoadPromiseRef.current) {
-      updatesLoadPromiseRef.current = (async () => {
-        try {
-          setLoadingUpdates(true);
-          const list = await getUpdatesFromFirestore();
-          setUpdates(list);
-          updatesLoadedRef.current = true;
-          return list;
-        } catch (e) {
-          console.error("Failed to load updates:", e);
-          throw e;
-        } finally {
-          setLoadingUpdates(false);
-          updatesLoadPromiseRef.current = null;
-        }
-      })();
-    }
-
-    return updatesLoadPromiseRef.current;
-  }, [updates]);
-
   useEffect(() => {
     if (didAttemptInitialUsersLoadRef.current) return;
     didAttemptInitialUsersLoadRef.current = true;
@@ -308,32 +284,17 @@ export const GameDataProvider = ({ children }) => {
           })
           .catch(() => { });
         ensureWatchLoaded().catch(() => { }); // Also check watch data
-        ensureUpdatesLoaded().catch(() => { }); // Also check updates
       }
     };
     document.addEventListener("visibilitychange", handleVisibility);
     return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, [ensureUsersLoaded, ensureWatchLoaded, ensureUpdatesLoaded]);
+  }, [ensureUsersLoaded, ensureWatchLoaded]);
 
   useEffect(() => {
     if (didAttemptInitialWatchLoadRef.current) return;
     didAttemptInitialWatchLoadRef.current = true;
     ensureWatchLoaded().catch(() => { });
   }, [ensureWatchLoaded]);
-
-  useEffect(() => {
-    if (didAttemptInitialUpdatesLoadRef.current) return;
-    didAttemptInitialUpdatesLoadRef.current = true;
-
-    setLoadingUpdates(true);
-    const unsubscribe = subscribeToUpdates((list) => {
-      setUpdates(list);
-      setLoadingUpdates(false);
-      updatesLoadedRef.current = true;
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const value = useMemo(
     () => ({
@@ -367,11 +328,6 @@ export const GameDataProvider = ({ children }) => {
       timesToBeat,
       setTimesToBeat,
       refreshTgaData,
-
-      updates,
-      setUpdates,
-      loadingUpdates,
-      ensureUpdatesLoaded,
     }),
     [
       games,
@@ -392,9 +348,6 @@ export const GameDataProvider = ({ children }) => {
       videosMap,
       timesToBeat,
       refreshTgaData,
-      updates,
-      loadingUpdates,
-      ensureUpdatesLoaded,
     ]
   );
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { editGameFromFirestore, addUpdateToFirestore } from "../../js/firebase";
+import { editGameFromFirestore } from "../../js/firebase";
 import { Timestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import SuggestionDropdown from "./SuggestionDropdown";
@@ -9,7 +9,6 @@ import Modal from "./Modal";
 import { useGameData } from "../../contexts/GameDataContext";
 import { PLATFORMS, TAGS } from "../../js/config";
 import { FiTrash2 } from "react-icons/fi";
-import ReactQuill from "react-quill-new";
 
 const platformOptions = Object.keys(PLATFORMS);
 const platformLabels = Object.fromEntries(
@@ -34,7 +33,6 @@ const EditGameForm = ({ game, games, onSuccess }) => {
     ratings: game.ratings || { critics: 0, players: 0, link: "" },
     tags: game.tags || tagsOptions.reduce((acc, tag) => ({ ...acc, [tag]: false }), {}),
     cover: game.cover || null,
-    updateMessage: "",
   });
 
   const [form, setForm] = useState(getInitialFormState());
@@ -157,15 +155,6 @@ const EditGameForm = ({ game, games, onSuccess }) => {
         tags: form.tags,
         cover: form.cover,
       });
-
-      if (form.updateMessage.trim()) {
-        const message = form.updateMessage.replace(/&nbsp;/g, " ");
-        await addUpdateToFirestore({
-          gameId: game.id,
-          gameName: form.name,
-          message: message,
-        });
-      }
 
       const updatedGame = {
         ...game,
@@ -442,18 +431,6 @@ const EditGameForm = ({ game, games, onSuccess }) => {
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-xs font-mono focus:outline-none focus:border-[#b069ff]/50 transition-all"
               />
             </div>
-          </div>
-        </div>
-
-        <div className="pt-4 border-t border-white/10">
-          <label className="text-xs font-black uppercase tracking-widest text-white/40 mb-4 ml-1 block">Update Message (Optional)</label>
-          <div className="relative rich-text-editor">
-            <ReactQuill
-              theme="snow"
-              value={form.updateMessage}
-              onChange={(content) => setForm(prev => ({ ...prev, updateMessage: content }))}
-              placeholder="e.g. Starfield is now available on PS5!"
-            />
           </div>
         </div>
 

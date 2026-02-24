@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, deleteDoc, updateDoc, doc, getDocs, arrayUnion, arrayRemove, getDoc, setDoc, query, where, onSnapshot } from "firebase/firestore";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, deleteDoc, updateDoc, doc, getDocs, arrayUnion, arrayRemove, getDoc, setDoc, query, where } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_API_KEY,
@@ -18,41 +18,6 @@ const db = initializeFirestore(app, {
         tabManager: persistentMultipleTabManager(),
     }),
 });
-
-export const getUpdatesFromFirestore = async () => {
-    try {
-        const updatesRef = collection(db, "updates");
-        const querySnapshot = await getDocs(updatesRef);
-        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    } catch (e) {
-        console.error("Error fetching updates: ", e);
-        throw e;
-    }
-};
-
-export const subscribeToUpdates = (onUpdate) => {
-    const updatesRef = collection(db, "updates");
-    return onSnapshot(updatesRef, (querySnapshot) => {
-        const updatesList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        onUpdate(updatesList);
-    }, (error) => {
-        console.error("Error subscribing to updates: ", error);
-    });
-};
-
-export const addUpdateToFirestore = async (updateData) => {
-    try {
-        const updatesRef = collection(db, "updates");
-        const docRef = await addDoc(updatesRef, {
-            ...updateData,
-            date: new Date().toISOString()
-        });
-        return docRef.id;
-    } catch (e) {
-        console.error("Error adding update: ", e);
-        throw e;
-    }
-};
 
 export const getGamesFromFirestore = async () => {
     try {

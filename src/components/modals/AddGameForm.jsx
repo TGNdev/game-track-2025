@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { addGameToFirestore, addUpdateToFirestore } from "../../js/firebase";
+import { addGameToFirestore } from "../../js/firebase";
 import { Timestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import SuggestionDropdown from "./SuggestionDropdown";
@@ -8,7 +8,6 @@ import Modal from "./Modal";
 import { useGameData } from "../../contexts/GameDataContext";
 import { PLATFORMS, TAGS } from "../../js/config";
 import { FiTrash2 } from "react-icons/fi";
-import ReactQuill from "react-quill-new";
 
 const platformOptions = Object.keys(PLATFORMS);
 const platformLabels = Object.fromEntries(
@@ -31,7 +30,6 @@ const AddGameForm = ({ games, onSuccess }) => {
     tags: tagsOptions.reduce((acc, tag) => ({ ...acc, [tag]: false }), {}),
     cover: null,
     igdb_id: "",
-    updateMessage: "",
   });
   const [form, setForm] = useState(getInitialFormState());
   const [errors, setErrors] = useState({});
@@ -153,15 +151,6 @@ const AddGameForm = ({ games, onSuccess }) => {
         cover: null,
         igdb_id: form.igdb_id,
       });
-
-      if (form.updateMessage.trim()) {
-        const message = form.updateMessage.replace(/&nbsp;/g, " ");
-        await addUpdateToFirestore({
-          gameId: newGameId,
-          gameName: form.name,
-          message: message,
-        });
-      }
 
       const newGameObject = {
         id: newGameId,
@@ -450,18 +439,6 @@ const AddGameForm = ({ games, onSuccess }) => {
             onChange={handleChange}
           />
           {errors.igdb_id && <div className="text-red-500 text-xs font-bold mt-1 ml-1">{errors.igdb_id}</div>}
-        </div>
-
-        <div className="pt-4 border-t border-white/10">
-          <label className="text-xs font-black uppercase tracking-widest text-white/40 mb-4 ml-1 block">Update Message (Optional)</label>
-          <div className="relative rich-text-editor">
-            <ReactQuill
-              theme="snow"
-              value={form.updateMessage}
-              onChange={(content) => setForm(prev => ({ ...prev, updateMessage: content }))}
-              placeholder="e.g. Starfield is now available on PS5!"
-            />
-          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-8 pt-4 border-t border-white/10">
