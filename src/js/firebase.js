@@ -218,6 +218,19 @@ export const getWatchStoriesFromFirestore = async () => {
     }
 };
 
+export const editWatchStoryCategoryFromFirestore = async (watchId, category) => {
+    try {
+        const watchRef = doc(db, "watchStories", watchId);
+        await updateDoc(watchRef, {
+            category,
+            updatedAt: new Date().toISOString()
+        });
+    } catch (e) {
+        console.error("Error editing watch story category: ", e);
+        throw e;
+    }
+};
+
 export const addToLibrary = async (userId, gameId, type = "played") => {
     try {
         const userRef = doc(db, "users", userId);

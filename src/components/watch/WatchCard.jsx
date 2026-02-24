@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { motion, useScroll } from "framer-motion";
 import { FiExternalLink, FiUser, FiCalendar, FiEdit2, FiTrash2, FiLink } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
@@ -9,18 +9,19 @@ import DOMPurify from "dompurify";
 const categoryColors = {
   Rumor: "bg-amber-500/20 text-amber-500 border-amber-500/20",
   Confirmation: "bg-green-500/20 text-green-500 border-green-500/20",
-  Layoffs: "bg-red-500/20 text-red-500 border-red-500/20",
-  Closure: "bg-gray-500/20 text-gray-400 border-gray-500/20",
+  Layoffs: "bg-red-300/20 text-red-300 border-red-300/20",
+  Closure: "bg-red-500/20 text-red-500 border-red-500/20",
   Acquisition: "bg-purple-500/20 text-purple-500 border-purple-500/20",
-  Legal: "bg-blue-500/20 text-blue-500 border-blue-500/20",
+  Announcement: "bg-blue-500/20 text-blue-500 border-blue-500/20",
   Financial: "bg-emerald-500/20 text-emerald-500 border-emerald-500/20",
-  Other: "bg-white/10 text-white/60 border-white/10"
+  Delay: "bg-yellow-500/20 text-yellow-500 border-yellow-500/20",
+  News: "bg-white/10 text-white/60 border-white/10",
+  Deal: "bg-green-500/20 text-green-500 border-green-500/20"
 };
 
 const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
   const scrollRef = useRef(null);
   const { scrollYProgress } = useScroll({ container: scrollRef });
-  const scaleX = useSpring(scrollYProgress, { stiffness: 200 });
 
   const formattedDate = new Date(article.createdAt).toLocaleDateString("en-US", {
     month: "short",
@@ -62,7 +63,7 @@ const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
               >
                 <FiLink size={14} />
               </button>
-              {canEdit && article._type !== 'rss' && (
+              {canEdit && (
                 <div className="flex gap-2">
                   <button
                     onClick={() => onEdit(article)}
@@ -71,13 +72,15 @@ const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
                   >
                     <FiEdit2 size={14} />
                   </button>
-                  <button
-                    onClick={() => onDelete(article.id)}
-                    className="p-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg text-red-500/60 hover:text-red-500 transition-all shadow-lg backdrop-blur-md border border-red-500/10"
-                    title="Delete Article"
-                  >
-                    <FiTrash2 size={14} />
-                  </button>
+                  {article._type !== 'rss' && (
+                    <button
+                      onClick={() => onDelete(article.id)}
+                      className="p-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg text-red-500/60 hover:text-red-500 transition-all shadow-lg backdrop-blur-md border border-red-500/10"
+                      title="Delete Article"
+                    >
+                      <FiTrash2 size={14} />
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -114,10 +117,10 @@ const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
             </span></span>
           </div>
 
-          <div className="h-[5px] w-full bg-white/10 overflow-hidden rounded-full mt-4">
+          <div className="h-[6px] w-full bg-white/10 overflow-hidden rounded-full mt-4">
             <motion.div
               className="h-full bg-gradient-primary origin-left"
-              style={{ scaleX: scaleX }}
+              style={{ scaleX: scrollYProgress }}
             />
           </div>
         </div>
@@ -138,7 +141,7 @@ const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
                   href={a.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/5 text-[9px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/10 transition-all"
+                  className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors group/link"
                 >
                   <span>{a.source}</span>
                   <FiExternalLink size={10} />

@@ -10,7 +10,7 @@ import { useGameUI } from "../contexts/GameUIContext";
 import { useAuth } from "../contexts/AuthContext";
 import { slugify } from "../js/utils";
 import { getGameCovers, getGameScreenshots, getGameTimeToBeat, getGameVideos } from "../js/igdb";
-import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes, deletePlaytime, getGlobalPlaytimesForGame, addWatchToFirestore, editWatchFromFirestore } from "../js/firebase";
+import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes, deletePlaytime, getGlobalPlaytimesForGame, addWatchToFirestore, editWatchFromFirestore, editWatchStoryCategoryFromFirestore } from "../js/firebase";
 import { toast } from "react-toastify";
 import CoverSkeleton from "../components/skeletons/CoverSkeleton";
 import ScreenshotSkeleton from "../components/skeletons/ScreenshotSkeleton";
@@ -71,6 +71,7 @@ export default function GameDetails() {
     watch,
     watchStories,
     setWatch,
+    setWatchStories,
     ensureWatchLoaded
   } = useGameData();
 
@@ -282,9 +283,15 @@ export default function GameDetails() {
   const handleSaveWatch = async (data) => {
     try {
       if (editingArticle) {
-        await editWatchFromFirestore(editingArticle.id, data);
-        setWatch(prev => prev.map(a => a.id === editingArticle.id ? { ...a, ...data } : a));
-        toast.success("Article updated!");
+        if (editingArticle._type === 'rss') {
+          await editWatchStoryCategoryFromFirestore(editingArticle.id, data.category);
+          setWatchStories(prev => prev.map(a => a.id === editingArticle.id ? { ...a, category: data.category } : a));
+          toast.success("Category updated!");
+        } else {
+          await editWatchFromFirestore(editingArticle.id, data);
+          setWatch(prev => prev.map(a => a.id === editingArticle.id ? { ...a, ...data } : a));
+          toast.success("Article updated!");
+        }
       } else {
         const newId = await addWatchToFirestore(data);
         const newArticle = { id: newId, ...data, createdAt: new Date().toISOString() };

@@ -6,26 +6,6 @@ const parser = new Parser();
 
 const STOP_WORDS = new Set(["the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for", "with", "by", "about", "as", "of", "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "do", "does", "did", "out", "up", "down", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", "don", "should", "now", "new", "first", "game", "games", "review", "trailer", "gameplay"]);
 
-const CATEGORY_KEYWORDS = {
-  Rumor: ["rumor", "report:", "reportedly", "sources say", "unannounced", "leak", "leaker", "insider", "datamine"],
-  Confirmation: ["confirmed", "announces", "reveals", "unveiled", "goes gold", "release date"],
-  Layoffs: ["layoff", "laid off", "job cut", "cuts jobs", "downsizing", "restructuring", "let go", "depart"],
-  Closure: ["shut down", "shuts down", "closing", "shutting down", "closed its doors", "ceases operations", "winding down"],
-  Acquisition: ["acquire", "acquired", "acquisition", "buyout", "merger", "buying", "purchases", "purchased by"],
-  Legal: ["lawsuit", "sued", "sues", "court", "legal action", "judge", "settlement", "nlrb", "union"],
-  Financial: ["revenue", "earnings", "financial", "q1", "q2", "q3", "q4", "sales", "million copies", "million units", "stock"]
-};
-
-function determineCategory(title, summary) {
-  const text = (title + " " + summary).toLowerCase();
-  for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
-    if (keywords.some(kw => text.includes(kw.toLowerCase()))) {
-      return category;
-    }
-  }
-  return "Other";
-}
-
 // Ensure the calculateSimilarity functions below use lowercase
 function getWords(text) {
   return text
@@ -121,6 +101,11 @@ export const handler = schedule("@hourly", async (event) => {
       let highestSimilarity = 0;
 
       for (const story of existingStories) {
+        // Skip grouping if a story already contains an article from the exact same outlet
+        if (story.articles.some(a => a.source === article.source)) {
+          continue;
+        }
+
         // Compare against the main story title AND against each article's title
         let maxSimForStory = calculateSimilarity(story.title, article.title);
         for (const a of story.articles) {
@@ -150,7 +135,7 @@ export const handler = schedule("@hourly", async (event) => {
         const newStory = {
           title: article.title, // Primary title
           summary: article.summary,
-          category: determineCategory(article.title, article.summary),
+          category: null,
           createdAt: article.pubDate,
           updatedAt: new Date().toISOString(),
           articles: [article],

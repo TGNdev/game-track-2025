@@ -4,7 +4,7 @@ import Layout from "../components/shared/Layout";
 import { useGameData } from "../contexts/GameDataContext";
 import WatchCard from "../components/watch/WatchCard";
 import WatchModal from "../components/watch/WatchModal";
-import { addWatchToFirestore, editWatchFromFirestore, deleteWatchFromFirestore } from "../js/firebase";
+import { addWatchToFirestore, editWatchFromFirestore, deleteWatchFromFirestore, editWatchStoryCategoryFromFirestore } from "../js/firebase";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiPlus, FiActivity, FiSearch, FiFrown, FiRefreshCw } from "react-icons/fi";
@@ -14,7 +14,7 @@ import Pagination from "../components/shared/Pagination";
 import { useGameUI } from "../contexts/GameUIContext";
 
 const IndustryWatch = () => {
-  const { watch, watchStories, setWatch, loadingWatch, ensureWatchLoaded, refreshWatchData } = useGameData();
+  const { watch, watchStories, setWatch, setWatchStories, loadingWatch, ensureWatchLoaded, refreshWatchData } = useGameData();
   const {
     itemsPerPage,
     currentPage,
@@ -95,9 +95,15 @@ const IndustryWatch = () => {
       data.summary = data.summary.replace(/&nbsp;/g, " ");
 
       if (editingArticle) {
-        await editWatchFromFirestore(editingArticle.id, data);
-        setWatch(prev => prev.map(a => a.id === editingArticle.id ? { ...a, ...data } : a));
-        toast.success("Article updated successfully!");
+        if (editingArticle._type === 'rss') {
+          await editWatchStoryCategoryFromFirestore(editingArticle.id, data.category);
+          setWatchStories(prev => prev.map(a => a.id === editingArticle.id ? { ...a, category: data.category } : a));
+          toast.success("Category updated successfully!");
+        } else {
+          await editWatchFromFirestore(editingArticle.id, data);
+          setWatch(prev => prev.map(a => a.id === editingArticle.id ? { ...a, ...data } : a));
+          toast.success("Article updated successfully!");
+        }
       } else {
         const newId = await addWatchToFirestore(data);
         const newArticle = { id: newId, ...data, createdAt: new Date().toISOString() };
