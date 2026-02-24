@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { getTgaFromFirestore, getGamesFromFirestore, getUsersFromFirestore, getWatchFromFirestore } from "../js/firebase";
+import { getTgaFromFirestore, getGamesFromFirestore, getUsersFromFirestore, getWatchFromFirestore, getWatchStoriesFromFirestore } from "../js/firebase";
 import { slugify } from "../js/utils";
 import { TTL } from "../js/cache";
 
@@ -44,27 +44,23 @@ export const GameDataProvider = ({ children }) => {
   const [loadingGames, setLoadingGames] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [loadingWatch, setLoadingWatch] = useState(false);
-  const [loadingUpdates, setLoadingUpdates] = useState(false);
   const [gamesError, setGamesError] = useState(null);
 
   const gamesLoadPromiseRef = useRef(null);
   const usersLoadPromiseRef = useRef(null);
   const watchLoadPromiseRef = useRef(null);
-  const updatesLoadPromiseRef = useRef(null);
   const didAttemptInitialGamesLoadRef = useRef(false);
   const didAttemptInitialUsersLoadRef = useRef(false);
   const didAttemptInitialWatchLoadRef = useRef(false);
-  const didAttemptInitialUpdatesLoadRef = useRef(false);
   const gamesLoadedRef = useRef(false);
   const usersLoadedRef = useRef(false);
   const watchLoadedRef = useRef(false);
-  const updatesLoadedRef = useRef(false);
 
   const [awardWinners, setAwardWinners] = useState(new Set());
   const [awardsPerGame, setAwardsPerGame] = useState({});
 
   const [watch, setWatch] = useState([]);
-  const [updates, setUpdates] = useState([]);
+  const [watchStories, setWatchStories] = useState([]);
 
   const [coverMap, setCoverMap] = useState({});
   const [screenshotsMap, setScreenshotsMap] = useState({});
@@ -253,10 +249,14 @@ export const GameDataProvider = ({ children }) => {
       watchLoadPromiseRef.current = (async () => {
         try {
           setLoadingWatch(true);
-          const list = await getWatchFromFirestore();
+          const [list, storiesList] = await Promise.all([
+            getWatchFromFirestore(),
+            getWatchStoriesFromFirestore()
+          ]);
           setWatch(list);
+          setWatchStories(storiesList);
           watchLoadedRef.current = true;
-          return list;
+          return { list, storiesList };
         } catch (e) {
           console.error("Failed to load watch data:", e);
           throw e;
@@ -310,6 +310,8 @@ export const GameDataProvider = ({ children }) => {
 
       watch,
       setWatch,
+      watchStories,
+      setWatchStories,
       loadingWatch,
       ensureWatchLoaded,
 
@@ -338,6 +340,7 @@ export const GameDataProvider = ({ children }) => {
       loadingUsers,
       ensureUsersLoaded,
       watch,
+      watchStories,
       loadingWatch,
       ensureWatchLoaded,
       awardWinners,

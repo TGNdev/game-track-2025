@@ -28,8 +28,8 @@ const WatchCardSmall = ({ article }) => {
     >
       <div className="flex flex-col h-full space-y-6">
         <div className="flex items-center justify-between pr-24 md:pr-0">
-          <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${categoryColors[article.category] || categoryColors.Other}`}>
-            {article.category}
+          <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${article._type === 'rss' ? categoryColors.Other : (categoryColors[article.category] || categoryColors.Other)}`}>
+            {article._type === 'rss' ? "News" : article.category}
           </div>
           <div className="flex items-center gap-2 text-white/30 text-[10px] font-black uppercase tracking-widest">
             <FiCalendar size={12} />

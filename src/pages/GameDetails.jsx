@@ -69,6 +69,7 @@ export default function GameDetails() {
     timesToBeat,
     setTimesToBeat,
     watch,
+    watchStories,
     setWatch,
     ensureWatchLoaded
   } = useGameData();
@@ -181,10 +182,24 @@ export default function GameDetails() {
   }, [gameVideos, gameScreenshots]);
 
   const relatedArticles = useMemo(() => {
-    if (!watch || !game) return [];
-    return watch.filter(a => a.gameId === game.id || a.gameName === game.name)
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  }, [watch, game]);
+    if (!game) return [];
+
+    const combined = [
+      ...(watch || []).map(w => ({ ...w, _type: 'custom' })),
+      ...(watchStories || []).map(ws => ({ ...ws, _type: 'rss' }))
+    ];
+
+    return combined.filter(a => {
+      if (a._type === 'custom') {
+        return a.gameId === game.id || a.gameName === game.name;
+      } else {
+        const gameNameLower = game.name ? game.name.toLowerCase() : "";
+        if (!gameNameLower) return false;
+        return a.title.toLowerCase().includes(gameNameLower) ||
+          a.summary.toLowerCase().includes(gameNameLower);
+      }
+    }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }, [watch, watchStories, game]);
 
   const canAddCountdown = game?.release_date?.seconds && (game.release_date.seconds * 1000 > Date.now());
 

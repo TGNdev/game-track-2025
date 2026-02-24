@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaTrophy } from 'react-icons/fa';
 
 const NomineeCard = ({ nominee, game, cover, shouldShowOpacity, isWinner, showCharacterOverride }) => {
   const [imageLoading, setImageLoading] = useState(true);

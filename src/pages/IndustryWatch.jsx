@@ -12,7 +12,7 @@ import ConfirmModal from "../components/modals/ConfirmModal";
 import { useAuth } from "../contexts/AuthContext";
 
 const IndustryWatch = () => {
-  const { watch, setWatch, loadingWatch, ensureWatchLoaded } = useGameData();
+  const { watch, watchStories, setWatch, loadingWatch, ensureWatchLoaded } = useGameData();
   const { userData } = useAuth();
   const [searchParams] = useSearchParams();
   const targetId = searchParams.get("id");
@@ -38,9 +38,12 @@ const IndustryWatch = () => {
   }, [loadingWatch, targetId]);
 
   const filteredArticles = useMemo(() => {
-    if (!watch) return [];
+    const combined = [
+      ...(watch || []).map(w => ({ ...w, _type: 'custom' })),
+      ...(watchStories || []).map(ws => ({ ...ws, _type: 'rss' }))
+    ];
 
-    const sorted = [...watch].sort((a, b) =>
+    const sorted = combined.sort((a, b) =>
       new Date(b.createdAt) - new Date(a.createdAt)
     );
 
@@ -50,10 +53,11 @@ const IndustryWatch = () => {
     return sorted.filter(a =>
       a.title.toLowerCase().includes(s) ||
       a.summary.toLowerCase().includes(s) ||
-      a.author.toLowerCase().includes(s) ||
-      a.gameName?.toLowerCase().includes(s)
+      (a.author && a.author.toLowerCase().includes(s)) ||
+      (a.gameName && a.gameName.toLowerCase().includes(s)) ||
+      (a.articles && a.articles.some(art => art.source.toLowerCase().includes(s)))
     );
-  }, [watch, searchTerm]);
+  }, [watch, watchStories, searchTerm]);
 
   const handleSave = async (data) => {
     try {

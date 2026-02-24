@@ -207,6 +207,17 @@ export const deleteWatchFromFirestore = async (watchId) => {
     }
 };
 
+export const getWatchStoriesFromFirestore = async () => {
+    try {
+        const watchStoriesRef = collection(db, "watchStories");
+        const querySnapshot = await getDocs(watchStoriesRef);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (e) {
+        console.error("Error fetching watch stories: ", e);
+        throw e;
+    }
+};
+
 export const addToLibrary = async (userId, gameId, type = "played") => {
     try {
         const userRef = doc(db, "users", userId);

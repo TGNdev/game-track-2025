@@ -1,4 +1,4 @@
-import { FiX, FiHome, FiUser, FiLogOut, FiActivity, FiMessageSquare } from "react-icons/fi";
+import { FiX, FiHome, FiUser, FiLogOut, FiActivity } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useGameUI } from "../../contexts/GameUIContext";
 import { FaTrophy, FaCalendar, FaShieldAlt } from "react-icons/fa";

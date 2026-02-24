@@ -41,8 +41,8 @@ const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
       <div className="flex flex-col h-full space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between shrink-0">
-          <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${categoryColors[article.category] || categoryColors.Other}`}>
-            {article.category}
+          <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${article._type === 'rss' ? categoryColors.Other : (categoryColors[article.category] || categoryColors.Other)}`}>
+            {article._type === 'rss' ? "News" : article.category}
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-white/30 text-[10px] font-black uppercase tracking-widest">
@@ -57,7 +57,7 @@ const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
               >
                 <FiLink size={14} />
               </button>
-              {canEdit && (
+              {canEdit && article._type !== 'rss' && (
                 <div className="flex gap-2">
                   <button
                     onClick={() => onEdit(article)}
@@ -103,7 +103,11 @@ const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
             <div className="size-6 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
               <FiUser size={14} />
             </div>
-            <span className="truncate">Reported by <span className="text-white">{article.author}</span></span>
+            <span className="truncate">Reported by <span className="text-white">
+              {article._type === 'rss'
+                ? Array.from(new Set(article.articles?.map(a => a.source))).join(", ")
+                : article.author}
+            </span></span>
           </div>
         </div>
 
@@ -117,15 +121,32 @@ const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
 
         {/* Footer - Sticky bottom */}
         <div className="pt-4 border-t border-white/10 flex items-center justify-between gap-4 shrink-0">
-          <a
-            href={article.source}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors group/link"
-          >
-            <span>Original Source</span>
-            <FiExternalLink size={14} className="group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
-          </a>
+          {article._type === 'rss' ? (
+            <div className="flex flex-wrap gap-2">
+              {article.articles?.map((a, i) => (
+                <a
+                  key={i}
+                  href={a.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/10 transition-all"
+                >
+                  <span>{a.source}</span>
+                  <FiExternalLink size={10} />
+                </a>
+              ))}
+            </div>
+          ) : (
+            <a
+              href={article.source}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors group/link"
+            >
+              <span>Original Source</span>
+              <FiExternalLink size={14} className="group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />
+            </a>
+          )}
         </div>
       </div>
     </motion.div>
