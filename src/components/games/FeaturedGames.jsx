@@ -4,7 +4,7 @@ import FeaturedGame from "./FeaturedGame";
 import { useGameData } from "../../contexts/GameDataContext";
 
 const FeaturedGames = ({ games }) => {
-  const { coverMap } = useGameData();
+  const { coverMap, loadingGames } = useGameData();
 
   const formatReleaseDate = (releaseDate) => {
     if (releaseDate instanceof Timestamp) {
@@ -75,6 +75,31 @@ const FeaturedGames = ({ games }) => {
     })
       .sort((a, b) => a.name.localeCompare(b.name));
   })();
+
+  if (loadingGames) {
+    return (
+      <div className="w-full rounded-xl mt-6 shadow-lg">
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden animate-pulse">
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-between mb-4">
+            <div className="h-8 bg-white/10 rounded-lg w-48" />
+            <div className="h-10 bg-white/10 rounded-full w-32 ml-auto" />
+          </div>
+          <div className="flex flex-wrap gap-4 w-full">
+            {[1, 2].map((i) => (
+              <div key={i} className="min-w-[300px] md:min-w-[400px] flex-1 bg-white/5 rounded-2xl p-4 flex flex-row gap-3">
+                <div className="w-32 aspect-[3/4] bg-white/10 rounded-lg" />
+                <div className="flex-1 py-4 space-y-4">
+                  <div className="h-6 bg-white/10 rounded w-3/4" />
+                  <div className="h-4 bg-white/10 rounded w-1/2" />
+                  <div className="h-8 bg-white/10 rounded w-24 mt-4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (featuredGames.length === 0) return null;
 

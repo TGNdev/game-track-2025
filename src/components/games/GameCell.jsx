@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useLayoutEffect } from "react";
 import { useNavigate } from "react-router";
 import { useGameUI } from "../../contexts/GameUIContext";
 import he from "he";
@@ -17,7 +17,7 @@ function GameCell({ game, coverImage }) {
   const { search, activeTags } = useGameUI();
   const gameTags = useMemo(() => activeTags(game), [activeTags, game]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const lefts = [];
     let currentLeft = 0;
     tagRefs.current.forEach((el) => {
@@ -37,7 +37,7 @@ function GameCell({ game, coverImage }) {
   };
 
   return (
-    <td className="px-4 py-3 sticky left-0 bg-sticky-column z-20 w-96 group/cell cursor-pointer" onClick={handleGameNavigate}>
+    <td className="px-4 py-3 sticky left-0 z-20 w-96 group/cell cursor-pointer" onClick={handleGameNavigate}>
       <div className="relative flex items-center text-left gap-6">
         <div className="absolute -top-3 left-0 z-30 flex gap-1">
           {gameTags.map((tag, index) => (

@@ -1,6 +1,6 @@
 import GameRow from "./GameRow";
 import GameCard from "./GameCard";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Timestamp } from "firebase/firestore";
 import { FaFilter } from "react-icons/fa";
@@ -52,15 +52,7 @@ const GamesView = () => {
 
 
 
-  useEffect(() => {
-    const filters = {
-      selectedPlatforms,
-      showOnlyUpcoming,
-      withRelease,
-      selectedYear,
-    };
-    localStorage.setItem('gameFilters', JSON.stringify(filters));
-  }, [selectedPlatforms, showOnlyUpcoming, withRelease, selectedYear]);
+
 
   const getPlatformArray = (platformsObj) => {
     if (Array.isArray(platformsObj)) return platformsObj;
@@ -201,7 +193,7 @@ const GamesView = () => {
     }
   }, [loadingGames, filtered.length]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isModalOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -213,7 +205,7 @@ const GamesView = () => {
     }
   }, [isModalOpen]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
@@ -412,7 +404,7 @@ const GamesView = () => {
               <table className="w-full border-collapse min-w-[1200px]">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="px-6 py-8 sticky left-0 bg-sticky-column z-30 text-left">
+                    <th className="px-6 py-8 sticky left-0 z-30 text-left">
                       <div className="flex flex-col gap-1">
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Game</span>
                         <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest italic opacity-60">Click for details</span>
@@ -440,7 +432,7 @@ const GamesView = () => {
                       </div>
                     </th>
                     {edit && (
-                      <th className="px-6 py-8 sticky right-0 bg-sticky-column z-30">
+                      <th className="px-6 py-8 sticky right-0 z-30">
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Actions</span>
                       </th>
                     )}
@@ -449,7 +441,7 @@ const GamesView = () => {
                 <tbody className="divide-y divide-white/5">
                   {Array.from({ length: itemsPerPage }).map((_, idx) => (
                     <tr key={idx} className="animate-pulse">
-                      <td className="px-6 py-6 sticky left-0 bg-sticky-column z-20">
+                      <td className="px-6 py-6 sticky left-0 z-20">
                         <div className="flex items-center gap-6">
                           <div className="w-16 aspect-[3/4] bg-white/5 rounded-lg shrink-0 shadow-inner" />
                           <div className="space-y-2 flex-1">
@@ -462,7 +454,7 @@ const GamesView = () => {
                       <td className="px-6 py-6"><div className="h-4 bg-white/5 rounded-full w-32 mx-auto" /></td>
                       <td className="px-6 py-6"><div className="h-4 bg-white/5 rounded-full w-28 mx-auto" /></td>
                       <td className="px-6 py-6 border-l border-white/5"><div className="h-8 bg-white/5 rounded-xl w-24 mx-auto" /></td>
-                      {edit && <td className="px-6 py-6 sticky right-0 bg-sticky-column z-20"><div className="h-10 bg-white/5 rounded-xl w-20 mx-auto" /></td>}
+                      {edit && <td className="px-6 py-6 sticky right-0 z-20"><div className="h-10 bg-white/5 rounded-xl w-20 mx-auto" /></td>}
                     </tr>
                   ))}
                 </tbody>
@@ -517,7 +509,7 @@ const GamesView = () => {
               <table className="w-full border-collapse min-w-[1200px]">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="px-6 py-8 sticky left-0 bg-sticky-column z-20 text-left">
+                    <th className="px-6 py-8 sticky left-0 z-20 text-left">
                       <div className="flex flex-col gap-1">
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Game</span>
                         <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest italic opacity-60">Click for details</span>
@@ -545,7 +537,7 @@ const GamesView = () => {
                       </div>
                     </th>
                     {edit && (
-                      <th className="px-6 py-8 sticky right-0 bg-sticky-column z-30">
+                      <th className="px-6 py-8 sticky right-0 z-30">
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Actions</span>
                       </th>
                     )}

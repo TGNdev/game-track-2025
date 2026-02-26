@@ -73,8 +73,8 @@ export const GameUIProvider = ({ children }) => {
   const [showOnlyUpcoming, setShowOnlyUpcoming] = useState(
     () => savedFilters?.showOnlyUpcoming ?? null
   );
-  const [showThisYearOnly, setShowThisYearOnly] = useState(
-    () => savedFilters?.showThisYearOnly || false
+  const [selectedYear, setSelectedYear] = useState(
+    () => savedFilters?.selectedYear || null
   );
   const [withRelease, setWithRelease] = useState(
     () => savedFilters?.withRelease ?? true
@@ -84,10 +84,10 @@ export const GameUIProvider = ({ children }) => {
     const {
       selectedPlatforms = [],
       showOnlyUpcoming = null,
-      showThisYearOnly = false,
+      selectedYear = null,
     } = savedFilters;
 
-    return (selectedPlatforms.length > 0 || showOnlyUpcoming !== null || showThisYearOnly);
+    return (selectedPlatforms.length > 0 || showOnlyUpcoming !== null || selectedYear !== null);
   });
 
   useEffect(() => {
@@ -95,10 +95,10 @@ export const GameUIProvider = ({ children }) => {
       selectedPlatforms,
       showOnlyUpcoming,
       withRelease,
-      showThisYearOnly,
+      selectedYear,
     };
     safeLocalStorageSet('gameFilters', JSON.stringify(filters));
-  }, [selectedPlatforms, showOnlyUpcoming, withRelease, showThisYearOnly]);
+  }, [selectedPlatforms, showOnlyUpcoming, withRelease, selectedYear]);
 
   const [isMobile, setIsMobile] = useState(() =>
     hasWindow ? window.innerWidth <= MOBILE_BREAKPOINT : false
@@ -282,8 +282,8 @@ export const GameUIProvider = ({ children }) => {
       setShowOnlyUpcoming,
       withRelease,
       setWithRelease,
-      showThisYearOnly,
-      setShowThisYearOnly,
+      selectedYear,
+      setSelectedYear,
       filtersVisible,
       setFiltersVisible,
       activeTags,
@@ -317,7 +317,7 @@ export const GameUIProvider = ({ children }) => {
       selectedPlatforms,
       showOnlyUpcoming,
       withRelease,
-      showThisYearOnly,
+      selectedYear,
       filtersVisible,
       activeTags,
     ]
