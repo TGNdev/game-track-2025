@@ -74,8 +74,9 @@ const Breadcrumbs = ({ tga = [] }) => {
       {/* Separator */}
       {(year || awardId) && <FaArrowRight />}
 
-      {/* Year */}
-      {year && !awardId ? (
+      {year === 'leaderboard' ? (
+        <span className="border rounded px-3 py-1 font-semibold pointer-events-none border-yellow-500/50 text-yellow-500 bg-yellow-500/10">Leaderboard</span>
+      ) : year && !awardId ? (
         <span className="border rounded px-3 py-1 font-semibold pointer-events-none">{year}</span>
       ) : (
         year && (

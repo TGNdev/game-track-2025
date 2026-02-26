@@ -9,21 +9,20 @@ import Breadcrumbs from "../components/awards_history/Breadcrumbs";
 import { slugify } from "../js/utils";
 import { getGameCovers } from "../js/igdb";
 import { useGameData } from "../contexts/GameDataContext";
-import { FaTrophy } from "react-icons/fa";
-
-
+import { FaTrophy, FaMedal } from "react-icons/fa";
+import Leaderboard from "../components/awards_history/Leaderboard";
 const AwardsHistory = () => {
   const { year, awardId } = useParams();
   const navigate = useNavigate();
 
   const [tga, setTga] = useState([]);
-  const [selectedYearNumber, setSelectedYearNumber] = useState(year ? parseInt(year) : null);
+  const [selectedYearNumber, setSelectedYearNumber] = useState(year === 'leaderboard' ? 'leaderboard' : (year ? parseInt(year) : null));
   const {
     coverMap, setCoverMap,
     games
   } = useGameData();
 
-  const selectedYearObj = tga.find((y) => y.year === selectedYearNumber) || null;
+  const selectedYearObj = selectedYearNumber === 'leaderboard' ? null : (tga.find((y) => y.year === selectedYearNumber) || null);
   const awardSlug = awardId;
   const selectedAward =
     selectedYearObj?.awards.find(
@@ -57,7 +56,7 @@ const AwardsHistory = () => {
   }, [games, setCoverMap]);
 
   useEffect(() => {
-    setSelectedYearNumber(year ? parseInt(year) : null);
+    setSelectedYearNumber(year === 'leaderboard' ? 'leaderboard' : (year ? parseInt(year) : null));
   }, [year]);
 
   const getGameById = (id) => games.find((g) => g.id === id);
@@ -81,8 +80,21 @@ const AwardsHistory = () => {
               Discover the history of the Game Awards, from the first annual ceremony in 2015 to the most recent awards.
             </p>
           </div>
+          {year !== 'leaderboard' && (
+            <button
+              onClick={() => navigate('/game-awards-history/leaderboard')}
+              className="px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 rounded-2xl text-white font-bold transition-all shadow-xl flex items-center justify-center gap-2 group whitespace-nowrap"
+            >
+              <FaMedal className="text-yellow-400 group-hover:scale-110 transition-transform" />
+              View Leaderboard
+            </button>
+          )}
         </div>
         <Breadcrumbs tga={tga} />
+
+        {selectedYearNumber === 'leaderboard' && (
+          <Leaderboard tga={tga} getGameById={getGameById} coverMap={coverMap} />
+        )}
 
         {!selectedYearNumber && (
           <YearSelector tga={tga} getGameById={getGameById} onSelectYear={handleSelectYear} />
