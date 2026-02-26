@@ -129,7 +129,7 @@ const Calendar = ({ mode = "games" }) => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-2 sm:px-4 py-6 sm:py-8 text-white min-h-screen">
+    <div className="max-w-7xl px-2 sm:px-4 py-6 sm:py-8 text-white min-h-screen">
       <div className="flex flex-col md:flex-row gap-4 sm:gap-6 items-center justify-between mb-8 sm:mb-12 bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 rounded-3xl sm:rounded-[2rem] shadow-2xl">
         <div className="flex items-center gap-4 sm:gap-6 w-full md:w-auto justify-between md:justify-start">
           <div className="flex bg-black/20 p-1 rounded-xl sm:rounded-2xl border border-white/5 items-center">
