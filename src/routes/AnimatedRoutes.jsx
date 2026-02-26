@@ -8,6 +8,7 @@ import Welcome from "../pages/Welcome";
 import GameDetails from "../pages/GameDetails";
 import Profile from "../pages/Profile";
 import AdminTga from "../pages/AdminTga";
+import Admin from "../pages/Admin";
 import IndustryWatch from "../pages/IndustryWatch";
 
 function FirstRunGate({ children }) {
@@ -86,6 +87,14 @@ const AnimatedRoutes = () => {
           element={
             <PageFade>
               <Profile />
+            </PageFade>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <PageFade>
+              <Admin />
             </PageFade>
           }
         />
