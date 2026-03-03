@@ -358,4 +358,42 @@ export const deletePlaytime = async (userId, gameId) => {
     }
 };
 
+export const getDevelopersFromFirestore = async () => {
+    try {
+        const developersRef = collection(db, "developers");
+        const querySnapshot = await getDocs(developersRef);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (e) {
+        console.error("Error fetching developers: ", e);
+        throw e;
+    }
+};
+
+export const saveDeveloper = async (developerData, docId = null) => {
+    try {
+        if (docId) {
+            const devRef = doc(db, "developers", docId);
+            await setDoc(devRef, developerData, { merge: true });
+            return docId;
+        } else {
+            const devRef = collection(db, "developers");
+            const docRef = await addDoc(devRef, developerData);
+            return docRef.id;
+        }
+    } catch (e) {
+        console.error("Error saving developer: ", e);
+        throw e;
+    }
+};
+
+export const deleteDeveloperFromFirestore = async (developerId) => {
+    try {
+        const devRef = doc(db, "developers", developerId);
+        await deleteDoc(devRef);
+    } catch (e) {
+        console.error("Error deleting developer: ", e);
+        throw e;
+    }
+};
+
 export { db, auth };

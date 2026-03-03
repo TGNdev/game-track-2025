@@ -2,7 +2,9 @@ import { useAuth } from "../contexts/AuthContext";
 import Layout from "../components/shared/Layout";
 import { Navigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FaTrophy, FaTools, FaChevronRight } from "react-icons/fa";
+import { FaTools } from "react-icons/fa";
+
+import { adminRoutes } from "../routes/adminRoutes";
 
 const Admin = () => {
   const { userData, loading: authLoading } = useAuth();
@@ -17,17 +19,11 @@ const Admin = () => {
 
   if (!userData?.isAdmin) return <Navigate to="/" />;
 
-  const adminTools = [
-    {
-      title: "The Game Awards",
-      description: "Manage award categories, nominees and winners history through the years.",
-      icon: <FaTrophy className="text-amber-400 text-3xl" />,
-      link: "/admin/tga",
-      color: "from-amber-500/20 to-yellow-500/20",
-      borderColor: "border-amber-500/30",
-      accentColor: "text-amber-400"
-    }
-  ];
+  const adminTools = adminRoutes.map(({ icon: Icon, ...route }) => ({
+    ...route,
+    link: `/admin/${route.path}`,
+    icon: <Icon className={`${route.accentColor} text-3xl`} />
+  }));
 
   return (
     <Layout>
@@ -62,48 +58,27 @@ const Admin = () => {
             >
               <Link to={tool.link} className="block h-full">
                 <motion.div
-                  whileHover={{ scale: 1.02, translateY: -5 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`bg-white/[0.03] border ${tool.borderColor} rounded-[2.5rem] p-10 backdrop-blur-xl hover:bg-white/[0.08] transition-all group h-full flex flex-col relative overflow-hidden shadow-2xl`}
+                  className={`bg-white/[0.03] border ${tool.borderColor} rounded-[2.5rem] p-10 backdrop-blur-xl hover:bg-white/[0.08] transition-all h-full flex flex-col relative overflow-hidden shadow-2xl`}
                 >
                   <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
                     {tool.icon}
                   </div>
 
-                  <div className={`size-20 rounded-3xl bg-gradient-to-br ${tool.color} flex items-center justify-center mb-8 group-hover:scale-110 transition-transform shadow-inner border border-white/10`}>
+                  <div className={`size-20 rounded-3xl bg-gradient-to-br ${tool.color} flex items-center justify-center mb-8 transition-transform shadow-inner border border-white/10`}>
                     {tool.icon}
                   </div>
 
-                  <h2 className="text-3xl font-black mb-4 text-white group-hover:text-primary-light transition-colors">
+                  <h2 className="text-3xl font-black mb-4 text-white group-hover:text-primary transition-colors">
                     {tool.title}
                   </h2>
 
                   <p className="text-white/50 font-medium leading-relaxed mb-10 flex-grow text-lg">
                     {tool.description}
                   </p>
-
-                  <div className={`flex items-center gap-3 font-black uppercase tracking-widest text-sm ${tool.accentColor} group-hover:gap-5 transition-all`}>
-                    Open Tool <FaChevronRight />
-                  </div>
                 </motion.div>
               </Link>
             </motion.div>
           ))}
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-white/5 border border-white/10 border-dashed rounded-[2.5rem] p-10 flex flex-col items-center justify-center text-center opacity-40 group relative"
-          >
-            <div className="size-20 rounded-3xl bg-white/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <FaTools className="text-white/20 text-3xl" />
-            </div>
-            <h2 className="text-2xl font-black mb-3">More Modules</h2>
-            <p className="text-white/40 font-medium max-w-[200px]">New administrative tools will appear here as the platform evolves.</p>
-
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/20 pointer-events-none" />
-          </motion.div>
         </div>
       </div>
     </Layout>

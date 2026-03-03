@@ -1,14 +1,23 @@
 import { useState, useEffect, useMemo } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { useGameData } from "../contexts/GameDataContext";
-import Layout from "../components/shared/Layout";
+import { useAuth } from "../../contexts/AuthContext";
+import { useGameData } from "../../contexts/GameDataContext";
+import Layout from "../../components/shared/Layout";
 import { Navigate } from "react-router-dom";
-import { getTgaFromFirestore, saveTgaYear } from "../js/firebase";
+import { getTgaFromFirestore, saveTgaYear } from "../../js/firebase";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlus, FaTrash, FaSave, FaTrophy, FaStar, FaUser, FaMask } from "react-icons/fa";
 import { FiX, FiImage } from "react-icons/fi";
-import { matchesSearch } from "../js/utils";
+import { matchesSearch } from "../../js/utils";
+
+export const adminConfig = {
+  title: "The Game Awards",
+  description: "Manage award categories, nominees and winners history through the years.",
+  icon: FaTrophy,
+  color: "from-amber-500/20 to-yellow-500/20",
+  borderColor: "border-amber-500/30",
+  accentColor: "text-amber-400"
+};
 
 const AdminTga = () => {
   const { userData, loading: authLoading } = useAuth();

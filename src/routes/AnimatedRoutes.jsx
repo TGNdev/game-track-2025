@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate, Outlet } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Home from "../pages/Home";
 import PageFade from "../components/shared/PageFade";
@@ -7,15 +7,21 @@ import ReleaseCalendar from "../pages/ReleaseCalendar";
 import Welcome from "../pages/Welcome";
 import GameDetails from "../pages/GameDetails";
 import Profile from "../pages/Profile";
-import AdminTga from "../pages/AdminTga";
 import Admin from "../pages/Admin";
 import IndustryWatch from "../pages/IndustryWatch";
+import { adminRoutes } from "./adminRoutes";
 
-function FirstRunGate({ children }) {
+const PageLayout = () => (
+  <PageFade>
+    <Outlet />
+  </PageFade>
+);
+
+const FirstRunGate = () => {
   const hasSeen = localStorage.getItem("hasSeenWelcome") === "true";
   if (!hasSeen) return <Navigate to="/welcome" replace />;
-  return children;
-}
+  return <Outlet />;
+};
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -24,97 +30,38 @@ const AnimatedRoutes = () => {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={routeKey}>
-        <Route
-          path="/welcome"
-          element={
-            <PageFade>
-              <Welcome />
-            </PageFade>
-          }
-        />
-        <Route
-          path="/"
-          element={
-            <PageFade>
-              <FirstRunGate>
-                <Home />
-              </FirstRunGate>
-            </PageFade>
-          }
-        />
-        <Route
-          path="/games/:game"
-          element={
-            <PageFade>
-              <GameDetails />
-            </PageFade>
-          }
-        />
-        <Route
-          path="/game-awards-history"
-          element={
-            <PageFade>
-              <AwardsHistory />
-            </PageFade>
-          }
-        />
-        <Route
-          path="/game-awards-history/:year"
-          element={
-            <PageFade>
-              <AwardsHistory />
-            </PageFade>
-          }
-        />
-        <Route
-          path="/game-awards-history/:year/:awardId"
-          element={
-            <PageFade>
-              <AwardsHistory />
-            </PageFade>
-          }
-        />
-        <Route
-          path="/release-calendar"
-          element={
-            <PageFade>
-              <ReleaseCalendar />
-            </PageFade>
-          }
-        />
-        <Route
-          path="/profiles/:username"
-          element={
-            <PageFade>
-              <Profile />
-            </PageFade>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <PageFade>
-              <Admin />
-            </PageFade>
-          }
-        />
-        <Route
-          path="/admin/tga"
-          element={
-            <PageFade>
-              <AdminTga />
-            </PageFade>
-          }
-        />
-        <Route
-          path="/industry-watch"
-          element={
-            <PageFade>
-              <IndustryWatch />
-            </PageFade>
-          }
-        />
-        <Route path="/profile" element={<Navigate to="/" replace />} />
+        <Route element={<PageLayout />}>
+          <Route path="/welcome" element={<Welcome />} />
+        </Route>
+
+        <Route element={<FirstRunGate />}>
+          <Route element={<PageLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/industry-watch" element={<IndustryWatch />} />
+            <Route path="/release-calendar" element={<ReleaseCalendar />} />
+
+            <Route path="/games/:game" element={<GameDetails />} />
+
+            <Route path="/game-awards-history">
+              <Route index element={<AwardsHistory />} />
+              <Route path=":year" element={<AwardsHistory />} />
+              <Route path=":year/:awardId" element={<AwardsHistory />} />
+            </Route>
+
+            <Route path="/profiles/:username" element={<Profile />} />
+
+            <Route path="/admin">
+              <Route index element={<Admin />} />
+              {adminRoutes.map(({ path, component: Component }) => (
+                <Route
+                  key={path}
+                  path={path}
+                  element={<Component />}
+                />
+              ))}
+            </Route>
+          </Route>
+        </Route>
       </Routes>
     </AnimatePresence>
   );
