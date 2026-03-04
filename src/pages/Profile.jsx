@@ -8,7 +8,7 @@ import { getGameCovers } from "../js/igdb";
 import { useNavigate } from "react-router-dom";
 import { slugify, matchesSearch } from "../js/utils";
 import { removeFromLibrary, removeCountdown, getUserByUsername, setPlaytime, addToLibrary, getPlaytimes, deletePlaytime } from "../js/firebase";
-import { FaExternalLinkAlt, FaClock, FaPlus, FaCheck, FaBookmark, FaShareAlt, FaTrophy } from "react-icons/fa";
+import { FaExternalLinkAlt, FaClock, FaPlus, FaCheck, FaBookmark, FaShareAlt, FaTrophy, FaThList, FaThLarge } from "react-icons/fa";
 import { toast } from "react-toastify";
 import CountdownTimer from "../components/shared/CountdownTimer";
 import ScrollableContainer from "../components/shared/ScrollableContainer";
@@ -28,6 +28,7 @@ const Profile = () => {
   const [completionModal, setCompletionModal] = useState({ isOpen: false, gameId: null, gameName: "", mode: 'transition' });
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, gameId: null, type: null });
 
+  const [layout, setLayout] = useState('grid');
   const isOwnProfile = !username || (loggedInUserData && loggedInUserData.username === username);
 
   useEffect(() => {
@@ -343,79 +344,158 @@ const Profile = () => {
             </div>
 
             <div
-              className="flex items-center gap-4 p-4 rounded-xl bg-white/5"
+              className="flex items-center justify-between p-4 rounded-xl bg-white/5"
             >
-              <div className="p-2 rounded-lg bg-gradient-primary">
-                {view === 'completed' && <FaTrophy className="size-5" />}
-                {view === 'played' && <FaCheck className="size-5" />}
-                {view === 'toPlay' && <FaBookmark className="size-5" />}
+              <div className="flex items-center gap-4">
+                <div className="p-2 rounded-lg bg-gradient-primary">
+                  {view === 'completed' && <FaTrophy className="size-5" />}
+                  {view === 'played' && <FaCheck className="size-5" />}
+                  {view === 'toPlay' && <FaBookmark className="size-5" />}
+                </div>
+                <h3 className="text-xl font-bold">
+                  {view === 'completed' && <span>Completed {completedGames.length > 0 ? "(" + completedGames.length + ")" : ''}</span>}
+                  {view === 'played' && <span>Played {playedGames.length > 0 ? "(" + playedGames.length + ")" : ''}</span>}
+                  {view === 'toPlay' && <span>To Play {toPlayGames.length > 0 ? "(" + toPlayGames.length + ")" : ''}</span>}
+                </h3>
               </div>
-              <h3 className="text-xl font-bold">
-                {view === 'completed' && <span>Completed {completedGames.length > 0 ? "(" + completedGames.length + ")" : ''}</span>}
-                {view === 'played' && <span>Played {playedGames.length > 0 ? "(" + playedGames.length + ")" : ''}</span>}
-                {view === 'toPlay' && <span>To Play {toPlayGames.length > 0 ? "(" + toPlayGames.length + ")" : ''}</span>}
-              </h3>
+              <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
+                <button
+                  onClick={() => setLayout('list')}
+                  className={`p-2 rounded-lg transition-all ${layout === 'list' ? 'bg-gradient-primary text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                  title="List View"
+                >
+                  <FaThList className="size-4" />
+                </button>
+                <button
+                  onClick={() => setLayout('grid')}
+                  className={`p-2 rounded-lg transition-all ${layout === 'grid' ? 'bg-gradient-primary text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                  title="Grid View"
+                >
+                  <FaThLarge className="size-4" />
+                </button>
+              </div>
             </div>
 
             {(view === 'completed' ? completedGames : view === 'played' ? playedGames : toPlayGames).length > 0 ? (
-              <ScrollableContainer>
-                {(view === 'completed' ? completedGames : view === 'played' ? playedGames : toPlayGames).map(game => (
-                  <div key={game.id} id={`profile-game-${game.id}`} className="w-60 h-auto shrink-0 rounded-xl shadow-sm text-center flex flex-col items-center border-primary relative">
-                    <div className="relative w-full aspect-[12/17] overflow-hidden rounded-lg">
-                      <img
-                        src={coverMap[game?.igdb_id]}
-                        alt={game.name}
-                        className="w-full h-full object-cover"
-                      />
-                      {isPlayedView && playtimes[game.id] && (
-                        <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
-                          <div className={`p-2 rounded-lg backdrop-blur-md shadow-lg border border-white/10 ${playtimes[game.id].status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-primary-light'}`}>
-                            {playtimes[game.id].status === 'completed' ? <FaTrophy className="size-4" /> : <FaClock className="size-4" />}
-                          </div>
-                          {playtimes[game.id].hours > 0 && (
-                            <div className={`${playtimes[game.id].status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-primary-light'} px-2 py-1 rounded-md backdrop-blur-md text-[10px] font-black border border-white/10`}>
-                              {playtimes[game.id].hours}H
+              layout === 'list' ? (
+                <ScrollableContainer>
+                  {(view === 'completed' ? completedGames : view === 'played' ? playedGames : toPlayGames).map(game => (
+                    <div key={game.id} id={`profile-game-${game.id}`} className="w-60 h-auto shrink-0 rounded-xl shadow-sm text-center flex flex-col items-center border-primary relative">
+                      <div className="relative w-full aspect-[12/17] overflow-hidden rounded-lg">
+                        <img
+                          src={coverMap[game?.igdb_id]}
+                          alt={game.name}
+                          className="w-full h-full object-cover"
+                        />
+                        {isPlayedView && playtimes[game.id] && (
+                          <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
+                            <div className={`p-2 rounded-lg backdrop-blur-md shadow-lg border border-white/10 ${playtimes[game.id].status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-primary-light'}`}>
+                              {playtimes[game.id].status === 'completed' ? <FaTrophy className="size-4" /> : <FaClock className="size-4" />}
                             </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                    <h4 className="px-4 font-black text-sm mb-2 pt-3 line-clamp-1">{game.name}</h4>
-                    <div className="flex gap-2">
-                      <button
-                        className="bg-gradient-primary py-1.5 px-2 rounded-lg my-2"
-                        onClick={() => navigate(`/games/${slugify(game.name)}`)}
-                        title="See details"
-                      >
-                        <FaExternalLinkAlt className="size-4" />
-                      </button>
-                      {isOwnProfile && (
-                        <>
-                          {(view === 'played' || view === 'completed') && (
+                            {playtimes[game.id].hours > 0 && (
+                              <div className={`${playtimes[game.id].status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-primary-light'} px-2 py-1 rounded-md backdrop-blur-md text-[10px] font-black border border-white/10`}>
+                                {playtimes[game.id].hours}H
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <h4 className="px-4 font-black text-sm mb-2 pt-3 line-clamp-1">{game.name}</h4>
+                      <div className="flex gap-2">
+                        <button
+                          className="bg-gradient-primary py-1.5 px-2 rounded-lg my-2"
+                          onClick={() => navigate(`/games/${slugify(game.name)}`)}
+                          title="See details"
+                        >
+                          <FaExternalLinkAlt className="size-4" />
+                        </button>
+                        {isOwnProfile && (
+                          <>
+                            {(view === 'played' || view === 'completed') && (
+                              <button
+                                className="bg-gradient-primary py-1.5 px-2 rounded-lg my-2 transition"
+                                onClick={() => handleAddPlaytime(game.id)}
+                                title="Add/Edit Playtime"
+                              >
+                                <FaClock className="size-4 text-white" />
+                              </button>
+                            )}
                             <button
-                              className="bg-gradient-primary py-1.5 px-2 rounded-lg my-2 transition"
-                              onClick={() => handleAddPlaytime(game.id)}
-                              title="Add/Edit Playtime"
+                              className="bg-gradient-primary py-1.5 px-2 rounded-lg my-2"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRemoveFromLibrary(game.id, (view === 'played' || view === 'completed') ? 'played' : 'toPlay');
+                              }}
+                              title="Remove from library"
                             >
-                              <FaClock className="size-4 text-white" />
+                              <FaPlus className="size-4 rotate-45" />
                             </button>
-                          )}
-                          <button
-                            className="bg-gradient-primary py-1.5 px-2 rounded-lg my-2"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRemoveFromLibrary(game.id, (view === 'played' || view === 'completed') ? 'played' : 'toPlay');
-                            }}
-                            title="Remove from library"
-                          >
-                            <FaPlus className="size-4 rotate-45" />
-                          </button>
-                        </>
-                      )}
+                          </>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </ScrollableContainer>
+                  ))}
+                </ScrollableContainer>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                  {(view === 'completed' ? completedGames : view === 'played' ? playedGames : toPlayGames).map(game => (
+                    <div key={game.id} id={`profile-game-${game.id}`} className="w-full h-auto rounded-xl shadow-sm text-center flex flex-col items-center border-primary relative">
+                      <div className="relative w-full aspect-[12/17] overflow-hidden rounded-lg shadow-lg">
+                        <img
+                          src={coverMap[game?.igdb_id]}
+                          alt={game.name}
+                          className="w-full h-full object-cover"
+                        />
+                        {isPlayedView && playtimes[game.id] && (
+                          <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
+                            <div className={`p-2 rounded-lg backdrop-blur-md shadow-lg border border-white/10 ${playtimes[game.id].status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-primary-light'}`}>
+                              {playtimes[game.id].status === 'completed' ? <FaTrophy className="size-4" /> : <FaClock className="size-4" />}
+                            </div>
+                            {playtimes[game.id].hours > 0 && (
+                              <div className={`${playtimes[game.id].status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-primary-light'} px-2 py-1 rounded-md backdrop-blur-md text-[10px] font-black border border-white/10`}>
+                                {playtimes[game.id].hours}H
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <h4 className="px-4 font-black text-sm mb-2 pt-3 line-clamp-2 min-h-[3rem]">{game.name}</h4>
+                      <div className="flex gap-2 mb-4">
+                        <button
+                          className="bg-gradient-primary py-1.5 px-2 rounded-lg"
+                          onClick={() => navigate(`/games/${slugify(game.name)}`)}
+                          title="See details"
+                        >
+                          <FaExternalLinkAlt className="size-4" />
+                        </button>
+                        {isOwnProfile && (
+                          <>
+                            {(view === 'played' || view === 'completed') && (
+                              <button
+                                className="bg-gradient-primary py-1.5 px-2 rounded-lg transition"
+                                onClick={() => handleAddPlaytime(game.id)}
+                                title="Add/Edit Playtime"
+                              >
+                                <FaClock className="size-4 text-white" />
+                              </button>
+                            )}
+                            <button
+                              className="bg-gradient-primary py-1.5 px-2 rounded-lg"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleRemoveFromLibrary(game.id, (view === 'played' || view === 'completed') ? 'played' : 'toPlay');
+                              }}
+                              title="Remove from library"
+                            >
+                              <FaPlus className="size-4 rotate-45" />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
             ) : (
               <div className="bg-white/5 rounded-2xl p-12 border-white/10 flex flex-col gap-2 justify-center items-center">
                 <p className="text-white/80 text-center">
@@ -441,12 +521,30 @@ const Profile = () => {
 
         <section>
           <div
-            className="flex items-center gap-4 p-4 rounded-xl mb-6 bg-white/5"
+            className="flex items-center justify-between p-4 rounded-xl mb-6 bg-white/5"
           >
-            <div className="p-2 rounded-lg bg-gradient-primary">
-              <FaClock className="size-5" />
+            <div className="flex items-center gap-4">
+              <div className="p-2 rounded-lg bg-gradient-primary">
+                <FaClock className="size-5" />
+              </div>
+              <h3 className="text-xl font-bold">Countdowns {countdowns.length > 0 ? `(${countdowns.length})` : ''}</h3>
             </div>
-            <h3 className="text-xl font-bold">Countdowns {countdowns.length > 0 ? `(${countdowns.length})` : ''}</h3>
+            <div className="flex bg-white/5 p-1 rounded-xl border border-white/10">
+              <button
+                onClick={() => setLayout('list')}
+                className={`p-2 rounded-lg transition-all ${layout === 'list' ? 'bg-gradient-primary text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                title="List View"
+              >
+                <FaThList className="size-4" />
+              </button>
+              <button
+                onClick={() => setLayout('grid')}
+                className={`p-2 rounded-lg transition-all ${layout === 'grid' ? 'bg-gradient-primary text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+                title="Grid View"
+              >
+                <FaThLarge className="size-4" />
+              </button>
+            </div>
           </div>
           {countdowns.length > 0 && (
             <div className="flex justify-between items-end">
@@ -456,39 +554,75 @@ const Profile = () => {
             </div>
           )}
           {countdowns.length > 0 ? (
-            <ScrollableContainer>
-              {countdowns.map(game => (
-                <div key={game.id} id={`profile-game-${game.id}`} className="w-60 h-auto shrink-0 rounded-xl shadow-sm text-center flex flex-col items-center border-primary">
-                  <img
-                    src={coverMap[game?.igdb_id]}
-                    alt={game.name}
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                  <div className="flex justify-center scale-75">
-                    <CountdownTimer targetDate={game.release_date} />
-                  </div>
-                  <div className="border-b border-white/30 w-full">
-                    <h4 className="px-4 font-black text-sm mb-2">{game.name}</h4>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      className="bg-gradient-primary py-1.5 px-2 rounded-lg my-2"
-                      onClick={() => navigate(`/games/${slugify(game.name)}`)}
-                    >
-                      <FaExternalLinkAlt className="size-4" />
-                    </button>
-                    {isOwnProfile && (
+            layout === 'list' ? (
+              <ScrollableContainer>
+                {countdowns.map(game => (
+                  <div key={game.id} id={`profile-game-${game.id}`} className="w-60 h-auto shrink-0 rounded-xl shadow-sm text-center flex flex-col items-center border-primary">
+                    <img
+                      src={coverMap[game?.igdb_id]}
+                      alt={game.name}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                    <div className="flex justify-center scale-75">
+                      <CountdownTimer targetDate={game.release_date} />
+                    </div>
+                    <div className="border-b border-white/30 w-full">
+                      <h4 className="px-4 font-black text-sm mb-2">{game.name}</h4>
+                    </div>
+                    <div className="flex gap-2">
                       <button
                         className="bg-gradient-primary py-1.5 px-2 rounded-lg my-2"
-                        onClick={() => handleRemoveCountdown(game.id)}
+                        onClick={() => navigate(`/games/${slugify(game.name)}`)}
                       >
-                        <FaPlus className="size-4 rotate-45" />
+                        <FaExternalLinkAlt className="size-4" />
                       </button>
-                    )}
+                      {isOwnProfile && (
+                        <button
+                          className="bg-gradient-primary py-1.5 px-2 rounded-lg my-2"
+                          onClick={() => handleRemoveCountdown(game.id)}
+                        >
+                          <FaPlus className="size-4 rotate-45" />
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </ScrollableContainer>
+                ))}
+              </ScrollableContainer>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                {countdowns.map(game => (
+                  <div key={game.id} id={`profile-game-${game.id}`} className="w-full h-auto rounded-xl shadow-sm text-center flex flex-col items-center border-primary relative">
+                    <img
+                      src={coverMap[game?.igdb_id]}
+                      alt={game.name}
+                      className="w-full h-full object-cover rounded-lg shadow-lg"
+                    />
+                    <div className="flex justify-center scale-75">
+                      <CountdownTimer targetDate={game.release_date} />
+                    </div>
+                    <div className="border-b border-white/10 w-full">
+                      <h4 className="px-4 font-black text-sm mb-2 line-clamp-2 min-h-[3rem]">{game.name}</h4>
+                    </div>
+                    <div className="flex gap-2 mb-4">
+                      <button
+                        className="bg-gradient-primary py-1.5 px-2 rounded-lg"
+                        onClick={() => navigate(`/games/${slugify(game.name)}`)}
+                      >
+                        <FaExternalLinkAlt className="size-4" />
+                      </button>
+                      {isOwnProfile && (
+                        <button
+                          className="bg-gradient-primary py-1.5 px-2 rounded-lg"
+                          onClick={() => handleRemoveCountdown(game.id)}
+                        >
+                          <FaPlus className="size-4 rotate-45" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
           ) : (
             <div className="bg-white/5 rounded-2xl p-12 border-white/10 flex flex-col gap-2 justify-center items-center">
               <p className="text-white/80 text-center">
