@@ -41,7 +41,7 @@ const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={`group relative border rounded-3xl p-4 md:p-6 hover:bg-white/[0.08] transition-all duration-500 shadow-xl scroll-mt-32 min-w-0 flex flex-col h-[480px] md:h-[520px] ${isHighlighted
-        ? "border-primary-light bg-white/[0.1] shadow-[0_0_30px_rgba(176,105,255,0.2)]"
+        ? "border-white/40 bg-white/[0.1] shadow-[0_0_30px_rgba(255,255,255,0.1)]"
         : "bg-white/5 border-white/10"
         }`}
     >
@@ -103,7 +103,7 @@ const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
               </div>
             )
           )}
-          <h3 className="text-xl md:text-2xl font-black text-white leading-tight group-hover:text-primary-light transition-colors line-clamp-2">
+          <h3 className="text-xl md:text-2xl font-black text-white leading-tight group-hover:text-white transition-colors line-clamp-2">
             {article.title}
           </h3>
           <div className="flex items-center gap-2 text-white/50 text-xs font-bold">

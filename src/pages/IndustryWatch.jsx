@@ -135,7 +135,7 @@ const IndustryWatch = () => {
       <div className="max-w-[1400px] mx-auto px-6 pb-12 md:py-20 space-y-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="space-y-4">
-            <div className="flex items-center gap-3 text-primary-light">
+            <div className="flex items-center gap-3">
               <div className="size-10 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-[0_0_20px_rgba(176,105,255,0.4)]">
                 <FiActivity size={24} className="text-white" />
               </div>
@@ -151,7 +151,7 @@ const IndustryWatch = () => {
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-4 justify-end">
           <div className="relative w-full sm:w-80 group">
-            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-primary-light transition-colors" />
+            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-white transition-colors" />
             <input
               type="text"
               placeholder="Search news..."

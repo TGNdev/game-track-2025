@@ -36,13 +36,13 @@ const WatchCardSmall = ({ article }) => {
             <span>{formattedDate}</span>
           </div>
         </div>
-        <h3 className="text-md md:text-lg font-black text-white leading-tight group-hover:text-primary-light transition-colors">
+        <h3 className="text-md md:text-lg font-black text-white leading-tight group-hover:text-white transition-colors">
           {article.title}
         </h3>
         <div className="pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4 mt-auto">
           <Link
             to={`/industry-watch?id=${article.id}`}
-            className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary-light hover:text-white transition-colors group/link"
+            className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-white hover:text-white/60 transition-colors group/link"
           >
             <span>Read full news</span>
             <FiExternalLink size={14} className="group-hover/link:translate-x-1 group-hover/link:-translate-y-1 transition-transform" />

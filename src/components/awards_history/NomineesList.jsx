@@ -44,7 +44,7 @@ const NomineeList = ({ award, getGameById, coverMap, awardYear }) => {
               <motion.div
                 initial={{ rotateY: -180, opacity: 0 }}
                 animate={{ rotateY: globalShowCharacter ? 0 : -180, opacity: globalShowCharacter ? 1 : 0 }}
-                className="absolute inset-0 flex items-center justify-center text-primary-light"
+                className="absolute inset-0 flex items-center justify-center text-white"
               >
                 <FaMask className="size-4" />
               </motion.div>
@@ -58,7 +58,7 @@ const NomineeList = ({ award, getGameById, coverMap, awardYear }) => {
         <div className='w-full flex flex-row justify-center mb-10'>
           <div className='max-w-xl text-center bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-2xl shadow-xl'>
             <p className='text-lg font-medium text-white/80 italic'>
-              Stay tuned! Winners will be announced at The Game Awards ceremony in <span className="text-primary-light font-black not-italic">December </span>!
+              Stay tuned! Winners will be announced at The Game Awards ceremony in <span className="text-white font-black not-italic underline decoration-primary decoration-2 underline-offset-4">December </span>!
             </p>
           </div>
         </div>

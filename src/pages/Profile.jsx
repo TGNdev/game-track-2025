@@ -307,7 +307,7 @@ const Profile = () => {
               onClick={handleShareProfile}
               className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl transition-all shadow-lg"
             >
-              <FaShareAlt className="text-primary-light" />
+              <FaShareAlt className="text-white" />
               <span className="font-bold text-sm tracking-tight">Share Profile</span>
             </button>
           </div>
@@ -389,11 +389,11 @@ const Profile = () => {
                         />
                         {isPlayedView && playtimes[game.id] && (
                           <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
-                            <div className={`p-2 rounded-lg backdrop-blur-md shadow-lg border border-white/10 ${playtimes[game.id].status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-primary-light'}`}>
+                            <div className={`p-2 rounded-lg backdrop-blur-md shadow-lg border border-white/10 ${playtimes[game.id].status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-white'}`}>
                               {playtimes[game.id].status === 'completed' ? <FaTrophy className="size-4" /> : <FaClock className="size-4" />}
                             </div>
                             {playtimes[game.id].hours > 0 && (
-                              <div className={`${playtimes[game.id].status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-primary-light'} px-2 py-1 rounded-md backdrop-blur-md text-[10px] font-black border border-white/10`}>
+                              <div className={`${playtimes[game.id].status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-white'} px-2 py-1 rounded-md backdrop-blur-md text-[10px] font-black border border-white/10`}>
                                 {playtimes[game.id].hours}H
                               </div>
                             )}
@@ -448,11 +448,11 @@ const Profile = () => {
                         />
                         {isPlayedView && playtimes[game.id] && (
                           <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
-                            <div className={`p-2 rounded-lg backdrop-blur-md shadow-lg border border-white/10 ${playtimes[game.id].status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-primary-light'}`}>
+                            <div className={`p-2 rounded-lg backdrop-blur-md shadow-lg border border-white/10 ${playtimes[game.id].status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-white'}`}>
                               {playtimes[game.id].status === 'completed' ? <FaTrophy className="size-4" /> : <FaClock className="size-4" />}
                             </div>
                             {playtimes[game.id].hours > 0 && (
-                              <div className={`${playtimes[game.id].status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-primary-light'} px-2 py-1 rounded-md backdrop-blur-md text-[10px] font-black border border-white/10`}>
+                              <div className={`${playtimes[game.id].status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-white'} px-2 py-1 rounded-md backdrop-blur-md text-[10px] font-black border border-white/10`}>
                                 {playtimes[game.id].hours}H
                               </div>
                             )}

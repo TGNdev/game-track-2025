@@ -115,7 +115,7 @@ const Leaderboard = ({ tga, getGameById, coverMap }) => {
             placeholder="Search game..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-light transition-all shadow-inner"
+            className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/20 transition-all shadow-inner"
           />
         </div>
       </div>

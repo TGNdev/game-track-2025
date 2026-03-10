@@ -126,7 +126,7 @@ const CompletionModal = ({ isOpen, onClose, onConfirm, mode = 'transition', init
                           className="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white font-bold flex items-center justify-between group hover:bg-white/10 hover:scale-[1.02] transition-all"
                         >
                           <div className="flex items-center gap-3">
-                            <FiFastForward size={20} className="text-primary-light" />
+                            <FiFastForward size={20} className="text-white/40" />
                             <span>{initialHours ? "I played more" : "I played but didn't finish"}</span>
                           </div>
                           <span className="text-white/40 text-xs font-black uppercase tracking-widest group-hover:text-white/60 transition-colors">Played</span>

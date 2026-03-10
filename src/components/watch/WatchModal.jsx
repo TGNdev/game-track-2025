@@ -238,7 +238,7 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                               }}
                               className="px-5 py-3 hover:bg-white/5 cursor-pointer text-sm font-bold border-b border-white/5 last:border-none flex items-center justify-between group/item"
                             >
-                              <span className="group-hover/item:text-primary-light transition-colors">{game.name}</span>
+                              <span className="group-hover/item:text-white transition-colors">{game.name}</span>
                               <span className="text-[10px] opacity-40 uppercase tracking-widest">{game.developers?.[0]?.name}</span>
                             </div>
                           ))}
