@@ -50,7 +50,9 @@ const Header = ({ onDrawerOpen }) => {
         <Link to="/">
           <div className="flex flex-row gap-2 items-center">
             <img src="logo.png" alt="Game Track Logo" className="size-6" />
-            <h1 className="text-xl font-bold text-white">{process.env.REACT_APP_TITLE}</h1>
+            <h1 className="text-2xl font-black bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent tracking-tighter">
+              {process.env.REACT_APP_TITLE}
+            </h1>
           </div>
         </Link>
         <div className="flex flex-row w-full sm:w-2/3 justify-end gap-5">

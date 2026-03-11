@@ -78,7 +78,7 @@ const FeaturedGames = ({ games }) => {
 
   if (loadingGames) {
     return (
-      <div className="w-full rounded-xl mt-6 shadow-lg">
+      <div className="w-full rounded-xl shadow-lg">
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden animate-pulse">
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-between mb-4">
             <div className="h-8 bg-white/10 rounded-lg w-48" />

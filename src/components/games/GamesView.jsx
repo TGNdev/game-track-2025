@@ -283,18 +283,6 @@ const GamesView = () => {
 
   return (
     <div className="max-w-[1400px] mx-auto px-6 pb-12 md:py-20 space-y-10">
-      <header>
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-          <div className="space-y-4">
-            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-              The Game Track
-            </h1>
-            <p className="text-white/40 font-medium max-w-xl text-lg leading-relaxed">
-              Your ultimate companion for tracking game releases, awards, and industry news. Stay updated with the latest in gaming.
-            </p>
-          </div>
-        </div>
-      </header>
       <FeaturedGames games={games} />
 
       {search && filteredUsers.length > 0 && (
