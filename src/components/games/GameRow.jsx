@@ -1,11 +1,13 @@
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
 import { AiFillEdit } from "react-icons/ai";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaExternalLinkAlt } from "react-icons/fa";
 import { deleteGameFromFirestore } from "../../js/firebase";
 import GameCell from "./GameCell";
 import he from "he";
 import { highlightMatch } from "../../js/utils";
 import { useGameUI } from "../../contexts/GameUIContext";
+import { useGameData } from "../../contexts/GameDataContext";
 
 const getRatingStyle = (rating) => {
   const baseClasses = "min-w-[40px] px-3 py-2 rounded-xl text-white text-xs flex items-center justify-center font-black shadow-lg";
@@ -24,6 +26,32 @@ const GameRow = ({ ref, game, coverImage, screenshots }) => {
     setGameToEdit,
     setIsModalOpen,
   } = useGameUI();
+  const { developers, editors } = useGameData();
+
+  const resolvedDevelopers = useMemo(() => {
+    if (game.developerRefs && game.developerRefs.length > 0) {
+      return game.developerRefs.map(ref => {
+        const refId = typeof ref === 'object' ? ref.devId : ref;
+        const found = developers.find(d => d.id === refId);
+        return found ? { name: found.name, link: found.website || "#", refId: found.id } : null;
+      }).filter(Boolean);
+    }
+    return game.developers || [];
+  }, [game.developerRefs, game.developers, developers]);
+
+  const resolvedEditors = useMemo(() => {
+    if (game.editorRefs && game.editorRefs.length > 0) {
+      return game.editorRefs.map(ref => {
+        const refId = typeof ref === 'object' ? ref.devId : ref;
+        const edFound = editors.find(e => e.id === refId);
+        if (edFound) return { name: edFound.name, link: edFound.website || "#", refId: edFound.id, type: "editor" };
+        const devFound = developers.find(d => d.id === refId);
+        if (devFound) return { name: devFound.name, link: devFound.website || "#", refId: devFound.id, type: "developer" };
+        return null;
+      }).filter(Boolean);
+    }
+    return (game.editors || []).map(e => ({ name: e, type: "legacy" }));
+  }, [game.editorRefs, game.editors, developers, editors]);
 
   const releaseDate = useMemo(() => {
     if (game.release_date?.seconds) {
@@ -56,42 +84,38 @@ const GameRow = ({ ref, game, coverImage, screenshots }) => {
 
       <td className="px-6 py-4">
         <div className="flex flex-col items-center gap-1 text-center divide-y divide-white/20">
-          {game.developers.slice(0, 2).map((developer) => (
-            <a
-              target="_blank"
-              rel="noreferrer"
-              href={developer.link}
-              key={developer.name}
-              className="group/link text-[11px] font-bold text-white/60 hover:text-white transition-colors"
-            >
-              <div className="group-hover/link:translate-x-1 transition-transform">
-                {highlightMatch(he.decode(developer.name), search)}
-              </div>
-            </a>
+          {resolvedDevelopers.slice(0, 2).map((dev) => (
+            <div key={dev.name} className="flex items-center gap-2 group/link truncate max-w-full justify-center py-1">
+              <Link
+                to={`/developers/${dev.refId || dev.name}`}
+                className="text-[11px] font-bold text-white/60 hover:text-white transition-colors truncate flex items-center"
+              >
+                {highlightMatch(he.decode(dev.name), search)}
+                <FaExternalLinkAlt className="text-[8px] ml-1" />
+              </Link>
+            </div>
           ))}
-          {game.developers.length > 2 && (
-            <span className="text-[9px] text-white/20 font-black uppercase">+{game.developers.length - 2} more</span>
+          {resolvedDevelopers.length > 2 && (
+            <span className="text-[9px] text-white/20 font-black uppercase">+{resolvedDevelopers.length - 2} more</span>
           )}
         </div>
       </td>
 
       <td className="px-6 py-4">
         <div className="flex flex-col items-center gap-1 text-center divide-y divide-white/20">
-          {game.editors.slice(0, 2).map((editor) => (
-            <a
-              target="_blank"
-              rel="noreferrer"
-              href={editor.link}
-              key={editor.name}
-              className="group/link text-[11px] font-bold text-white/60 hover:text-white transition-colors"
-            >
-              <div className="group-hover/link:translate-x-1 transition-transform">
+          {resolvedEditors.slice(0, 2).map((editor) => (
+            <div key={editor.name} className="flex items-center gap-2 group/link truncate max-w-full justify-center py-1">
+              <Link
+                to={editor.type === "developer" ? `/developers/${editor.refId || editor.name}` : `/editors/${editor.refId || editor.name}`}
+                className="text-[11px] font-bold text-white/60 hover:text-white transition-colors truncate flex items-center"
+              >
                 {highlightMatch(he.decode(editor.name), search)}
-              </div>
-            </a>
+                <FaExternalLinkAlt className="text-[8px] ml-1" />
+              </Link>
+            </div>
           ))}
-          {game.editors.length > 2 && (
-            <span className="text-[9px] text-white/20 font-black uppercase">+{game.editors.length - 2} more</span>
+          {resolvedEditors.length > 2 && (
+            <span className="text-[9px] text-white/20 font-black uppercase">+{resolvedEditors.length - 2} more</span>
           )}
         </div>
       </td>

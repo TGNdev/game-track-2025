@@ -10,7 +10,7 @@ const ReleaseCalendar = () => {
 
   return (
     <Layout>
-      <div className="max-w-[1400px] mx-auto px-6 pb-12 md:py-20 space-y-8">
+      <div className="max-w-[1400px] mx-auto px-6 pb-12 md:py-20 space-y-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-3">

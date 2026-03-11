@@ -2,10 +2,24 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
 import { slugify } from "../../js/utils";
+import { useGameData } from "../../contexts/GameDataContext";
+import { useMemo } from "react";
 
 const FeaturedGame = ({ featured, cover }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
   const navigate = useNavigate();
+  const { developers } = useGameData();
+
+  const resolvedDevelopers = useMemo(() => {
+    if (featured.developerRefs && featured.developerRefs.length > 0) {
+      return featured.developerRefs.map(ref => {
+        const refId = typeof ref === 'object' ? ref.devId : ref;
+        const found = developers.find(d => d.id === refId);
+        return found ? { name: found.name, link: found.website || "#", refId: found.id } : null;
+      }).filter(Boolean);
+    }
+    return featured.developers || [];
+  }, [featured.developerRefs, featured.developers, developers]);
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-2xl p-4 shadow-2xl relative overflow-hidden flex flex-row gap-3">
@@ -27,12 +41,12 @@ const FeaturedGame = ({ featured, cover }) => {
             <h2 className="text-xl font-bold">{featured.name}</h2>
             <div className="flex flex-row gap-1 text-sm flex-wrap">
               <div>By</div>
-              {featured.developers.map((dev, index) => (
+              {resolvedDevelopers.map((dev, index) => (
                 <div key={`featured-${dev.name}`} className="font-semibold">
                   {dev.name}
-                  {index < featured.developers.length - 2
+                  {index < resolvedDevelopers.length - 2
                     ? ", "
-                    : index === featured.developers.length - 2
+                    : index === resolvedDevelopers.length - 2
                       ? " & "
                       : ""}
                 </div>

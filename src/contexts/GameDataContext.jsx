@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { getTgaFromFirestore, getGamesFromFirestore, getUsersFromFirestore, getWatchFromFirestore, getWatchStoriesFromFirestore, getDevelopersFromFirestore } from "../js/firebase";
+import { getTgaFromFirestore, getGamesFromFirestore, getUsersFromFirestore, getWatchFromFirestore, getWatchStoriesFromFirestore, getDevelopersFromFirestore, getEditorsFromFirestore } from "../js/firebase";
 import { slugify } from "../js/utils";
 import { TTL } from "../js/cache";
 
@@ -42,9 +42,11 @@ export const GameDataProvider = ({ children }) => {
   const [games, setGames] = useState([]);
   const [users, setUsers] = useState([]);
   const [developers, setDevelopers] = useState([]);
+  const [editors, setEditors] = useState([]);
   const [loadingGames, setLoadingGames] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [loadingDevelopers, setLoadingDevelopers] = useState(false);
+  const [loadingEditors, setLoadingEditors] = useState(false);
   const [loadingWatch, setLoadingWatch] = useState(false);
   const [gamesError, setGamesError] = useState(null);
 
@@ -52,14 +54,17 @@ export const GameDataProvider = ({ children }) => {
   const usersLoadPromiseRef = useRef(null);
   const watchLoadPromiseRef = useRef(null);
   const developersLoadPromiseRef = useRef(null);
+  const editorsLoadPromiseRef = useRef(null);
   const didAttemptInitialGamesLoadRef = useRef(false);
   const didAttemptInitialUsersLoadRef = useRef(false);
   const didAttemptInitialWatchLoadRef = useRef(false);
   const didAttemptInitialDevelopersLoadRef = useRef(false);
+  const didAttemptInitialEditorsLoadRef = useRef(false);
   const gamesLoadedRef = useRef(false);
   const usersLoadedRef = useRef(false);
   const watchLoadedRef = useRef(false);
   const developersLoadedRef = useRef(false);
+  const editorsLoadedRef = useRef(false);
 
   const [awardWinners, setAwardWinners] = useState(new Set());
   const [awardsPerGame, setAwardsPerGame] = useState({});
@@ -203,6 +208,42 @@ export const GameDataProvider = ({ children }) => {
     return developersLoadPromiseRef.current;
   }, [developers]);
 
+  const refreshDevelopersData = useCallback(async () => {
+    developersLoadedRef.current = false;
+    developersLoadPromiseRef.current = null;
+    return await ensureDevelopersLoaded();
+  }, [ensureDevelopersLoaded]);
+
+  const ensureEditorsLoaded = useCallback(async () => {
+    if (editorsLoadedRef.current) return editors;
+
+    if (!editorsLoadPromiseRef.current) {
+      editorsLoadPromiseRef.current = (async () => {
+        try {
+          setLoadingEditors(true);
+          const list = await getEditorsFromFirestore();
+          setEditors(list);
+          editorsLoadedRef.current = true;
+          return list;
+        } catch (e) {
+          console.error("Failed to load editors:", e);
+          throw e;
+        } finally {
+          setLoadingEditors(false);
+          editorsLoadPromiseRef.current = null;
+        }
+      })();
+    }
+
+    return editorsLoadPromiseRef.current;
+  }, [editors]);
+
+  const refreshEditorsData = useCallback(async () => {
+    editorsLoadedRef.current = false;
+    editorsLoadPromiseRef.current = null;
+    return await ensureEditorsLoaded();
+  }, [ensureEditorsLoaded]);
+
   const ensureGamesLoaded = useCallback(async () => {
     if (gamesLoadedRef.current) return games;
 
@@ -211,10 +252,11 @@ export const GameDataProvider = ({ children }) => {
         try {
           setGamesError(null);
           setLoadingGames(true);
-          // Load developers along with games to ensure references are resolvable
+          // Load developers & editors along with games to ensure references are resolvable
           const [list] = await Promise.all([
             getGamesFromFirestore(),
-            ensureDevelopersLoaded()
+            ensureDevelopersLoaded(),
+            ensureEditorsLoaded()
           ]);
           setGames(list);
           gamesLoadedRef.current = true;
@@ -230,7 +272,7 @@ export const GameDataProvider = ({ children }) => {
     }
 
     return gamesLoadPromiseRef.current;
-  }, [games, ensureDevelopersLoaded]);
+  }, [games, ensureDevelopersLoaded, ensureEditorsLoaded]);
 
   useEffect(() => {
     if (didAttemptInitialGamesLoadRef.current) return;
@@ -354,6 +396,25 @@ export const GameDataProvider = ({ children }) => {
     return () => document.removeEventListener("visibilitychange", handleVisibility);
   }, [ensureDevelopersLoaded]);
 
+  useEffect(() => {
+    if (didAttemptInitialEditorsLoadRef.current) return;
+    didAttemptInitialEditorsLoadRef.current = true;
+    ensureEditorsLoaded().catch(() => { });
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        getEditorsFromFirestore()
+          .then(list => {
+            setEditors(list);
+            editorsLoadedRef.current = true;
+          })
+          .catch(() => { });
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [ensureEditorsLoaded]);
+
   const value = useMemo(
     () => ({
       games,
@@ -366,6 +427,11 @@ export const GameDataProvider = ({ children }) => {
       setDevelopers,
       loadingDevelopers,
       ensureDevelopersLoaded,
+
+      editors,
+      setEditors,
+      loadingEditors,
+      ensureEditorsLoaded,
 
       users,
       loadingUsers,
@@ -394,6 +460,8 @@ export const GameDataProvider = ({ children }) => {
       timesToBeat,
       setTimesToBeat,
       refreshTgaData,
+      refreshDevelopersData,
+      refreshEditorsData,
     }),
     [
       games,
@@ -403,6 +471,9 @@ export const GameDataProvider = ({ children }) => {
       developers,
       loadingDevelopers,
       ensureDevelopersLoaded,
+      editors,
+      loadingEditors,
+      ensureEditorsLoaded,
       users,
       loadingUsers,
       ensureUsersLoaded,
@@ -419,6 +490,8 @@ export const GameDataProvider = ({ children }) => {
       videosMap,
       timesToBeat,
       refreshTgaData,
+      refreshDevelopersData,
+      refreshEditorsData,
     ]
   );
 

@@ -58,6 +58,7 @@ export default function GameDetails() {
 
   const {
     games,
+    developers,
     loadingGames,
     awardsPerGame,
     coverMap,
@@ -72,7 +73,8 @@ export default function GameDetails() {
     watchStories,
     setWatch,
     setWatchStories,
-    ensureWatchLoaded
+    ensureWatchLoaded,
+    editors
   } = useGameData();
 
   const { getPlatformsSvg, isReleased, activeTags } = useGameUI();
@@ -203,6 +205,31 @@ export default function GameDetails() {
   }, [watch, watchStories, game]);
 
   const canAddCountdown = game?.release_date?.seconds && (game.release_date.seconds * 1000 > Date.now());
+
+  const resolvedDevelopers = useMemo(() => {
+    if (game?.developerRefs && game.developerRefs.length > 0) {
+      return game.developerRefs.map(ref => {
+        const refId = typeof ref === 'object' ? ref.devId : ref;
+        const found = developers.find(d => d.id === refId);
+        return found ? { name: found.name, link: found.website || "#", refId: found.id } : null;
+      }).filter(Boolean);
+    }
+    return game?.developers || [];
+  }, [game?.developerRefs, game?.developers, developers]);
+
+  const resolvedEditors = useMemo(() => {
+    if (game?.editorRefs && game.editorRefs.length > 0) {
+      return game.editorRefs.map(ref => {
+        const refId = typeof ref === 'object' ? ref.devId : ref;
+        const edFound = editors.find(e => e.id === refId);
+        if (edFound) return { name: edFound.name, link: edFound.website || "#", refId: edFound.id, type: "editor" };
+        const devFound = developers.find(d => d.id === refId);
+        if (devFound) return { name: devFound.name, link: devFound.website || "#", refId: devFound.id, type: "developer" };
+        return null;
+      }).filter(Boolean);
+    }
+    return (game?.editors || []).map(e => ({ name: e, type: "legacy" }));
+  }, [game?.editorRefs, game?.editors, developers, editors]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -385,11 +412,11 @@ export default function GameDetails() {
               )}
               {personalPlaytime && (
                 <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
-                  <div className={`p-2 rounded-lg backdrop-blur-md shadow-lg border border-white/10 ${personalPlaytime.status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-primary-light'}`}>
+                  <div className={`p-2 rounded-lg backdrop-blur-md shadow-lg border border-white/10 ${personalPlaytime.status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-white'}`}>
                     {personalPlaytime.status === 'completed' ? <FaTrophy className="size-4" /> : <FaClock className="size-4" />}
                   </div>
                   {personalPlaytime.hours > 0 && (
-                    <div className={`${personalPlaytime.status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-primary-light'} px-2 py-1 rounded-md backdrop-blur-md text-[10px] font-black border border-white/10`}>
+                    <div className={`${personalPlaytime.status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-white'} px-2 py-1 rounded-md backdrop-blur-md text-[10px] font-black border border-white/10`}>
                       {personalPlaytime.hours}H
                     </div>
                   )}
@@ -467,7 +494,7 @@ export default function GameDetails() {
               </h1>
               <div className="flex flex-wrap gap-4 md:gap-6 items-center justify-center md:justify-start text-white/80">
                 <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
-                  <FaCalendarAlt className="text-primary-light" />
+                  <FaCalendarAlt className="text-white/40" />
                   <span className="font-semibold">
                     {game?.release_date?.seconds
                       ? new Date(game.release_date.seconds * 1000).toLocaleDateString("en-US", {
@@ -543,14 +570,14 @@ export default function GameDetails() {
                     <Link
                       key={i}
                       to={`/game-awards-history/${award.year}/${award.slug}`}
-                      className="group flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-primary-light transition-all duration-300 hover:bg-white/10 hover:shadow-lg hover:scale-[1.02]"
+                      className="group flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/40 transition-all duration-300 hover:bg-white/10 hover:shadow-lg hover:scale-[1.02]"
                     >
                       <div>
-                        <p className="text-[10px] font-black text-primary-light uppercase tracking-widest mb-1">{award.year}</p>
+                        <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">{award.year}</p>
                         <p className="font-bold text-lg leading-snug">{he.decode(award.title)}</p>
                       </div>
                       <div className="opacity-0 group-hover:opacity-100 transition duration-300 translate-x-4 group-hover:translate-x-0 shrink-0 ml-4">
-                        <FaExternalLinkAlt className="text-primary-light" />
+                        <FaExternalLinkAlt className="text-white" />
                       </div>
                     </Link>
                   ))}
@@ -722,21 +749,21 @@ export default function GameDetails() {
                         <span className="text-white/40 text-[10px] font-black uppercase tracking-widest mb-0.5 md:mb-1">Main Story</span>
                         <span className="text-sm md:text-base text-white font-bold">Standard Play</span>
                       </div>
-                      <span className="text-xl md:text-2xl font-black text-primary-light">{gameTimeToBeat ? formatTime(gameTimeToBeat.normally) : "..."}</span>
+                      <span className="text-xl md:text-2xl font-black text-white">{gameTimeToBeat ? formatTime(gameTimeToBeat.normally) : "..."}</span>
                     </div>
                     <div className="flex justify-between items-end border-b border-white/10 pb-3 md:pb-4">
                       <div className="flex flex-col">
                         <span className="text-white/40 text-[10px] font-black uppercase tracking-widest mb-0.5 md:mb-1">Fast Run</span>
                         <span className="text-sm md:text-base text-white font-bold">Rushed Play</span>
                       </div>
-                      <span className="text-xl md:text-2xl font-black text-primary-light">{gameTimeToBeat ? formatTime(gameTimeToBeat.hastily) : "..."}</span>
+                      <span className="text-xl md:text-2xl font-black text-white">{gameTimeToBeat ? formatTime(gameTimeToBeat.hastily) : "..."}</span>
                     </div>
                     <div className="flex justify-between items-end">
                       <div className="flex flex-col">
                         <span className="text-white/40 text-[10px] font-black uppercase tracking-widest mb-0.5 md:mb-1">Completionist</span>
                         <span className="text-sm md:text-base text-white font-bold">100% Run</span>
                       </div>
-                      <span className="text-xl md:text-2xl font-black text-primary-light">{gameTimeToBeat ? formatTime(gameTimeToBeat.completely) : "..."}</span>
+                      <span className="text-xl md:text-2xl font-black text-white">{gameTimeToBeat ? formatTime(gameTimeToBeat.completely) : "..."}</span>
                     </div>
 
                     {averagePlaytime && (
@@ -751,7 +778,7 @@ export default function GameDetails() {
                               <span className="text-sm md:text-base text-white font-bold">Completed the game</span>
                             </div>
                           </div>
-                          <span className="text-xl md:text-2xl font-black text-primary-light">
+                          <span className="text-xl md:text-2xl font-black text-white">
                             {averagePlaytime}h
                           </span>
                         </div>
@@ -763,40 +790,56 @@ export default function GameDetails() {
             )}
             <section className="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-6 space-y-4 md:space-y-6 shadow-2xl ">
               <div>
-                <h3 className="text-[10px] md:text-xs font-black uppercase text-primary-light mb-3 md:mb-4 flex items-center gap-2">
+                <h3 className="text-[10px] md:text-xs font-black uppercase text-white/40 mb-3 md:mb-4 flex items-center gap-2">
                   Developers
                 </h3>
                 <div className="flex flex-col gap-2 md:gap-3">
-                  {game?.developers?.map((dev, i) => (
-                    <a
-                      key={i}
-                      href={dev.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-base md:text-lg font-black transition flex items-center flex-row gap-2 hover:scale-105"
-                    >
-                      {he.decode(dev.name || "")}
-                      <FaExternalLinkAlt className="text-[10px]" />
-                    </a>
+                  {resolvedDevelopers.map((dev, i) => (
+                    <div key={i} className="flex items-center gap-3 group">
+                      <Link
+                        to={`/industry/${dev.refId || dev.name}`}
+                        className="text-base md:text-lg font-black transition hover:text-white hover:translate-x-1"
+                      >
+                        {he.decode(dev.name || "")}
+                      </Link>
+                      {dev.link && dev.link !== "#" && (
+                        <a
+                          href={dev.link}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="opacity-20 hover:opacity-100 transition-opacity"
+                        >
+                          <FaExternalLinkAlt className="text-[10px]" />
+                        </a>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
               <div className="pt-4 md:pt-6 border-t border-white/10">
-                <h3 className="text-[10px] md:text-xs font-black uppercase text-primary-light mb-3 md:mb-4 flex items-center gap-2">
+                <h3 className="text-[10px] md:text-xs font-black uppercase text-white/40 mb-3 md:mb-4 flex items-center gap-2">
                   Publishers
                 </h3>
                 <div className="flex flex-col gap-2 md:gap-3">
-                  {game?.editors?.map((editor, i) => (
-                    <a
-                      key={i}
-                      href={editor.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-base md:text-lg font-black transition flex items-center flex-row gap-2 hover:scale-105"
-                    >
-                      {he.decode(editor.name || "")}
-                      <FaExternalLinkAlt className="text-[10px]" />
-                    </a>
+                  {resolvedEditors.map((editor, i) => (
+                    <div key={i} className="flex items-center gap-3 group">
+                      <Link
+                        to={`/industry/${editor.refId || editor.name}`}
+                        className="text-base md:text-lg font-black transition hover:text-white hover:translate-x-1"
+                      >
+                        {he.decode(editor.name || "")}
+                      </Link>
+                      {editor.link && editor.link !== "#" && (
+                        <a
+                          href={editor.link}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="opacity-20 hover:opacity-100 transition-opacity"
+                        >
+                          <FaExternalLinkAlt className="text-[10px]" />
+                        </a>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>

@@ -396,4 +396,42 @@ export const deleteDeveloperFromFirestore = async (developerId) => {
     }
 };
 
+export const getEditorsFromFirestore = async () => {
+    try {
+        const editorsRef = collection(db, "editors");
+        const querySnapshot = await getDocs(editorsRef);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (e) {
+        console.error("Error fetching editors: ", e);
+        throw e;
+    }
+};
+
+export const saveEditor = async (editorData, docId = null) => {
+    try {
+        if (docId) {
+            const editorRef = doc(db, "editors", docId);
+            await setDoc(editorRef, editorData, { merge: true });
+            return docId;
+        } else {
+            const editorsRef = collection(db, "editors");
+            const docRef = await addDoc(editorsRef, editorData);
+            return docRef.id;
+        }
+    } catch (e) {
+        console.error("Error saving editor: ", e);
+        throw e;
+    }
+};
+
+export const deleteEditorFromFirestore = async (editorId) => {
+    try {
+        const editorRef = doc(db, "editors", editorId);
+        await deleteDoc(editorRef);
+    } catch (e) {
+        console.error("Error deleting editor: ", e);
+        throw e;
+    }
+};
+
 export { db, auth };

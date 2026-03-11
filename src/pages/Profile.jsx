@@ -8,7 +8,7 @@ import { getGameCovers } from "../js/igdb";
 import { useNavigate } from "react-router-dom";
 import { slugify, matchesSearch } from "../js/utils";
 import { removeFromLibrary, removeCountdown, getUserByUsername, setPlaytime, addToLibrary, getPlaytimes, deletePlaytime } from "../js/firebase";
-import { FaExternalLinkAlt, FaClock, FaPlus, FaCheck, FaBookmark, FaShareAlt, FaTrophy, FaThList, FaThLarge } from "react-icons/fa";
+import { FaExternalLinkAlt, FaClock, FaPlus, FaCheck, FaBookmark, FaShareAlt, FaTrophy, FaThList, FaThLarge, FaUser } from "react-icons/fa";
 import { toast } from "react-toastify";
 import CountdownTimer from "../components/shared/CountdownTimer";
 import ScrollableContainer from "../components/shared/ScrollableContainer";
@@ -290,28 +290,31 @@ const Profile = () => {
 
   return (
     <Layout>
-      <div className="mx-6 mt-6 flex flex-col gap-10 md:gap-14">
-        <section className="flex flex-col items-center md:items-start gap-4">
-          <div className="flex flex-col md:flex-row items-center gap-6 w-full justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex flex-col items-center md:items-start">
-                <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+      <div className="max-w-[1400px] mx-auto px-6 pb-12 md:py-20 space-y-12">
+        <header>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="size-10 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-[0_0_20px_rgba(176,105,255,0.4)]">
+                  <FaUser size={24} className="text-white" />
+                </div>
+                <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
                   {profileData?.username || 'Gamer'}
                 </h1>
-                <p className="text-white/40 font-bold uppercase tracking-widest text-xs md:text-sm">
-                  Personal Library
-                </p>
               </div>
+              <p className="text-white/40 font-medium max-w-xl text-lg leading-relaxed">
+                Explore the personal game library, playtimes and countdowns of {profileData?.username || 'this gamer'}.
+              </p>
             </div>
             <button
               onClick={handleShareProfile}
-              className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl transition-all shadow-lg"
+              className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-6 py-3 rounded-2xl transition-all shadow-xl font-bold"
             >
               <FaShareAlt className="text-white" />
-              <span className="font-bold text-sm tracking-tight">Share Profile</span>
+              <span>Share Profile</span>
             </button>
           </div>
-        </section>
+        </header>
 
         <section>
           <div className="flex flex-col gap-6">

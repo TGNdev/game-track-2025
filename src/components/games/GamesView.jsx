@@ -3,7 +3,8 @@ import GameCard from "./GameCard";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Timestamp } from "firebase/firestore";
-import { FaFilter } from "react-icons/fa";
+import { FaFilter, FaUser, FaBuilding } from "react-icons/fa";
+import { FiX } from "react-icons/fi";
 import FeaturedGames from "./FeaturedGames";
 import { matchesSearch } from "../../js/utils";
 import FilterButton from "../shared/FilterButton";
@@ -11,9 +12,9 @@ import Pagination from "../shared/Pagination";
 import { PLATFORMS } from "../../js/config";
 import { useGameData } from "../../contexts/GameDataContext";
 import { useGameUI } from "../../contexts/GameUIContext";
-import { FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import ScrollableContainer from "../shared/ScrollableContainer";
+import he from "he";
 
 const GamesView = () => {
   const {
@@ -37,9 +38,12 @@ const GamesView = () => {
     setSelectedPlatforms,
     setShowOnlyUpcoming,
     setSelectedYear,
+    setSearch,
   } = useGameUI();
   const {
     games,
+    developers,
+    editors,
     coverMap,
     screenshotsMap,
     loadingGames,
@@ -129,10 +133,40 @@ const GamesView = () => {
         return typeof game.release_date === "string";
       })
       .filter((game) => {
+        const getResolvedDevNames = (g) => {
+          let names = [];
+          if (g.developerRefs?.length > 0) {
+            g.developerRefs.forEach(ref => {
+              const refId = typeof ref === 'object' ? ref.devId : ref;
+              const d = developers.find(dev => dev.id === refId);
+              if (d) names.push(d.name);
+            });
+          }
+          if (g.developers?.length > 0) {
+            g.developers.forEach(d => names.push(d.name));
+          }
+          return names;
+        };
+
+        const getResolvedEditorNames = (g) => {
+          let names = [];
+          if (g.editorRefs?.length > 0) {
+            g.editorRefs.forEach(ref => {
+              const refId = typeof ref === 'object' ? ref.devId : ref;
+              const d = developers.find(dev => dev.id === refId);
+              if (d) names.push(d.name);
+            });
+          }
+          if (g.editors?.length > 0) {
+            g.editors.forEach(d => names.push(d.name));
+          }
+          return names;
+        };
+
         const matchesSearchValue =
           matchesSearch(game.name, search) ||
-          game.developers.some((dev) => matchesSearch(dev.name, search)) ||
-          game.editors.some((editor) => matchesSearch(editor.name, search));
+          getResolvedDevNames(game).some((name) => matchesSearch(name, search)) ||
+          getResolvedEditorNames(game).some((name) => matchesSearch(name, search));
 
         const matchesPlatform =
           selectedPlatforms.length === 0 ||
@@ -169,12 +203,31 @@ const GamesView = () => {
         if (aSort !== bSort) return aSort - bSort;
         return a.name.localeCompare(b.name);
       });
-  }, [games, search, selectedPlatforms, showOnlyUpcoming, withRelease, selectedYear]);
+  }, [games, search, selectedPlatforms, showOnlyUpcoming, withRelease, selectedYear, developers]);
 
   const filteredUsers = useMemo(() => {
     if (!search || search.length < 2) return [];
     return users.filter(user => matchesSearch(user.username, search));
   }, [users, search]);
+
+  const filteredIndustry = useMemo(() => {
+    if (!search || search.length < 2) return [];
+    const matchedDevs = developers.filter(d => matchesSearch(d.name, search));
+    const matchedEds = editors.filter(e => matchesSearch(e.name, search));
+
+    const seen = new Set();
+    const results = [];
+
+    [...matchedDevs, ...matchedEds].forEach(item => {
+      const normalizedName = item.name.toLowerCase().trim();
+      if (!seen.has(normalizedName)) {
+        seen.add(normalizedName);
+        results.push(item);
+      }
+    });
+
+    return results;
+  }, [developers, editors, search]);
 
   useEffect(() => {
     if (!loadingGames && filtered.length > 0) {
@@ -229,7 +282,19 @@ const GamesView = () => {
   }, [search, selectedPlatforms, showOnlyUpcoming, withRelease, selectedYear, itemsPerPage, setCurrentPage]);
 
   return (
-    <div className="px-6 w-full flex flex-col gap-6 pb-4">
+    <div className="max-w-[1400px] mx-auto px-6 pb-12 md:py-20 space-y-10">
+      <header>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div className="space-y-4">
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
+              The Game Track
+            </h1>
+            <p className="text-white/40 font-medium max-w-xl text-lg leading-relaxed">
+              Your ultimate companion for tracking game releases, awards, and industry news. Stay updated with the latest in gaming.
+            </p>
+          </div>
+        </div>
+      </header>
       <FeaturedGames games={games} />
 
       {search && filteredUsers.length > 0 && (
@@ -252,6 +317,39 @@ const GamesView = () => {
                   <span className="font-black text-sm">{user.username}</span>
                   <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest">
                     {(user.library?.played?.length || 0) + (user.library?.toPlay?.length || 0)} Games
+                  </span>
+                </div>
+              </div>
+            ))}
+          </ScrollableContainer>
+          <div className="border-b border-white/10 w-full mt-2" />
+        </section>
+      )}
+
+      {search && filteredIndustry.length > 0 && (
+        <section className="w-full flex flex-col gap-4">
+          <div className="flex items-center gap-2 text-white/60 px-2 font-bold uppercase tracking-wider text-xs">
+            <FaBuilding className="size-3" />
+            <span>Matching Studios ({filteredIndustry.length})</span>
+          </div>
+          <ScrollableContainer>
+            {filteredIndustry.map(item => (
+              <div
+                key={item.id}
+                onClick={() => navigate(`/industry/${item.id}`)}
+                className="hover:cursor-pointer shrink-0 flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 p-3 rounded-2xl transition-colors duration-200 shadow-lg"
+              >
+                <div className="size-11 rounded-xl bg-white/5 border border-white/10 p-1.5 flex items-center justify-center overflow-hidden">
+                  {item.logo ? (
+                    <img src={item.logo} alt={item.name} className="w-full h-full object-contain" />
+                  ) : (
+                    <FaBuilding className="text-white/20" />
+                  )}
+                </div>
+                <div className="flex flex-col items-start pr-4">
+                  <span className="font-black text-sm">{he.decode(item.name)}</span>
+                  <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest">
+                    {item.country || "Industry Profile"}
                   </span>
                 </div>
               </div>
@@ -286,14 +384,36 @@ const GamesView = () => {
         </div>
       </div>
 
-      <div className="w-full flex flex-col items-center">
-        <button
-          className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] gap-3 px-6 py-3 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 hover:border-white/20 transition-all shadow-xl backdrop-blur-sm group"
-          onClick={() => setFiltersVisible(prev => !prev)}
-        >
-          <FaFilter className={`size-3 transition-colors ${filtersVisible ? 'text-[#b069ff]' : 'text-white/40 group-hover:text-white'}`} />
-          <span>{filtersVisible ? "Hide Filters" : "Show Filters"}</span>
-        </button>
+      <div className="w-full flex flex-col items-center gap-4">
+        <div className="w-full flex flex-col md:flex-row items-center justify-center gap-4">
+          {/* Filter Toggle Button */}
+          <button
+            className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] gap-3 px-6 py-3.5 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 hover:border-white/20 transition-all shadow-xl backdrop-blur-sm group whitespace-nowrap"
+            onClick={() => setFiltersVisible(prev => !prev)}
+          >
+            <FaFilter className={`size-3 transition-colors ${filtersVisible ? 'text-[#b069ff]' : 'text-white/40 group-hover:text-white'}`} />
+            <span>{filtersVisible ? "Hide Filters" : "Show Filters"}</span>
+          </button>
+          {/* Search Bar */}
+          <div className="relative w-full max-w-sm">
+            <input
+              type="text"
+              placeholder="Search games, studios, users..."
+              className="w-full bg-white/5 border border-white/10 rounded-full pl-12 pr-10 py-3 text-white focus:outline-none focus:border-[#b069ff]/50 transition-all shadow-xl backdrop-blur-sm font-bold tracking-[0.2em] uppercase text-xs"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+              >
+                <FiX className="size-4" />
+              </button>
+            )}
+          </div>
+        </div>
+
         <AnimatePresence>
           {filtersVisible && (
             <motion.div

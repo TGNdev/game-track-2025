@@ -40,8 +40,8 @@ export default function Welcome() {
   return (
     <div className="relative h-screen w-full bg-background overflow-hidden font-sans">
       {/* Background Decor */}
-      <div className="absolute top-[-10%] left-[-10%] size-[40%] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] size-[40%] bg-tertiary/20 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] size-[40%] bg-white/10 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] size-[40%] bg-white/10 blur-[120px] rounded-full pointer-events-none" />
 
       <div
         ref={containerRef}

@@ -9,6 +9,8 @@ import GameDetails from "../pages/GameDetails";
 import Profile from "../pages/Profile";
 import Admin from "../pages/Admin";
 import IndustryWatch from "../pages/IndustryWatch";
+import Developers from "../pages/Developers";
+import IndustryDetails from "../pages/IndustryDetails";
 import { adminRoutes } from "./adminRoutes";
 
 const PageLayout = () => (
@@ -25,7 +27,7 @@ const FirstRunGate = () => {
 
 const AnimatedRoutes = () => {
   const location = useLocation();
-  const routeKey = `${location.pathname}${location.search}${location.hash}`;
+  const routeKey = `${location.pathname}${location.search}${location.hash} `;
 
   return (
     <AnimatePresence mode="wait">
@@ -41,6 +43,12 @@ const AnimatedRoutes = () => {
             <Route path="/release-calendar" element={<ReleaseCalendar />} />
 
             <Route path="/games/:game" element={<GameDetails />} />
+            <Route path="/industry" element={<Developers />} />
+            <Route path="/industry/:id" element={<IndustryDetails />} />
+            <Route path="/developers" element={<Developers />} />
+            <Route path="/developers/:id" element={<IndustryDetails />} />
+            <Route path="/editors" element={<Developers />} />
+            <Route path="/editors/:id" element={<IndustryDetails />} />
 
             <Route path="/game-awards-history">
               <Route index element={<AwardsHistory />} />

@@ -66,16 +66,12 @@ const AwardsHistory = () => {
 
   return (
     <Layout>
-      <div className="max-w-[1400px] mx-auto px-6 pb-12 md:py-20 space-y-8">
+      <div className="max-w-[1400px] mx-auto px-6 pb-12 md:py-20 space-y-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="size-10 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-[0_0_20px_rgba(176,105,255,0.4)]">
-                <FaTrophy size={24} className="text-white" />
-              </div>              <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-                Game Awards History
-              </h1>
-            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
+              Game Awards History
+            </h1>
             <p className="text-white/40 font-medium max-w-xl text-lg leading-relaxed">
               Discover the history of the Game Awards, from the first annual ceremony in 2015 to the most recent awards.
             </p>

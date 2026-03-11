@@ -1,8 +1,9 @@
 import { useEffect, useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FiChevronDown } from "react-icons/fi";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { useGameUI } from "../../contexts/GameUIContext";
+import { useGameData } from "../../contexts/GameDataContext";
 import he from "he";
 import { highlightMatch, slugify } from "../../js/utils";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
@@ -12,6 +13,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [coverLoaded, setCoverLoaded] = useState(false);
+  const { developers } = useGameData();
   const {
     search,
     getPlatformsSvg,
@@ -21,6 +23,28 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
     setGameToEdit,
     activeTags
   } = useGameUI();
+
+  const resolvedDevelopers = useMemo(() => {
+    if (game.developerRefs && game.developerRefs.length > 0) {
+      return game.developerRefs.map(ref => {
+        const refId = typeof ref === 'object' ? ref.devId : ref;
+        const found = developers.find(d => d.id === refId);
+        return found ? { name: found.name, link: found.website || "#", refId: found.id } : null;
+      }).filter(Boolean);
+    }
+    return game.developers || [];
+  }, [game.developerRefs, game.developers, developers]);
+
+  const resolvedEditors = useMemo(() => {
+    if (game.editorRefs && game.editorRefs.length > 0) {
+      return game.editorRefs.map(ref => {
+        const refId = typeof ref === 'object' ? ref.devId : ref;
+        const found = developers.find(d => d.id === refId);
+        return found ? { name: found.name, link: found.website || "#", refId: found.id } : null;
+      }).filter(Boolean);
+    }
+    return game.editors || [];
+  }, [game.editorRefs, game.editors, developers]);
 
   const gameTags = useMemo(() => activeTags(game), [activeTags, game]);
 
@@ -113,23 +137,43 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
               <div className="flex flex-col justify-between py-1 flex-1">
                 <div className="space-y-4">
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-primary-light">Developers</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Developers</span>
                     <div className="flex flex-col gap-0.5">
-                      {game.developers.map((dev, idx) => (
-                        <span key={idx} className="text-sm font-bold truncate">
-                          {he.decode(dev.name)}
-                        </span>
+                      {resolvedDevelopers.map((dev, idx) => (
+                        <div key={idx} className="text-sm font-bold truncate">
+                          {dev.refId ? (
+                            <Link
+                              to={`/developers/${dev.refId}`}
+                              className="hover:text-white transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {he.decode(dev.name)}
+                            </Link>
+                          ) : (
+                            he.decode(dev.name)
+                          )}
+                        </div>
                       ))}
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-primary-light">Publishers</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Publishers</span>
                     <div className="flex flex-col gap-0.5">
-                      {game.editors.map((edit, idx) => (
-                        <span key={idx} className="text-sm font-bold truncate">
-                          {he.decode(edit.name)}
-                        </span>
+                      {resolvedEditors.map((edit, idx) => (
+                        <div key={idx} className="text-sm font-bold truncate">
+                          {edit.refId ? (
+                            <Link
+                              to={`/developers/${edit.refId}`}
+                              className="hover:text-white transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {he.decode(edit.name)}
+                            </Link>
+                          ) : (
+                            he.decode(edit.name)
+                          )}
+                        </div>
                       ))}
                     </div>
                   </div>
