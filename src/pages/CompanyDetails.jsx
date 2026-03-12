@@ -1,16 +1,18 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useGameData } from "../contexts/GameDataContext";
 import Layout from "../components/shared/Layout";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaBuilding, FaGlobe, FaCity, FaArrowLeft, FaExternalLinkAlt, FaGamepad } from "react-icons/fa";
+import { FaBuilding, FaGlobe, FaCity, FaArrowLeft, FaExternalLinkAlt, FaGamepad, FaHammer, FaBullhorn } from "react-icons/fa";
 import { slugify } from "../js/utils";
 import he from "he";
 import CompactGameCard from "../components/games/CompactGameCard";
+import { getGameCovers } from "../js/igdb";
 
-const IndustryDetails = () => {
+const CompanyDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("produced");
   const {
     developers,
     editors,
@@ -20,7 +22,8 @@ const IndustryDetails = () => {
     loadingGames,
     ensureDevelopersLoaded,
     ensureEditorsLoaded,
-    coverMap
+    coverMap,
+    setCoverMap
   } = useGameData();
 
   useEffect(() => {
@@ -74,9 +77,13 @@ const IndustryDetails = () => {
     return mergedData;
   }, [developers, editors, id, loadingDevelopers, loadingEditors]);
 
-  const entityGames = useMemo(() => {
-    if (!entity) return [];
-    return games.filter(game => {
+  const { developedGames, publishedGames } = useMemo(() => {
+    if (!entity) return { developedGames: [], publishedGames: [] };
+
+    const developed = [];
+    const published = [];
+
+    games.forEach(game => {
       const isDeveloper = game.developerRefs?.some(ref => {
         const devId = typeof ref === 'object' ? ref.devId : ref;
         return entity.ids.includes(devId);
@@ -85,13 +92,43 @@ const IndustryDetails = () => {
         const edId = typeof ref === 'object' ? ref.devId : ref;
         return entity.ids.includes(edId);
       });
-      return isDeveloper || isEditor;
-    }).sort((a, b) => {
-      const dateA = a.release_date?.seconds || 0;
-      const dateB = b.release_date?.seconds || 0;
-      return dateB - dateA;
+
+      if (isDeveloper) developed.push(game);
+      if (isEditor) published.push(game);
     });
+
+    const sortFn = (a, b) => (b.release_date?.seconds || 0) - (a.release_date?.seconds || 0);
+
+    return {
+      developedGames: developed.sort(sortFn),
+      publishedGames: published.sort(sortFn)
+    };
   }, [entity, games]);
+
+  // Set initial active tab based on availability
+  useEffect(() => {
+    if (developedGames.length > 0) {
+      setActiveTab("produced");
+    } else if (publishedGames.length > 0) {
+      setActiveTab("published");
+    }
+  }, [developedGames.length, publishedGames.length]);
+
+  // Fetch covers for all entity games
+  useEffect(() => {
+    const fetchCovers = async () => {
+      const allEntityGames = [...developedGames, ...publishedGames];
+      if (allEntityGames.length === 0) return;
+
+      const gameIds = [...new Set(allEntityGames.map(g => g.igdb_id).filter(Boolean))];
+      if (gameIds.length === 0) return;
+
+      const covers = await getGameCovers(gameIds);
+      setCoverMap(prev => ({ ...prev, ...covers }));
+    };
+
+    fetchCovers();
+  }, [developedGames, publishedGames, setCoverMap]);
 
   const parentCompany = useMemo(() => {
     if (!entity?.parentCompanyId) return null;
@@ -123,10 +160,10 @@ const IndustryDetails = () => {
         <div className="flex flex-col items-center justify-center h-[60vh] gap-6">
           <h1 className="text-4xl font-black opacity-20 italic">Company not found</h1>
           <button
-            onClick={() => navigate("/industry")}
+            onClick={() => navigate("/companies")}
             className="flex items-center gap-2 bg-white/10 px-6 py-3 rounded-2xl font-bold hover:bg-white/20 transition-colors"
           >
-            <FaArrowLeft /> Back to Industry
+            <FaArrowLeft /> Back to Companies
           </button>
         </div>
       </Layout>
@@ -167,11 +204,6 @@ const IndustryDetails = () => {
                 >
                   {he.decode(entity.name)}
                 </motion.h1>
-                {entity.ids.length > 1 && (
-                  <div className="bg-white/10 text-white border border-white/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest h-fit mt-2">
-                    Combined Profile
-                  </div>
-                )}
               </div>
 
               <motion.div
@@ -216,7 +248,7 @@ const IndustryDetails = () => {
                   Parent Company
                 </h2>
                 <Link
-                  to={`/industry/${parentCompany.id}`}
+                  to={`/companies/${parentCompany.id}`}
                   className="block bg-white/5 border border-white/10 rounded-3xl p-6 hover:border-primary/40 hover:bg-white/10 transition-all group"
                 >
                   <div className="flex items-center gap-4">
@@ -246,7 +278,7 @@ const IndustryDetails = () => {
                   {subsidiaries.map(sub => (
                     <Link
                       key={sub.id}
-                      to={`/industry/${sub.id}`}
+                      to={`/companies/${sub.id}`}
                       className="flex items-center justify-between bg-white/5 border border-white/10 rounded-2xl px-5 py-4 hover:bg-white/10 transition-colors group"
                     >
                       <div className="flex items-center gap-3">
@@ -281,40 +313,77 @@ const IndustryDetails = () => {
 
           {/* Main Content: Games */}
           <div className="lg:col-span-3">
-            <div className="mb-8 flex items-center justify-between">
-              <h2 className="text-3xl font-black italic flex items-center gap-4">
-                <FaGamepad className="text-white/20" />
-                Industry Catalog
-                <span className="text-lg font-normal text-white/20 not-italic ml-2 uppercase tracking-widest leading-none">
-                  ({entityGames.length})
-                </span>
-              </h2>
+            <div className="mb-10 space-y-8">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <h2 className="text-3xl font-black italic flex items-center gap-4">
+                  <FaGamepad className="text-white/20" />
+                  Catalog
+                </h2>
+
+                <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10 w-fit">
+                  {developedGames.length > 0 && (
+                    <button
+                      onClick={() => setActiveTab("produced")}
+                      className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${activeTab === "produced"
+                        ? "bg-gradient-primary text-white shadow-lg shadow-primary/20"
+                        : "text-white/40 hover:text-white/60"
+                        }`}
+                    >
+                      <FaHammer size={14} className={activeTab === "produced" ? "animate-pulse" : ""} />
+                      Produced
+                      <span className="text-[10px] opacity-50 ml-1">({developedGames.length})</span>
+                    </button>
+                  )}
+                  {publishedGames.length > 0 && (
+                    <button
+                      onClick={() => setActiveTab("published")}
+                      className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${activeTab === "published"
+                        ? "bg-gradient-primary text-white shadow-lg shadow-primary/20"
+                        : "text-white/40 hover:text-white/60"
+                        }`}
+                    >
+                      <FaBullhorn size={14} className={activeTab === "published" ? "animate-pulse" : ""} />
+                      Published
+                      <span className="text-[10px] opacity-50 ml-1">({publishedGames.length})</span>
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
 
-            {entityGames.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-6">
-                <AnimatePresence>
-                  {entityGames.map((game, index) => (
-                    <motion.div
-                      key={game.id}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.05 }}
-                    >
-                      <CompactGameCard
-                        game={game}
-                        coverImage={coverMap ? coverMap[game.igdb_id] : null}
-                      />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            ) : (
-              <div className="bg-white/5 rounded-[3rem] border border-dashed border-white/10 p-20 text-center">
-                <FaGamepad className="mx-auto text-6xl text-white/10 mb-6" />
-                <p className="text-xl font-bold text-white/20 italic">No games linked to this industry entity yet.</p>
-              </div>
-            )}
+            {/* Content for the active tab */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.2 }}
+              >
+                {((activeTab === "produced" ? developedGames : publishedGames).length > 0) ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {(activeTab === "produced" ? developedGames : publishedGames).map((game, index) => (
+                      <motion.div
+                        key={game.id}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: Math.min(index * 0.05, 0.5) }}
+                      >
+                        <CompactGameCard
+                          game={game}
+                          coverImage={coverMap ? coverMap[game.igdb_id] : null}
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-white/5 rounded-[3rem] border border-dashed border-white/10 p-20 text-center">
+                    <FaGamepad className="mx-auto text-6xl text-white/10 mb-6" />
+                    <p className="text-xl font-bold text-white/20 italic">No games listed in the {activeTab} catalog.</p>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </div>
@@ -322,4 +391,5 @@ const IndustryDetails = () => {
   );
 };
 
-export default IndustryDetails;
+export default CompanyDetails;
+

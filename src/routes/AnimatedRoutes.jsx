@@ -9,8 +9,9 @@ import GameDetails from "../pages/GameDetails";
 import Profile from "../pages/Profile";
 import Admin from "../pages/Admin";
 import IndustryWatch from "../pages/IndustryWatch";
-import Developers from "../pages/Developers";
-import IndustryDetails from "../pages/IndustryDetails";
+import Companies from "../pages/Companies";
+import CompanyDetails from "../pages/CompanyDetails";
+import NotFound from "../pages/NotFound";
 import { adminRoutes } from "./adminRoutes";
 
 const PageLayout = () => (
@@ -43,12 +44,8 @@ const AnimatedRoutes = () => {
             <Route path="/release-calendar" element={<ReleaseCalendar />} />
 
             <Route path="/games/:game" element={<GameDetails />} />
-            <Route path="/industry" element={<Developers />} />
-            <Route path="/industry/:id" element={<IndustryDetails />} />
-            <Route path="/developers" element={<Developers />} />
-            <Route path="/developers/:id" element={<IndustryDetails />} />
-            <Route path="/editors" element={<Developers />} />
-            <Route path="/editors/:id" element={<IndustryDetails />} />
+            <Route path="/companies" element={<Companies />} />
+            <Route path="/companies/:id" element={<CompanyDetails />} />
 
             <Route path="/game-awards-history">
               <Route index element={<AwardsHistory />} />
@@ -70,6 +67,7 @@ const AnimatedRoutes = () => {
             </Route>
           </Route>
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
   );

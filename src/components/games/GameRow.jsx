@@ -87,7 +87,7 @@ const GameRow = ({ ref, game, coverImage, screenshots }) => {
           {resolvedDevelopers.slice(0, 2).map((dev) => (
             <div key={dev.name} className="flex items-center gap-2 group/link truncate max-w-full justify-center py-1">
               <Link
-                to={`/developers/${dev.refId || dev.name}`}
+                to={`/companies/${dev.refId || dev.name}`}
                 className="text-[11px] font-bold text-white/60 hover:text-white transition-colors truncate flex items-center"
               >
                 {highlightMatch(he.decode(dev.name), search)}
@@ -106,7 +106,7 @@ const GameRow = ({ ref, game, coverImage, screenshots }) => {
           {resolvedEditors.slice(0, 2).map((editor) => (
             <div key={editor.name} className="flex items-center gap-2 group/link truncate max-w-full justify-center py-1">
               <Link
-                to={editor.type === "developer" ? `/developers/${editor.refId || editor.name}` : `/editors/${editor.refId || editor.name}`}
+                to={`/companies/${editor.refId || editor.name}`}
                 className="text-[11px] font-bold text-white/60 hover:text-white transition-colors truncate flex items-center"
               >
                 {highlightMatch(he.decode(editor.name), search)}

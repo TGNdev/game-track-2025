@@ -797,7 +797,7 @@ export default function GameDetails() {
                   {resolvedDevelopers.map((dev, i) => (
                     <div key={i} className="flex items-center gap-3 group">
                       <Link
-                        to={`/industry/${dev.refId || dev.name}`}
+                        to={`/companies/${dev.refId || dev.name}`}
                         className="text-base md:text-lg font-black transition hover:text-white hover:translate-x-1"
                       >
                         {he.decode(dev.name || "")}
@@ -824,7 +824,7 @@ export default function GameDetails() {
                   {resolvedEditors.map((editor, i) => (
                     <div key={i} className="flex items-center gap-3 group">
                       <Link
-                        to={`/industry/${editor.refId || editor.name}`}
+                        to={`/companies/${editor.refId || editor.name}`}
                         className="text-base md:text-lg font-black transition hover:text-white hover:translate-x-1"
                       >
                         {he.decode(editor.name || "")}

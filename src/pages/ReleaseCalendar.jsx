@@ -1,7 +1,6 @@
 import Layout from "../components/shared/Layout";
 import Calendar from "../components/calendar/Calendar";
 import { useState } from "react";
-import { FaCalendar } from "react-icons/fa";
 
 const ReleaseCalendar = () => {
   const [view, setView] = useState('games');
@@ -13,14 +12,9 @@ const ReleaseCalendar = () => {
       <div className="max-w-[1400px] mx-auto px-6 pb-12 md:py-20 space-y-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="size-10 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-[0_0_20px_rgba(176,105,255,0.4)]">
-                <FaCalendar size={24} className="text-white" />
-              </div>
-              <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-                Calendars
-              </h1>
-            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
+              Calendars
+            </h1>
             <p className="text-white/40 font-medium max-w-xl text-lg leading-relaxed">
               Track upcoming game releases and gaming events, served to you in a clean and organized way.
             </p>

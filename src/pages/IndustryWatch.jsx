@@ -7,7 +7,7 @@ import WatchModal from "../components/watch/WatchModal";
 import { addWatchToFirestore, editWatchFromFirestore, deleteWatchFromFirestore, editWatchStoryCategoryFromFirestore } from "../js/firebase";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiPlus, FiActivity, FiSearch, FiFrown, FiRefreshCw } from "react-icons/fi";
+import { FiPlus, FiSearch, FiFrown, FiRefreshCw } from "react-icons/fi";
 import ConfirmModal from "../components/modals/ConfirmModal";
 import { useAuth } from "../contexts/AuthContext";
 import Pagination from "../components/shared/Pagination";
@@ -135,14 +135,9 @@ const IndustryWatch = () => {
       <div className="max-w-[1400px] mx-auto px-6 pb-12 md:py-20 space-y-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="size-10 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-[0_0_20px_rgba(176,105,255,0.4)]">
-                <FiActivity size={24} className="text-white" />
-              </div>
-              <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-                Industry Watch
-              </h1>
-            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
+              Industry Watch
+            </h1>
             <p className="text-white/40 font-medium max-w-xl text-lg leading-relaxed">
               Insider rumors, studio movements, and major industry shifts—curated and summarized for you.
             </p>
@@ -259,7 +254,7 @@ const IndustryWatch = () => {
         title="Delete Article"
         message="Are you sure you want to remove this news from the watch? This action cannot be undone."
       />
-    </Layout>
+    </Layout >
   );
 };
 

@@ -86,14 +86,14 @@ const Drawer = ({ open, setOpen }) => {
             </Link>
 
             <Link
-              to="/developers"
+              to="/companies"
               className="flex items-center gap-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
               onClick={() => setOpen(false)}
             >
               <div className="p-2 rounded-lg bg-gradient-primary transition-colors">
                 <FaBuilding className="size-5" />
               </div>
-              <span className="font-semibold">The Industry</span>
+              <span className="font-semibold">Companies</span>
             </Link>
 
             <div className="h-[2px] bg-white/10 my-4"></div>

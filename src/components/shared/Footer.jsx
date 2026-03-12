@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaTwitter, FaDiscord, FaGithub, FaGamepad, FaShieldAlt } from "react-icons/fa";
+import { FaGamepad, FaShieldAlt } from "react-icons/fa";
 import { useGameUI } from "../../contexts/GameUIContext";
 import { useAuth } from "../../contexts/AuthContext";
 import BackTopButton from "./BackTopButton";
@@ -24,7 +24,7 @@ const Footer = () => {
       title: "Industry Watch",
       links: [
         { label: "Market Overview", to: "/industry-watch" },
-        { label: "Developers & Editors", to: "/industry" },
+        { label: "Developers & Editors", to: "/companies" },
       ],
     },
     {

@@ -9,7 +9,7 @@ import Breadcrumbs from "../components/awards_history/Breadcrumbs";
 import { slugify } from "../js/utils";
 import { getGameCovers } from "../js/igdb";
 import { useGameData } from "../contexts/GameDataContext";
-import { FaTrophy, FaMedal } from "react-icons/fa";
+import { FaMedal } from "react-icons/fa";
 import Leaderboard from "../components/awards_history/Leaderboard";
 const AwardsHistory = () => {
   const { year, awardId } = useParams();

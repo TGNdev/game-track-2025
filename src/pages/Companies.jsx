@@ -7,7 +7,7 @@ import { FaBuilding, FaGlobe, FaCity } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
 import he from "he";
 
-const Developers = () => {
+const Companies = () => {
   const location = useLocation();
   const { developers, loadingDevelopers, ensureDevelopersLoaded, editors, loadingEditors, ensureEditorsLoaded } = useGameData();
 
@@ -35,7 +35,33 @@ const Developers = () => {
   }, [ensureDevelopersLoaded, ensureEditorsLoaded]);
 
   const currentItems = useMemo(() => {
-    return viewMode === "developers" ? developers : editors;
+    const list = viewMode === "developers" ? developers : editors;
+
+    return list.map(item => {
+      let linkedEntity = null;
+
+      if (viewMode === "editors" && item.linkedDeveloperId) {
+        linkedEntity = developers.find(d => d.id === item.linkedDeveloperId);
+      } else if (viewMode === "developers") {
+        linkedEntity = editors.find(e => e.linkedDeveloperId === item.id);
+      }
+
+      if (linkedEntity) {
+        return {
+          ...linkedEntity,
+          ...item,
+          // Explicitly prioritize linked data for missing visual info
+          logo: item.logo || linkedEntity.logo,
+          country: item.country || linkedEntity.country,
+          city: item.city || linkedEntity.city,
+          website: item.website || linkedEntity.website,
+          studios: item.studios || linkedEntity.studios,
+          parentCompanyId: item.parentCompanyId || linkedEntity.parentCompanyId,
+        };
+      }
+
+      return item;
+    });
   }, [viewMode, developers, editors]);
 
   const alphabet = useMemo(() => {
@@ -103,7 +129,7 @@ const Developers = () => {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div className="space-y-4">
               <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-                The Industry
+                Companies
               </h1>
               <p className="text-white/40 font-medium max-w-xl text-lg leading-relaxed">
                 Discover the studios and publishers behind your favorite games. Browse by name or search for a specific entity.
@@ -191,7 +217,7 @@ const Developers = () => {
                   layout
                 >
                   <Link
-                    to={`/industry/${item.id}`}
+                    to={`/companies/${item.id}`}
                     className="block bg-white/5 border border-white/10 rounded-3xl p-6 hover:border-white/20 hover:bg-white/10 transition-all h-full group"
                   >
                     <div className="flex items-center gap-6 mb-4">
@@ -239,4 +265,4 @@ const Developers = () => {
   );
 };
 
-export default Developers;
+export default Companies;

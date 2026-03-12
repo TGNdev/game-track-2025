@@ -324,7 +324,7 @@ const GamesView = () => {
             {filteredIndustry.map(item => (
               <div
                 key={item.id}
-                onClick={() => navigate(`/industry/${item.id}`)}
+                onClick={() => navigate(`/companies/${item.id}`)}
                 className="hover:cursor-pointer shrink-0 flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 p-3 rounded-2xl transition-colors duration-200 shadow-lg"
               >
                 <div className="size-11 rounded-xl bg-white/5 border border-white/10 p-1.5 flex items-center justify-center overflow-hidden">
@@ -337,7 +337,7 @@ const GamesView = () => {
                 <div className="flex flex-col items-start pr-4">
                   <span className="font-black text-sm">{he.decode(item.name)}</span>
                   <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest">
-                    {item.country || "Industry Profile"}
+                    {item.country || "Profile"}
                   </span>
                 </div>
               </div>

@@ -8,7 +8,7 @@ import { getGameCovers } from "../js/igdb";
 import { useNavigate } from "react-router-dom";
 import { slugify, matchesSearch } from "../js/utils";
 import { removeFromLibrary, removeCountdown, getUserByUsername, setPlaytime, addToLibrary, getPlaytimes, deletePlaytime } from "../js/firebase";
-import { FaExternalLinkAlt, FaClock, FaPlus, FaCheck, FaBookmark, FaShareAlt, FaTrophy, FaThList, FaThLarge, FaUser } from "react-icons/fa";
+import { FaExternalLinkAlt, FaClock, FaPlus, FaCheck, FaBookmark, FaShareAlt, FaTrophy, FaThList, FaThLarge } from "react-icons/fa";
 import { toast } from "react-toastify";
 import CountdownTimer from "../components/shared/CountdownTimer";
 import ScrollableContainer from "../components/shared/ScrollableContainer";
@@ -294,14 +294,9 @@ const Profile = () => {
         <header>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="size-10 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-[0_0_20px_rgba(176,105,255,0.4)]">
-                  <FaUser size={24} className="text-white" />
-                </div>
-                <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-                  {profileData?.username || 'Gamer'}
-                </h1>
-              </div>
+              <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
+                {profileData?.username || 'Gamer'}
+              </h1>
               <p className="text-white/40 font-medium max-w-xl text-lg leading-relaxed">
                 Explore the personal game library, playtimes and countdowns of {profileData?.username || 'this gamer'}.
               </p>

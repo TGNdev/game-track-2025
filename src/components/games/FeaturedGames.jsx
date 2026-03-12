@@ -104,7 +104,7 @@ const FeaturedGames = ({ games }) => {
   if (featuredGames.length === 0) return null;
 
   return (
-    <div className="w-full rounded-xl mt-6 shadow-lg">
+    <div className="w-full rounded-xl shadow-lg">
       <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between mb-4">
           <div className="text-2xl font-bold text-center sm:text-left">

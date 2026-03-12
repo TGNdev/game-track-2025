@@ -79,7 +79,7 @@ const Editors = () => {
       <div className="mx-auto max-w-7xl px-6 py-10">
         <header className="mb-12">
           <h1 className="text-5xl font-black bg-clip-text text-white mb-4">
-            The Industry
+            Companies
           </h1>
           <p className="text-white/40 font-bold uppercase tracking-widest text-sm max-w-2xl">
             Discover the editors behind your favorite games. Browse by name or search for a specific entity.
