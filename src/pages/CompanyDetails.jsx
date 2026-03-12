@@ -29,6 +29,8 @@ const CompanyDetails = () => {
     ensureCompaniesLoaded();
   }, [ensureCompaniesLoaded]);
 
+  window.scrollTo(0, 0);
+
   // Resolve the entity and its combined data
   const entity = useMemo(() => {
     if (loadingCompanies) return null;
