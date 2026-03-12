@@ -12,11 +12,12 @@ import { signOut } from "firebase/auth";
 import { toast } from "react-toastify";
 import { useAuth } from "./AuthContext";
 import { ReactComponent as Switch2Icon } from "../assets/icons/switch_2.svg";
+import { ReactComponent as WiiU } from "../assets/icons/wii_u.svg";
 import { TAGS } from "../js/config";
 import { useGameData } from "./GameDataContext";
 import { CiMobile3 } from "react-icons/ci";
 import { FaXbox, FaPlaystation, FaComputer } from "react-icons/fa6";
-import { SiWiiu, SiNintendoswitch } from "react-icons/si";
+import { BsNintendoSwitch } from "react-icons/bs";
 
 const GameUIContext = createContext(null);
 
@@ -163,11 +164,11 @@ export const GameUIProvider = ({ children }) => {
       case "pc":
         return <FaComputer className={`${base} bg-slate-400`} fill="white" />;
       case "switch":
-        return <SiNintendoswitch className={`${base} bg-red-500`} fill="white" />;
+        return <BsNintendoSwitch className={`${base} bg-red-500`} fill="white" />;
       case "switch_2":
         return <Switch2Icon className={`${base} bg-red-500`} fill="white" />;
       case "wii_u":
-        return <SiWiiu className={`${base} bg-blue-400`} fill="white" />;
+        return <WiiU className={`${base} bg-blue-400`} fill="white" />;
       case "mobile":
         return <CiMobile3 className={`${base} bg-black`} fill="white" />;
       default:
