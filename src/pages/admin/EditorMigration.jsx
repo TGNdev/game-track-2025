@@ -7,12 +7,12 @@ import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const adminConfig = {
-    title: "Editor Migration",
-    description: "Migrate legacy editor strings to the new editors collection.",
+    title: "Editor Migration (Legacy)",
+    description: "DEPRECATED: Prefer the full Company Migration tool. Migrate legacy editor strings to the editors collection.",
     icon: FaExchangeAlt,
-    color: "from-purple-500/20 to-pink-500/20",
-    borderColor: "border-purple-500/30",
-    accentColor: "text-purple-400"
+    color: "from-purple-500/10 to-pink-500/10",
+    borderColor: "border-purple-500/20",
+    accentColor: "text-purple-400/50"
 };
 
 const EditorMigration = () => {

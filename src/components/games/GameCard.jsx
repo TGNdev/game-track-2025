@@ -13,7 +13,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [coverLoaded, setCoverLoaded] = useState(false);
-  const { developers } = useGameData();
+  const { companies } = useGameData();
   const {
     search,
     getPlatformsSvg,
@@ -28,23 +28,23 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
     if (game.developerRefs && game.developerRefs.length > 0) {
       return game.developerRefs.map(ref => {
         const refId = typeof ref === 'object' ? ref.devId : ref;
-        const found = developers.find(d => d.id === refId);
-        return found ? { name: found.name, link: found.website || "#", refId: found.id } : null;
+        const found = companies.find(d => d.id === refId || d.slug === refId);
+        return found ? { name: found.name, link: `/companies/${found.slug || found.id}`, refId: found.slug || found.id } : null;
       }).filter(Boolean);
     }
     return game.developers || [];
-  }, [game.developerRefs, game.developers, developers]);
+  }, [game.developerRefs, game.developers, companies]);
 
   const resolvedEditors = useMemo(() => {
     if (game.editorRefs && game.editorRefs.length > 0) {
       return game.editorRefs.map(ref => {
         const refId = typeof ref === 'object' ? ref.devId : ref;
-        const found = developers.find(d => d.id === refId);
-        return found ? { name: found.name, link: found.website || "#", refId: found.id } : null;
+        const found = companies.find(d => d.id === refId || d.slug === refId);
+        return found ? { name: found.name, link: `/companies/${found.slug || found.id}`, refId: found.slug || found.id } : null;
       }).filter(Boolean);
     }
     return game.editors || [];
-  }, [game.editorRefs, game.editors, developers]);
+  }, [game.editorRefs, game.editors, companies]);
 
   const gameTags = useMemo(() => activeTags(game), [activeTags, game]);
 
@@ -143,7 +143,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
                         <div key={idx} className="text-sm font-bold truncate">
                           {dev.refId ? (
                             <Link
-                              to={`/developers/${dev.refId}`}
+                              to={`/companies/${dev.refId}`}
                               className="hover:text-white transition-colors"
                               onClick={(e) => e.stopPropagation()}
                             >
@@ -164,7 +164,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
                         <div key={idx} className="text-sm font-bold truncate">
                           {edit.refId ? (
                             <Link
-                              to={`/developers/${edit.refId}`}
+                              to={`/companies/${edit.refId}`}
                               className="hover:text-white transition-colors"
                               onClick={(e) => e.stopPropagation()}
                             >

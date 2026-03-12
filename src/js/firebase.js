@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, deleteDoc, updateDoc, doc, getDocs, arrayUnion, arrayRemove, getDoc, setDoc, query, where } from "firebase/firestore";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, deleteDoc, updateDoc, doc, getDocs, arrayUnion, arrayRemove, getDoc, setDoc, query, where, writeBatch } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_API_KEY,
@@ -369,6 +369,17 @@ export const getDevelopersFromFirestore = async () => {
     }
 };
 
+export const getCompaniesFromFirestore = async () => {
+    try {
+        const companiesRef = collection(db, "companies");
+        const querySnapshot = await getDocs(companiesRef);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (e) {
+        console.error("Error fetching companies: ", e);
+        throw e;
+    }
+};
+
 export const saveDeveloper = async (developerData, docId = null) => {
     try {
         if (docId) {
@@ -386,12 +397,39 @@ export const saveDeveloper = async (developerData, docId = null) => {
     }
 };
 
+export const saveCompany = async (companyData, docId = null) => {
+    try {
+        if (docId) {
+            const companyRef = doc(db, "companies", docId);
+            await setDoc(companyRef, companyData, { merge: true });
+            return docId;
+        } else {
+            const companiesRef = collection(db, "companies");
+            const docRef = await addDoc(companiesRef, companyData);
+            return docRef.id;
+        }
+    } catch (e) {
+        console.error("Error saving company: ", e);
+        throw e;
+    }
+};
+
 export const deleteDeveloperFromFirestore = async (developerId) => {
     try {
         const devRef = doc(db, "developers", developerId);
         await deleteDoc(devRef);
     } catch (e) {
         console.error("Error deleting developer: ", e);
+        throw e;
+    }
+};
+
+export const deleteCompanyFromFirestore = async (companyId) => {
+    try {
+        const companyRef = doc(db, "companies", companyId);
+        await deleteDoc(companyRef);
+    } catch (e) {
+        console.error("Error deleting company: ", e);
         throw e;
     }
 };
@@ -434,4 +472,4 @@ export const deleteEditorFromFirestore = async (editorId) => {
     }
 };
 
-export { db, auth };
+export { db, auth, writeBatch };

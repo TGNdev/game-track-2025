@@ -14,68 +14,29 @@ const CompanyDetails = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("produced");
   const {
-    developers,
-    editors,
+    companies,
     games,
-    loadingDevelopers,
-    loadingEditors,
+    loadingCompanies,
     loadingGames,
-    ensureDevelopersLoaded,
-    ensureEditorsLoaded,
+    ensureCompaniesLoaded,
     coverMap,
     setCoverMap
   } = useGameData();
 
   useEffect(() => {
-    ensureDevelopersLoaded();
-    ensureEditorsLoaded();
-  }, [ensureDevelopersLoaded, ensureEditorsLoaded]);
+    ensureCompaniesLoaded();
+  }, [ensureCompaniesLoaded]);
 
   // Resolve the entity and its combined data
   const entity = useMemo(() => {
-    if (loadingDevelopers || loadingEditors) return null;
+    if (loadingCompanies) return null;
 
-    // Search in both collections
-    const devEntry = developers.find(d => d.id === id || slugify(d.name) === id);
-    const edEntry = editors.find(e => e.id === id || slugify(e.name) === id);
+    // Search by slug exactly, or by ID as fallback (forward compatibility)
+    const company = companies.find(c => c.slug === id || c.id === id);
+    if (!company) return null;
 
-    // If we only found one, but it's linked to the other, find both
-    let resolvedDev = devEntry;
-    let resolvedEd = edEntry;
-
-    if (!resolvedDev && resolvedEd?.linkedDeveloperId) {
-      resolvedDev = developers.find(d => d.id === resolvedEd.linkedDeveloperId);
-    }
-    // Cross-link from dev to ed is less common in your schema but good for future
-    if (!resolvedEd && resolvedDev) {
-      resolvedEd = editors.find(e => e.linkedDeveloperId === resolvedDev.id);
-    }
-
-    const primary = resolvedDev || resolvedEd;
-    if (!primary) return null;
-
-    // Determine IDs to search for in games
-    const relatedIds = new Set();
-    if (resolvedDev) relatedIds.add(resolvedDev.id);
-    if (resolvedEd) relatedIds.add(resolvedEd.id);
-
-    // Merge data: Developer data takes priority for info as requested
-    // "linked company as it should be the other one that has all the good info"
-    const mergedData = {
-      ...(resolvedEd || {}),
-      ...(resolvedDev || {}), // Dev data overrides Editor data if both exist
-      id: primary.id, // The ID from the URL we found
-      ids: Array.from(relatedIds) // All associated tool IDs
-    };
-
-    // If it was an editor with inherited data
-    if (resolvedEd && resolvedDev && !devEntry) {
-      // We arrived via editor but dev has info
-      mergedData.name = mergedData.name || resolvedDev.name;
-    }
-
-    return mergedData;
-  }, [developers, editors, id, loadingDevelopers, loadingEditors]);
+    return company;
+  }, [companies, id, loadingCompanies]);
 
   const { developedGames, publishedGames } = useMemo(() => {
     if (!entity) return { developedGames: [], publishedGames: [] };
@@ -86,11 +47,12 @@ const CompanyDetails = () => {
     games.forEach(game => {
       const isDeveloper = game.developerRefs?.some(ref => {
         const devId = typeof ref === 'object' ? ref.devId : ref;
-        return entity.ids.includes(devId);
+        // Check both canonical slug and internal ID
+        return devId === entity.slug || devId === entity.id;
       });
       const isEditor = game.editorRefs?.some(ref => {
         const edId = typeof ref === 'object' ? ref.devId : ref;
-        return entity.ids.includes(edId);
+        return edId === entity.slug || edId === entity.id;
       });
 
       if (isDeveloper) developed.push(game);
@@ -132,19 +94,15 @@ const CompanyDetails = () => {
 
   const parentCompany = useMemo(() => {
     if (!entity?.parentCompanyId) return null;
-    // Check both collections for parent
-    return developers.find(d => d.id === entity.parentCompanyId) ||
-      editors.find(e => e.id === entity.parentCompanyId);
-  }, [entity, developers, editors]);
+    return companies.find(c => c.id === entity.parentCompanyId || c.slug === entity.parentCompanyId);
+  }, [entity, companies]);
 
   const subsidiaries = useMemo(() => {
     if (!entity) return [];
-    const devs = developers.filter(d => d.parentCompanyId === entity.id);
-    const eds = editors.filter(e => e.parentCompanyId === entity.id);
-    return [...devs, ...eds];
-  }, [entity, developers, editors]);
+    return companies.filter(c => c.parentCompanyId === entity.id || c.parentCompanyId === entity.slug);
+  }, [entity, companies]);
 
-  if (loadingDevelopers || loadingEditors || loadingGames) {
+  if (loadingCompanies || loadingGames) {
     return (
       <Layout>
         <div className="flex justify-center items-center h-[60vh]">
@@ -248,7 +206,7 @@ const CompanyDetails = () => {
                   Parent Company
                 </h2>
                 <Link
-                  to={`/companies/${parentCompany.id}`}
+                  to={`/companies/${parentCompany.slug || parentCompany.id}`}
                   className="block bg-white/5 border border-white/10 rounded-3xl p-6 hover:border-primary/40 hover:bg-white/10 transition-all group"
                 >
                   <div className="flex items-center gap-4">
@@ -278,7 +236,7 @@ const CompanyDetails = () => {
                   {subsidiaries.map(sub => (
                     <Link
                       key={sub.id}
-                      to={`/companies/${sub.id}`}
+                      to={`/companies/${sub.slug || sub.id}`}
                       className="flex items-center justify-between bg-white/5 border border-white/10 rounded-2xl px-5 py-4 hover:bg-white/10 transition-colors group"
                     >
                       <div className="flex items-center gap-3">

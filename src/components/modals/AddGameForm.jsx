@@ -46,33 +46,28 @@ const AddGameForm = ({ games, onSuccess }) => {
   const navigate = useNavigate();
   const {
     setGames,
-    developers: developersFromDB,
-    ensureDevelopersLoaded,
-    editors: editorsFromDB,
-    ensureEditorsLoaded
+    companies,
+    ensureCompaniesLoaded
   } = useGameData();
 
   useEffect(() => {
-    ensureDevelopersLoaded();
-    ensureEditorsLoaded();
-  }, [ensureDevelopersLoaded, ensureEditorsLoaded]);
+    ensureCompaniesLoaded();
+  }, [ensureCompaniesLoaded]);
 
   const existingDevs = useMemo(() => {
-    return developersFromDB.map(d => ({ ...d, name: d.name, link: d.website }));
-  }, [developersFromDB]);
+    return companies.filter(c => c.roles?.includes('developer')).map(d => ({ ...d, name: d.name, link: d.website }));
+  }, [companies]);
 
   const existingEditors = useMemo(() => {
-    const editorNames = new Set(editorsFromDB.map(e => e.name.toLowerCase()));
-    const uniqueDevs = developersFromDB.filter(d => !editorNames.has(d.name.toLowerCase()));
-    return [...editorsFromDB, ...uniqueDevs].map(e => ({ ...e, name: e.name, link: e.website || (typeof e.link === 'string' ? e.link : "") }));
-  }, [editorsFromDB, developersFromDB]);
+    return companies.filter(c => c.roles?.includes('editor')).map(e => ({ ...e, name: e.name, link: e.website || (typeof e.link === 'string' ? e.link : "") }));
+  }, [companies]);
 
   const handleEntitySelect = (type, entity) => {
     const refType = type === "developers" ? "developerRefs" : "editorRefs";
     const legacyType = type === "developers" ? "developers" : "editors";
     const setSearch = type === "developers" ? setDevSearch : setEditorSearch;
 
-    if (form[refType].some(ref => ref.devId === entity.id)) {
+    if (form[refType].some(ref => (typeof ref === 'string' ? ref : ref.devId) === (entity.slug || entity.id))) {
       toast.info(`${entity.name} is already added.`);
       setSearch("");
       setSuggestionTarget(null);
@@ -81,7 +76,7 @@ const AddGameForm = ({ games, onSuccess }) => {
 
     setForm(prev => ({
       ...prev,
-      [refType]: [...prev[refType], { devId: entity.id }],
+      [refType]: [...prev[refType], { devId: entity.slug || entity.id }],
       [legacyType]: [...prev[legacyType], { name: entity.name, link: entity.website || entity.link || "" }]
     }));
 
@@ -281,7 +276,8 @@ const AddGameForm = ({ games, onSuccess }) => {
 
           <div className="flex flex-wrap gap-2">
             {form.developerRefs.map((ref, i) => {
-              const dev = developersFromDB.find(d => d.id === ref.devId);
+              const devId = typeof ref === 'string' ? ref : ref.devId;
+              const dev = companies.find(d => d.id === devId || d.slug === devId);
               return (
                 <div key={ref.devId} className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-2 group/tag">
                   <div className="size-6 bg-white/10 rounded-lg flex items-center justify-center overflow-hidden">
@@ -343,7 +339,8 @@ const AddGameForm = ({ games, onSuccess }) => {
 
           <div className="flex flex-wrap gap-2">
             {form.editorRefs.map((ref, i) => {
-              const ed = editorsFromDB.find(e => e.id === ref.devId) || developersFromDB.find(d => d.id === ref.devId);
+              const edId = typeof ref === 'string' ? ref : ref.devId;
+              const ed = companies.find(e => e.id === edId || e.slug === edId);
               return (
                 <div key={ref.devId} className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-2 group/tag">
                   <div className="size-6 bg-white/10 rounded-lg flex items-center justify-center overflow-hidden">

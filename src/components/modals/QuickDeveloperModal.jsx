@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { FaBuilding, FaGlobe, FaCity, FaSave } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
-import { saveDeveloper } from "../../js/firebase";
+import { saveCompany } from "../../js/firebase";
 import { toast } from "react-toastify";
 import { useGameData } from "../../contexts/GameDataContext";
+import { slugify } from "../../js/utils";
 
-const QuickDeveloperModal = ({ isOpen, onClose, onCreated, initialName = "" }) => {
-  const { refreshDevelopersData } = useGameData();
+const QuickDeveloperModal = ({ isOpen, onClose, onCreated, type, initialName = "" }) => {
+  const { refreshCompaniesData } = useGameData();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: initialName,
@@ -28,15 +29,23 @@ const QuickDeveloperModal = ({ isOpen, onClose, onCreated, initialName = "" }) =
 
     setLoading(true);
     try {
-      const newDevId = await saveDeveloper(formData, null);
-      toast.success("Developer created successfully!");
+      const role = type === "editors" ? "editor" : "developer";
+      const slug = slugify(formData.name);
+      const companyToSave = {
+        ...formData,
+        roles: [role],
+        slug
+      };
+
+      const newId = await saveCompany(companyToSave, slug);
+      toast.success(`${role.charAt(0).toUpperCase() + role.slice(1)} created successfully!`);
 
       // Refresh context data
-      await refreshDevelopersData();
+      await refreshCompaniesData();
 
-      // Return the new developer info to the parent form
+      // Return the new company info to the parent form
       if (onCreated) {
-        onCreated({ id: newDevId, ...formData });
+        onCreated({ id: newId, ...companyToSave });
       }
       onClose();
     } catch (err) {
@@ -63,8 +72,8 @@ const QuickDeveloperModal = ({ isOpen, onClose, onCreated, initialName = "" }) =
               <FaBuilding className="text-white text-xl" />
             </div>
             <div>
-              <h2 className="text-xl font-black uppercase tracking-widest text-white">Quick Add Studio</h2>
-              <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mt-1">Creating a new developer profile</p>
+              <h2 className="text-xl font-black uppercase tracking-widest text-white">Quick Add {type === "editors" ? "Publisher" : "Studio"}</h2>
+              <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mt-1">Creating a new {type === "editors" ? "editor" : "developer"} profile</p>
             </div>
           </div>
           <button
@@ -150,7 +159,7 @@ const QuickDeveloperModal = ({ isOpen, onClose, onCreated, initialName = "" }) =
               ) : (
                 <>
                   <FaSave />
-                  <span>Create Developer</span>
+                  <span>Create {type === "editors" ? "Publisher" : "Developer"}</span>
                 </>
               )}
             </button>

@@ -10,12 +10,12 @@ import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 
 export const adminConfig = {
-  title: "Editor Administrator",
-  description: "Manage editors and publishers.",
+  title: "Editors (Legacy)",
+  description: "DEPRECATED: Use the new Company Administrator instead. Manage editors and publishers.",
   icon: FaUserTie,
-  color: "from-purple-500/20 to-pink-500/20",
-  borderColor: "border-purple-500/30",
-  accentColor: "text-purple-400"
+  color: "from-purple-500/10 to-pink-500/10",
+  borderColor: "border-purple-500/20",
+  accentColor: "text-purple-400/50"
 };
 
 const AdminEditors = () => {

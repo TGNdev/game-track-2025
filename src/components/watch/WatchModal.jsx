@@ -22,7 +22,7 @@ const CATEGORIES = [
 ];
 
 const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId = "", initialGameName = "" }) => {
-  const { games } = useGameData();
+  const { games, companies } = useGameData();
   const [formData, setFormData] = useState({
     title: "",
     source: "",
@@ -239,7 +239,11 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
                               className="px-5 py-3 hover:bg-white/5 cursor-pointer text-sm font-bold border-b border-white/5 last:border-none flex items-center justify-between group/item"
                             >
                               <span className="group-hover/item:text-white transition-colors">{game.name}</span>
-                              <span className="text-[10px] opacity-40 uppercase tracking-widest">{game.developers?.[0]?.name}</span>
+                              <span className="text-[10px] opacity-40 uppercase tracking-widest">
+                                {game.developerRefs?.[0] 
+                                  ? companies.find(c => c.id === (typeof game.developerRefs[0] === 'object' ? game.developerRefs[0].devId : game.developerRefs[0]) || c.slug === (typeof game.developerRefs[0] === 'object' ? game.developerRefs[0].devId : game.developerRefs[0]))?.name
+                                  : game.developers?.[0]?.name || "Unknown"}
+                              </span>
                             </div>
                           ))}
                         </div>

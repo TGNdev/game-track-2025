@@ -9,7 +9,7 @@ import he from "he";
 
 const Companies = () => {
   const location = useLocation();
-  const { developers, loadingDevelopers, ensureDevelopersLoaded, editors, loadingEditors, ensureEditorsLoaded } = useGameData();
+  const { companies, loadingCompanies, ensureCompaniesLoaded } = useGameData();
 
   // Set initial view mode based on path, default to developers
   const [viewMode, setViewMode] = useState(() => {
@@ -30,39 +30,14 @@ const Companies = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    ensureDevelopersLoaded();
-    ensureEditorsLoaded();
-  }, [ensureDevelopersLoaded, ensureEditorsLoaded]);
+    ensureCompaniesLoaded();
+  }, [ensureCompaniesLoaded]);
 
   const currentItems = useMemo(() => {
-    const list = viewMode === "developers" ? developers : editors;
-
-    return list.map(item => {
-      let linkedEntity = null;
-
-      if (viewMode === "editors" && item.linkedDeveloperId) {
-        linkedEntity = developers.find(d => d.id === item.linkedDeveloperId);
-      } else if (viewMode === "developers") {
-        linkedEntity = editors.find(e => e.linkedDeveloperId === item.id);
-      }
-
-      if (linkedEntity) {
-        return {
-          ...linkedEntity,
-          ...item,
-          // Explicitly prioritize linked data for missing visual info
-          logo: item.logo || linkedEntity.logo,
-          country: item.country || linkedEntity.country,
-          city: item.city || linkedEntity.city,
-          website: item.website || linkedEntity.website,
-          studios: item.studios || linkedEntity.studios,
-          parentCompanyId: item.parentCompanyId || linkedEntity.parentCompanyId,
-        };
-      }
-
-      return item;
-    });
-  }, [viewMode, developers, editors]);
+    // Filter by role (developer or editor)
+    const roleToFilter = viewMode === "developers" ? "developer" : "editor";
+    return companies.filter(company => company.roles && company.roles.includes(roleToFilter));
+  }, [viewMode, companies]);
 
   const alphabet = useMemo(() => {
     const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -112,7 +87,7 @@ const Companies = () => {
     return list.sort((a, b) => a.name.localeCompare(b.name));
   }, [currentItems, searchQuery, selectedLetter]);
 
-  if (loadingDevelopers || loadingEditors) {
+  if (loadingCompanies) {
     return (
       <Layout>
         <div className="flex justify-center items-center h-[60vh]">
@@ -187,7 +162,7 @@ const Companies = () => {
                 disabled={!hasItems}
                 className={`size-8 md:size-10 rounded-xl flex items-center justify-center font-black transition-all ${hasItems
                   ? selectedLetter === char && !searchQuery.trim()
-                    ? "bg-white/5 text-white shadow-lg scale-110"
+                    ? "bg-white/20 text-white shadow-lg scale-110"
                     : "bg-white/5 hover:bg-white/10 hover:text-white cursor-pointer"
                   : "opacity-10 cursor-not-allowed"
                   }`}
@@ -217,7 +192,7 @@ const Companies = () => {
                   layout
                 >
                   <Link
-                    to={`/companies/${item.id}`}
+                    to={`/companies/${item.slug || item.id}`}
                     className="block bg-white/5 border border-white/10 rounded-3xl p-6 hover:border-white/20 hover:bg-white/10 transition-all h-full group"
                   >
                     <div className="flex items-center gap-6 mb-4">

@@ -7,7 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { getTgaFromFirestore, getGamesFromFirestore, getUsersFromFirestore, getWatchFromFirestore, getWatchStoriesFromFirestore, getDevelopersFromFirestore, getEditorsFromFirestore } from "../js/firebase";
+import { getTgaFromFirestore, getGamesFromFirestore, getUsersFromFirestore, getWatchFromFirestore, getWatchStoriesFromFirestore, getCompaniesFromFirestore } from "../js/firebase";
 import { slugify } from "../js/utils";
 import { TTL } from "../js/cache";
 
@@ -41,30 +41,25 @@ const safeLocalStorageRemove = (key) => {
 export const GameDataProvider = ({ children }) => {
   const [games, setGames] = useState([]);
   const [users, setUsers] = useState([]);
-  const [developers, setDevelopers] = useState([]);
-  const [editors, setEditors] = useState([]);
+  const [companies, setCompanies] = useState([]);
   const [loadingGames, setLoadingGames] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
-  const [loadingDevelopers, setLoadingDevelopers] = useState(false);
-  const [loadingEditors, setLoadingEditors] = useState(false);
+  const [loadingCompanies, setLoadingCompanies] = useState(false);
   const [loadingWatch, setLoadingWatch] = useState(false);
   const [gamesError, setGamesError] = useState(null);
 
   const gamesLoadPromiseRef = useRef(null);
   const usersLoadPromiseRef = useRef(null);
   const watchLoadPromiseRef = useRef(null);
-  const developersLoadPromiseRef = useRef(null);
-  const editorsLoadPromiseRef = useRef(null);
+  const companiesLoadPromiseRef = useRef(null);
   const didAttemptInitialGamesLoadRef = useRef(false);
   const didAttemptInitialUsersLoadRef = useRef(false);
   const didAttemptInitialWatchLoadRef = useRef(false);
-  const didAttemptInitialDevelopersLoadRef = useRef(false);
-  const didAttemptInitialEditorsLoadRef = useRef(false);
+  const didAttemptInitialCompaniesLoadRef = useRef(false);
   const gamesLoadedRef = useRef(false);
   const usersLoadedRef = useRef(false);
   const watchLoadedRef = useRef(false);
-  const developersLoadedRef = useRef(false);
-  const editorsLoadedRef = useRef(false);
+  const companiesLoadedRef = useRef(false);
 
   const [awardWinners, setAwardWinners] = useState(new Set());
   const [awardsPerGame, setAwardsPerGame] = useState({});
@@ -184,65 +179,35 @@ export const GameDataProvider = ({ children }) => {
     };
   }, [loadAwardData]);
 
-  const ensureDevelopersLoaded = useCallback(async () => {
-    if (developersLoadedRef.current) return developers;
+  const ensureCompaniesLoaded = useCallback(async () => {
+    if (companiesLoadedRef.current) return companies;
 
-    if (!developersLoadPromiseRef.current) {
-      developersLoadPromiseRef.current = (async () => {
+    if (!companiesLoadPromiseRef.current) {
+      companiesLoadPromiseRef.current = (async () => {
         try {
-          setLoadingDevelopers(true);
-          const list = await getDevelopersFromFirestore();
-          setDevelopers(list);
-          developersLoadedRef.current = true;
+          setLoadingCompanies(true);
+          const list = await getCompaniesFromFirestore();
+          setCompanies(list);
+          companiesLoadedRef.current = true;
           return list;
         } catch (e) {
-          console.error("Failed to load developers:", e);
+          console.error("Failed to load companies:", e);
           throw e;
         } finally {
-          setLoadingDevelopers(false);
-          developersLoadPromiseRef.current = null;
+          setLoadingCompanies(false);
+          companiesLoadPromiseRef.current = null;
         }
       })();
     }
 
-    return developersLoadPromiseRef.current;
-  }, [developers]);
+    return companiesLoadPromiseRef.current;
+  }, [companies]);
 
-  const refreshDevelopersData = useCallback(async () => {
-    developersLoadedRef.current = false;
-    developersLoadPromiseRef.current = null;
-    return await ensureDevelopersLoaded();
-  }, [ensureDevelopersLoaded]);
-
-  const ensureEditorsLoaded = useCallback(async () => {
-    if (editorsLoadedRef.current) return editors;
-
-    if (!editorsLoadPromiseRef.current) {
-      editorsLoadPromiseRef.current = (async () => {
-        try {
-          setLoadingEditors(true);
-          const list = await getEditorsFromFirestore();
-          setEditors(list);
-          editorsLoadedRef.current = true;
-          return list;
-        } catch (e) {
-          console.error("Failed to load editors:", e);
-          throw e;
-        } finally {
-          setLoadingEditors(false);
-          editorsLoadPromiseRef.current = null;
-        }
-      })();
-    }
-
-    return editorsLoadPromiseRef.current;
-  }, [editors]);
-
-  const refreshEditorsData = useCallback(async () => {
-    editorsLoadedRef.current = false;
-    editorsLoadPromiseRef.current = null;
-    return await ensureEditorsLoaded();
-  }, [ensureEditorsLoaded]);
+  const refreshCompaniesData = useCallback(async () => {
+    companiesLoadedRef.current = false;
+    companiesLoadPromiseRef.current = null;
+    return await ensureCompaniesLoaded();
+  }, [ensureCompaniesLoaded]);
 
   const ensureGamesLoaded = useCallback(async () => {
     if (gamesLoadedRef.current) return games;
@@ -255,8 +220,7 @@ export const GameDataProvider = ({ children }) => {
           // Load developers & editors along with games to ensure references are resolvable
           const [list] = await Promise.all([
             getGamesFromFirestore(),
-            ensureDevelopersLoaded(),
-            ensureEditorsLoaded()
+            ensureCompaniesLoaded()
           ]);
           setGames(list);
           gamesLoadedRef.current = true;
@@ -272,7 +236,7 @@ export const GameDataProvider = ({ children }) => {
     }
 
     return gamesLoadPromiseRef.current;
-  }, [games, ensureDevelopersLoaded, ensureEditorsLoaded]);
+  }, [games, ensureCompaniesLoaded]);
 
   useEffect(() => {
     if (didAttemptInitialGamesLoadRef.current) return;
@@ -378,42 +342,23 @@ export const GameDataProvider = ({ children }) => {
   }, [ensureWatchLoaded]);
 
   useEffect(() => {
-    if (didAttemptInitialDevelopersLoadRef.current) return;
-    didAttemptInitialDevelopersLoadRef.current = true;
-    ensureDevelopersLoaded().catch(() => { });
+    if (didAttemptInitialCompaniesLoadRef.current) return;
+    didAttemptInitialCompaniesLoadRef.current = true;
+    ensureCompaniesLoaded().catch(() => { });
 
     const handleVisibility = () => {
       if (document.visibilityState === "visible") {
-        getDevelopersFromFirestore()
+        getCompaniesFromFirestore()
           .then(list => {
-            setDevelopers(list);
-            developersLoadedRef.current = true;
+            setCompanies(list);
+            companiesLoadedRef.current = true;
           })
           .catch(() => { });
       }
     };
     document.addEventListener("visibilitychange", handleVisibility);
     return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, [ensureDevelopersLoaded]);
-
-  useEffect(() => {
-    if (didAttemptInitialEditorsLoadRef.current) return;
-    didAttemptInitialEditorsLoadRef.current = true;
-    ensureEditorsLoaded().catch(() => { });
-
-    const handleVisibility = () => {
-      if (document.visibilityState === "visible") {
-        getEditorsFromFirestore()
-          .then(list => {
-            setEditors(list);
-            editorsLoadedRef.current = true;
-          })
-          .catch(() => { });
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibility);
-    return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, [ensureEditorsLoaded]);
+  }, [ensureCompaniesLoaded]);
 
   const value = useMemo(
     () => ({
@@ -423,15 +368,10 @@ export const GameDataProvider = ({ children }) => {
       gamesError,
       ensureGamesLoaded,
 
-      developers,
-      setDevelopers,
-      loadingDevelopers,
-      ensureDevelopersLoaded,
-
-      editors,
-      setEditors,
-      loadingEditors,
-      ensureEditorsLoaded,
+      companies,
+      setCompanies,
+      loadingCompanies,
+      ensureCompaniesLoaded,
 
       users,
       loadingUsers,
@@ -460,20 +400,16 @@ export const GameDataProvider = ({ children }) => {
       timesToBeat,
       setTimesToBeat,
       refreshTgaData,
-      refreshDevelopersData,
-      refreshEditorsData,
+      refreshCompaniesData,
     }),
     [
       games,
       loadingGames,
       gamesError,
       ensureGamesLoaded,
-      developers,
-      loadingDevelopers,
-      ensureDevelopersLoaded,
-      editors,
-      loadingEditors,
-      ensureEditorsLoaded,
+      companies,
+      loadingCompanies,
+      ensureCompaniesLoaded,
       users,
       loadingUsers,
       ensureUsersLoaded,
@@ -490,8 +426,7 @@ export const GameDataProvider = ({ children }) => {
       videosMap,
       timesToBeat,
       refreshTgaData,
-      refreshDevelopersData,
-      refreshEditorsData,
+      refreshCompaniesData,
     ]
   );
 

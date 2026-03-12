@@ -8,7 +8,6 @@ import WatchModal from "../components/watch/WatchModal";
 import { useGameData } from "../contexts/GameDataContext";
 import { useGameUI } from "../contexts/GameUIContext";
 import { useAuth } from "../contexts/AuthContext";
-import { slugify } from "../js/utils";
 import { getGameCovers, getGameScreenshots, getGameTimeToBeat, getGameVideos } from "../js/igdb";
 import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes, deletePlaytime, getGlobalPlaytimesForGame, addWatchToFirestore, editWatchFromFirestore, editWatchStoryCategoryFromFirestore } from "../js/firebase";
 import { toast } from "react-toastify";
@@ -58,7 +57,7 @@ export default function GameDetails() {
 
   const {
     games,
-    developers,
+    companies,
     loadingGames,
     awardsPerGame,
     coverMap,
@@ -74,13 +73,13 @@ export default function GameDetails() {
     setWatch,
     setWatchStories,
     ensureWatchLoaded,
-    editors
+    ensureCompaniesLoaded
   } = useGameData();
 
   const { getPlatformsSvg, isReleased, activeTags } = useGameUI();
 
   const game = useMemo(() => {
-    return games.find(g => slugify(g.name) === gameSlug);
+    return games.find(g => g.slug === gameSlug);
   }, [games, gameSlug]);
 
   const gameTags = useMemo(() => activeTags(game), [activeTags, game]);
@@ -210,26 +209,24 @@ export default function GameDetails() {
     if (game?.developerRefs && game.developerRefs.length > 0) {
       return game.developerRefs.map(ref => {
         const refId = typeof ref === 'object' ? ref.devId : ref;
-        const found = developers.find(d => d.id === refId);
-        return found ? { name: found.name, link: found.website || "#", refId: found.id } : null;
+        const found = companies.find(c => c.id === refId || c.slug === refId);
+        return found ? { name: found.name, link: found.website || "#", refId: found.slug || found.id } : null;
       }).filter(Boolean);
     }
     return game?.developers || [];
-  }, [game?.developerRefs, game?.developers, developers]);
+  }, [game?.developerRefs, game?.developers, companies]);
 
   const resolvedEditors = useMemo(() => {
     if (game?.editorRefs && game.editorRefs.length > 0) {
       return game.editorRefs.map(ref => {
         const refId = typeof ref === 'object' ? ref.devId : ref;
-        const edFound = editors.find(e => e.id === refId);
-        if (edFound) return { name: edFound.name, link: edFound.website || "#", refId: edFound.id, type: "editor" };
-        const devFound = developers.find(d => d.id === refId);
-        if (devFound) return { name: devFound.name, link: devFound.website || "#", refId: devFound.id, type: "developer" };
+        const found = companies.find(c => c.id === refId || c.slug === refId);
+        if (found) return { name: found.name, link: found.website || "#", refId: found.slug || found.id };
         return null;
       }).filter(Boolean);
     }
     return (game?.editors || []).map(e => ({ name: e, type: "legacy" }));
-  }, [game?.editorRefs, game?.editors, developers, editors]);
+  }, [game?.editorRefs, game?.editors, companies]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -250,7 +247,8 @@ export default function GameDetails() {
       }
     };
     fetchStats();
-  }, [currentUser, game?.id]);
+    ensureCompaniesLoaded();
+  }, [currentUser?.uid, game?.id, ensureCompaniesLoaded]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

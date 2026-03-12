@@ -51,26 +51,21 @@ const EditGameForm = ({ game, games, onSuccess }) => {
   const navigate = useNavigate();
   const {
     setGames,
-    developers: developersFromDB,
-    ensureDevelopersLoaded,
-    editors: editorsFromDB,
-    ensureEditorsLoaded
+    companies,
+    ensureCompaniesLoaded
   } = useGameData();
 
   useEffect(() => {
-    ensureDevelopersLoaded();
-    ensureEditorsLoaded();
-  }, [ensureDevelopersLoaded, ensureEditorsLoaded]);
+    ensureCompaniesLoaded();
+  }, [ensureCompaniesLoaded]);
 
   const existingDevs = useMemo(() => {
-    return developersFromDB.map(d => ({ ...d, name: d.name, link: d.website }));
-  }, [developersFromDB]);
+    return companies.filter(c => c.roles?.includes('developer')).map(d => ({ ...d, name: d.name, link: d.website }));
+  }, [companies]);
 
   const existingEditors = useMemo(() => {
-    const editorNames = new Set(editorsFromDB.map(e => e.name.toLowerCase()));
-    const uniqueDevs = developersFromDB.filter(d => !editorNames.has(d.name.toLowerCase()));
-    return [...editorsFromDB, ...uniqueDevs].map(e => ({ ...e, name: e.name, link: e.website || (typeof e.link === 'string' ? e.link : "") }));
-  }, [editorsFromDB, developersFromDB]);
+    return companies.filter(c => c.roles?.includes('editor')).map(e => ({ ...e, name: e.name, link: e.website || (typeof e.link === 'string' ? e.link : "") }));
+  }, [companies]);
 
   useEffect(() => {
     setHasChanges(!isEqual(form, originalData));
@@ -111,7 +106,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
     const legacyType = type === "developers" ? "developers" : "editors";
     const setSearch = type === "developers" ? setDevSearch : setEditorSearch;
 
-    if (form[refType].some(ref => (typeof ref === 'string' ? ref : ref.devId) === entity.id)) {
+    if (form[refType].some(ref => (typeof ref === 'string' ? ref : ref.devId) === (entity.slug || entity.id))) {
       toast.info(`${entity.name} is already added.`);
       setSearch("");
       setSuggestionTarget(null);
@@ -120,7 +115,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
 
     setForm(prev => ({
       ...prev,
-      [refType]: [...prev[refType], { devId: entity.id }],
+      [refType]: [...prev[refType], { devId: entity.slug || entity.id }],
       [legacyType]: [...prev[legacyType], { name: entity.name, link: entity.website || entity.link || "" }]
     }));
 
@@ -304,7 +299,7 @@ const EditGameForm = ({ game, games, onSuccess }) => {
             {/* Referenced Developers */}
             {form.developerRefs.map((ref, i) => {
               const devId = typeof ref === 'string' ? ref : ref?.devId;
-              const dev = developersFromDB.find(d => d.id === devId);
+              const dev = companies.find(d => d.id === devId || d.slug === devId);
               return (
                 <div key={devId} className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-2 group/tag shadow-sm">
                   <div className="size-6 bg-white/10 rounded-lg flex items-center justify-center overflow-hidden">
@@ -378,10 +373,10 @@ const EditGameForm = ({ game, games, onSuccess }) => {
 
             {/* Referenced Editors */}
             {form.editorRefs.map((ref, i) => {
-              const devId = typeof ref === 'string' ? ref : ref?.devId;
-              const ed = editorsFromDB.find(e => e.id === devId) || developersFromDB.find(d => d.id === devId);
+              const edId = typeof ref === 'string' ? ref : ref?.devId;
+              const ed = companies.find(e => e.id === edId || e.slug === edId);
               return (
-                <div key={devId} className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-2 group/tag shadow-sm">
+                <div key={edId} className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-2 group/tag shadow-sm">
                   <div className="size-6 bg-white/10 rounded-lg flex items-center justify-center overflow-hidden">
                     {ed?.logo ? (
                       <img src={ed.logo} alt="" className="w-full h-full object-contain p-1" />

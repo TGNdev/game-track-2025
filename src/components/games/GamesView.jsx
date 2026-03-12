@@ -42,8 +42,7 @@ const GamesView = () => {
   } = useGameUI();
   const {
     games,
-    developers,
-    editors,
+    companies,
     coverMap,
     screenshotsMap,
     loadingGames,
@@ -138,8 +137,8 @@ const GamesView = () => {
           if (g.developerRefs?.length > 0) {
             g.developerRefs.forEach(ref => {
               const refId = typeof ref === 'object' ? ref.devId : ref;
-              const d = developers.find(dev => dev.id === refId);
-              if (d) names.push(d.name);
+              const found = companies.find(c => c.id === refId || c.slug === refId);
+              if (found) names.push(found.name);
             });
           }
           if (g.developers?.length > 0) {
@@ -153,12 +152,12 @@ const GamesView = () => {
           if (g.editorRefs?.length > 0) {
             g.editorRefs.forEach(ref => {
               const refId = typeof ref === 'object' ? ref.devId : ref;
-              const d = developers.find(dev => dev.id === refId);
-              if (d) names.push(d.name);
+              const found = companies.find(c => c.id === refId || c.slug === refId);
+              if (found) names.push(found.name);
             });
           }
           if (g.editors?.length > 0) {
-            g.editors.forEach(d => names.push(d.name));
+            g.editors.forEach(d => names.push(d));
           }
           return names;
         };
@@ -203,7 +202,7 @@ const GamesView = () => {
         if (aSort !== bSort) return aSort - bSort;
         return a.name.localeCompare(b.name);
       });
-  }, [games, search, selectedPlatforms, showOnlyUpcoming, withRelease, selectedYear, developers]);
+  }, [games, search, selectedPlatforms, showOnlyUpcoming, withRelease, selectedYear, companies]);
 
   const filteredUsers = useMemo(() => {
     if (!search || search.length < 2) return [];
@@ -212,22 +211,8 @@ const GamesView = () => {
 
   const filteredIndustry = useMemo(() => {
     if (!search || search.length < 2) return [];
-    const matchedDevs = developers.filter(d => matchesSearch(d.name, search));
-    const matchedEds = editors.filter(e => matchesSearch(e.name, search));
-
-    const seen = new Set();
-    const results = [];
-
-    [...matchedDevs, ...matchedEds].forEach(item => {
-      const normalizedName = item.name.toLowerCase().trim();
-      if (!seen.has(normalizedName)) {
-        seen.add(normalizedName);
-        results.push(item);
-      }
-    });
-
-    return results;
-  }, [developers, editors, search]);
+    return companies.filter(c => matchesSearch(c.name, search));
+  }, [companies, search]);
 
   useEffect(() => {
     if (!loadingGames && filtered.length > 0) {
@@ -324,7 +309,7 @@ const GamesView = () => {
             {filteredIndustry.map(item => (
               <div
                 key={item.id}
-                onClick={() => navigate(`/companies/${item.id}`)}
+                onClick={() => navigate(`/companies/${item.slug || item.id}`)}
                 className="hover:cursor-pointer shrink-0 flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 p-3 rounded-2xl transition-colors duration-200 shadow-lg"
               >
                 <div className="size-11 rounded-xl bg-white/5 border border-white/10 p-1.5 flex items-center justify-center overflow-hidden">

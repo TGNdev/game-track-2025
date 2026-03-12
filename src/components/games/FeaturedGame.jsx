@@ -8,18 +8,18 @@ import { useMemo } from "react";
 const FeaturedGame = ({ featured, cover }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
   const navigate = useNavigate();
-  const { developers } = useGameData();
+  const { companies } = useGameData();
 
   const resolvedDevelopers = useMemo(() => {
     if (featured.developerRefs && featured.developerRefs.length > 0) {
       return featured.developerRefs.map(ref => {
         const refId = typeof ref === 'object' ? ref.devId : ref;
-        const found = developers.find(d => d.id === refId);
-        return found ? { name: found.name, link: found.website || "#", refId: found.id } : null;
+        const found = companies.find(d => d.id === refId || d.slug === refId);
+        return found ? { name: found.name, link: `/companies/${found.slug || found.id}`, refId: found.id } : null;
       }).filter(Boolean);
     }
     return featured.developers || [];
-  }, [featured.developerRefs, featured.developers, developers]);
+  }, [featured.developerRefs, featured.developers, companies]);
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-2xl p-4 shadow-2xl relative overflow-hidden flex flex-row gap-3">
@@ -42,7 +42,14 @@ const FeaturedGame = ({ featured, cover }) => {
             <div className="flex flex-row gap-1 text-sm flex-wrap">
               <div>By</div>
               {resolvedDevelopers.map((dev, index) => (
-                <div key={`featured-${dev.name}`} className="font-semibold">
+                <div 
+                  key={`featured-${dev.name}`} 
+                  className="font-semibold hover:text-primary cursor-pointer transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(dev.link);
+                  }}
+                >
                   {dev.name}
                   {index < resolvedDevelopers.length - 2
                     ? ", "
@@ -57,7 +64,7 @@ const FeaturedGame = ({ featured, cover }) => {
         <div className="flex flex-row items-center justify-between">
           <button
             onClick={() => {
-              navigate(`/games/${slugify(featured.name)}`);
+              navigate(`/games/${featured.slug || slugify(featured.name)}`);
             }}
             className="self-start bg-gradient-primary text-sm px-3 py-1.5 rounded-md"
           >

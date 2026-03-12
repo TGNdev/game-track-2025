@@ -26,32 +26,30 @@ const GameRow = ({ ref, game, coverImage, screenshots }) => {
     setGameToEdit,
     setIsModalOpen,
   } = useGameUI();
-  const { developers, editors } = useGameData();
+  const { companies } = useGameData();
 
   const resolvedDevelopers = useMemo(() => {
     if (game.developerRefs && game.developerRefs.length > 0) {
       return game.developerRefs.map(ref => {
         const refId = typeof ref === 'object' ? ref.devId : ref;
-        const found = developers.find(d => d.id === refId);
-        return found ? { name: found.name, link: found.website || "#", refId: found.id } : null;
+        const found = companies.find(c => c.id === refId || c.slug === refId);
+        return found ? { name: found.name, link: found.website || "#", refId: found.slug || found.id } : null;
       }).filter(Boolean);
     }
     return game.developers || [];
-  }, [game.developerRefs, game.developers, developers]);
+  }, [game.developerRefs, game.developers, companies]);
 
   const resolvedEditors = useMemo(() => {
     if (game.editorRefs && game.editorRefs.length > 0) {
       return game.editorRefs.map(ref => {
         const refId = typeof ref === 'object' ? ref.devId : ref;
-        const edFound = editors.find(e => e.id === refId);
-        if (edFound) return { name: edFound.name, link: edFound.website || "#", refId: edFound.id, type: "editor" };
-        const devFound = developers.find(d => d.id === refId);
-        if (devFound) return { name: devFound.name, link: devFound.website || "#", refId: devFound.id, type: "developer" };
+        const found = companies.find(c => c.id === refId || c.slug === refId);
+        if (found) return { name: found.name, link: found.website || "#", refId: found.slug || found.id };
         return null;
       }).filter(Boolean);
     }
     return (game.editors || []).map(e => ({ name: e, type: "legacy" }));
-  }, [game.editorRefs, game.editors, developers, editors]);
+  }, [game.editorRefs, game.editors, companies]);
 
   const releaseDate = useMemo(() => {
     if (game.release_date?.seconds) {

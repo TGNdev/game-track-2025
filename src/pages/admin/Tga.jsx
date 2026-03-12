@@ -21,7 +21,7 @@ export const adminConfig = {
 
 const AdminTga = () => {
   const { userData, loading: authLoading } = useAuth();
-  const { games, loadingGames, refreshTgaData } = useGameData();
+  const { games, companies, loadingGames, refreshTgaData } = useGameData();
   const [tgaYears, setTgaYears] = useState([]);
   const [selectedYearDoc, setSelectedYearDoc] = useState(null);
   const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
@@ -365,6 +365,7 @@ const AdminTga = () => {
                             nominee={nom}
                             categoryType={detectCategoryType(categories[activeCategoryIndex].title)}
                             games={games}
+                            companies={companies}
                             onUpdate={(field, val) => updateNominee(activeCategoryIndex, nIdx, field, val)}
                             onRemove={() => removeNominee(activeCategoryIndex, nIdx)}
                           />
@@ -394,7 +395,7 @@ const detectCategoryType = (title) => {
   return "standard";
 };
 
-const NomineeRow = ({ nominee, categoryType, games, onUpdate, onRemove }) => {
+const NomineeRow = ({ nominee, categoryType, games, companies, onUpdate, onRemove }) => {
   const [showGames, setShowGames] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -455,7 +456,11 @@ const NomineeRow = ({ nominee, categoryType, games, onUpdate, onRemove }) => {
                       className="px-4 py-2 hover:bg-white/10 cursor-pointer text-xs font-medium border-b border-white/5 last:border-none flex items-center justify-between"
                     >
                       <span>{g.name}</span>
-                      <span className="text-[10px] opacity-40 uppercase">{g.developers?.[0]?.name}</span>
+                      <span className="text-[10px] opacity-40 uppercase">
+                        {g.developerRefs?.[0] 
+                          ? companies.find(c => c.id === (typeof g.developerRefs[0] === 'object' ? g.developerRefs[0].devId : g.developerRefs[0]) || c.slug === (typeof g.developerRefs[0] === 'object' ? g.developerRefs[0].devId : g.developerRefs[0]))?.name
+                          : g.developers?.[0]?.name || "Unknown"}
+                      </span>
                     </div>
                   ))}
                 </div>
