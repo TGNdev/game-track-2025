@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/shared/Layout";
 import { motion } from "framer-motion";
-import { FaGhost, FaArrowLeft, FaGamepad } from "react-icons/fa";
+import { FaArrowLeft, FaGamepad } from "react-icons/fa";
 
 const NotFound = () => {
   const navigate = useNavigate();
