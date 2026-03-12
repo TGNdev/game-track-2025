@@ -49,36 +49,37 @@ const Admin = () => {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {adminTools.map((tool, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-            >
-              <Link to={tool.link} className="block h-full">
-                <motion.div
-                  className={`bg-white/[0.03] border ${tool.borderColor} rounded-[2.5rem] p-10 backdrop-blur-xl hover:bg-white/[0.08] transition-all h-full flex flex-col relative overflow-hidden shadow-2xl`}
-                >
-                  <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                    {tool.icon}
-                  </div>
+          {adminTools.filter(tool => tool.active)
+            .map((tool, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <Link to={tool.link} className="block h-full">
+                  <motion.div
+                    className={`bg-white/[0.03] border ${tool.borderColor} rounded-[2.5rem] p-10 backdrop-blur-xl hover:bg-white/[0.08] transition-all h-full flex flex-col relative overflow-hidden shadow-2xl`}
+                  >
+                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                      {tool.icon}
+                    </div>
 
-                  <div className={`size-20 rounded-3xl bg-gradient-to-br ${tool.color} flex items-center justify-center mb-8 transition-transform shadow-inner border border-white/10`}>
-                    {tool.icon}
-                  </div>
+                    <div className={`size-20 rounded-3xl bg-gradient-to-br ${tool.color} flex items-center justify-center mb-8 transition-transform shadow-inner border border-white/10`}>
+                      {tool.icon}
+                    </div>
 
-                  <h2 className="text-3xl font-black mb-4 text-white group-hover:text-primary transition-colors">
-                    {tool.title}
-                  </h2>
+                    <h2 className="text-3xl font-black mb-4 text-white group-hover:text-primary transition-colors">
+                      {tool.title}
+                    </h2>
 
-                  <p className="text-white/50 font-medium leading-relaxed mb-10 flex-grow text-lg">
-                    {tool.description}
-                  </p>
-                </motion.div>
-              </Link>
-            </motion.div>
-          ))}
+                    <p className="text-white/50 font-medium leading-relaxed mb-10 flex-grow text-lg">
+                      {tool.description}
+                    </p>
+                  </motion.div>
+                </Link>
+              </motion.div>
+            ))}
         </div>
       </div>
     </Layout>

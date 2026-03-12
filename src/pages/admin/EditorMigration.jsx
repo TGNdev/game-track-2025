@@ -12,7 +12,8 @@ export const adminConfig = {
     icon: FaExchangeAlt,
     color: "from-purple-500/10 to-pink-500/10",
     borderColor: "border-purple-500/20",
-    accentColor: "text-purple-400/50"
+    accentColor: "text-purple-400/50",
+    active: false
 };
 
 const EditorMigration = () => {

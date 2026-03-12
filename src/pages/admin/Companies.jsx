@@ -17,7 +17,8 @@ export const adminConfig = {
   icon: FaBuilding,
   color: "from-blue-500/20 to-indigo-500/20",
   borderColor: "border-blue-500/30",
-  accentColor: "text-blue-400"
+  accentColor: "text-blue-400",
+  active: true
 };
 
 const AdminCompanies = () => {
@@ -133,7 +134,7 @@ const AdminCompanies = () => {
 
     try {
       const docId = editingCompany.id === "new" ? null : editingCompany.id;
-      
+
       // Auto-generate slug if not present or if name changed (for new entries primarily)
       const submitData = {
         ...formData,
@@ -591,7 +592,7 @@ const CompanyCard = memo(({ company, handleEdit, handleDelete }) => {
       </div>
 
       <h3 className="text-2xl font-black">{he.decode(company.name)}</h3>
-      
+
       <div className="flex flex-wrap gap-2 mb-2">
         {company.roles?.map(role => (
           <span key={role} className="text-[10px] font-black uppercase tracking-widest bg-gradient-primary px-3 py-1 rounded-full text-white">

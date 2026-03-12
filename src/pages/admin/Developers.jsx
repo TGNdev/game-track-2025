@@ -15,7 +15,8 @@ export const adminConfig = {
   icon: FaDev,
   color: "from-amber-500/10 to-yellow-500/10",
   borderColor: "border-amber-500/20",
-  accentColor: "text-amber-400/50"
+  accentColor: "text-amber-400/50",
+  active: false
 };
 
 const AdminDevelopers = () => {

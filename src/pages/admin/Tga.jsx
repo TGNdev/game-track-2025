@@ -16,7 +16,8 @@ export const adminConfig = {
   icon: FaTrophy,
   color: "from-amber-500/20 to-yellow-500/20",
   borderColor: "border-amber-500/30",
-  accentColor: "text-amber-400"
+  accentColor: "text-amber-400",
+  active: true
 };
 
 const AdminTga = () => {
@@ -457,7 +458,7 @@ const NomineeRow = ({ nominee, categoryType, games, companies, onUpdate, onRemov
                     >
                       <span>{g.name}</span>
                       <span className="text-[10px] opacity-40 uppercase">
-                        {g.developerRefs?.[0] 
+                        {g.developerRefs?.[0]
                           ? companies.find(c => c.id === (typeof g.developerRefs[0] === 'object' ? g.developerRefs[0].devId : g.developerRefs[0]) || c.slug === (typeof g.developerRefs[0] === 'object' ? g.developerRefs[0].devId : g.developerRefs[0]))?.name
                           : g.developers?.[0]?.name || "Unknown"}
                       </span>

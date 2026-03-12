@@ -275,6 +275,11 @@ export const GameDataProvider = ({ children }) => {
 
     return gamesLoadPromiseRef.current;
   }, [games, ensureCompaniesLoaded]);
+  const refreshGamesData = useCallback(async () => {
+    gamesLoadedRef.current = false;
+    gamesLoadPromiseRef.current = null;
+    return await ensureGamesLoaded();
+  }, [ensureGamesLoaded]);
 
   useEffect(() => {
     if (didAttemptInitialGamesLoadRef.current) return;
@@ -439,6 +444,7 @@ export const GameDataProvider = ({ children }) => {
       setTimesToBeat,
       refreshTgaData,
       refreshCompaniesData,
+      refreshGamesData,
     }),
     [
       games,
@@ -465,6 +471,7 @@ export const GameDataProvider = ({ children }) => {
       timesToBeat,
       refreshTgaData,
       refreshCompaniesData,
+      refreshGamesData,
     ]
   );
 

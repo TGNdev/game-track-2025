@@ -10,7 +10,8 @@ export const adminConfig = {
   icon: FaExchangeAlt,
   color: "from-blue-500/20 to-indigo-500/20",
   borderColor: "border-blue-500/30",
-  accentColor: "text-blue-400"
+  accentColor: "text-blue-400",
+  active: false
 };
 
 const CompanyMigration = () => {
