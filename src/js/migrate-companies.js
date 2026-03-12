@@ -1,5 +1,5 @@
 import { db, getGamesFromFirestore, getDevelopersFromFirestore, getEditorsFromFirestore } from "./firebase";
-import { collection, writeBatch, doc } from "firebase/firestore";
+import { writeBatch, doc } from "firebase/firestore";
 import { slugify } from "./utils";
 
 export const migrateCompanies = async (options = { dryRun: true }) => {
@@ -58,7 +58,7 @@ export const migrateCompanies = async (options = { dryRun: true }) => {
         company.roles.push("developer");
       }
       company.oldIds.push({ type: "developer", id: dev.id });
-      
+
       // Update info if not set
       company.logo = dev.logo || company.logo || null;
       company.website = dev.website || company.website || null;

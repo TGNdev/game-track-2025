@@ -141,7 +141,7 @@ export const matchesSearch = (target, search) => {
       .replace(/[\u0300-\u036f]/g, "");
 
   const targetLower = normalize(target);
-  const targetWords = targetLower.split(/[\s-:\.]+/).filter((t) => t.length > 0);
+  const targetWords = targetLower.split(/[\s-:.]+/).filter((t) => t.length > 0);
   const targetAcronym = targetWords.map((w) => w[0]).join("");
 
   return searchTerms.every((term) => {
