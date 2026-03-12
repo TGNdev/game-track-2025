@@ -1,10 +1,12 @@
 import { getCachedValue, setCachedValue } from "./cache";
 
-export const getGameCovers = async (gameIds) => {
+export const getGameCovers = async (gameIds, onBatch) => {
     const coverMap = {};
     const uncachedIds = [];
 
-    for (const id of gameIds) {
+    const cleanIds = [...new Set(gameIds.filter(id => id != null))];
+
+    for (const id of cleanIds) {
         const cached = getCachedValue(id, "cover");
         if (cached) {
             coverMap[id] = cached;
@@ -13,11 +15,17 @@ export const getGameCovers = async (gameIds) => {
         }
     }
 
+    // Report cached values immediately
+    if (onBatch && Object.keys(coverMap).length > 0) {
+        onBatch({ ...coverMap });
+    }
+
     if (uncachedIds.length > 0) {
-        const BATCH_SIZE = 100;
+        const BATCH_SIZE = 40;
         for (let i = 0; i < uncachedIds.length; i += BATCH_SIZE) {
             const batch = uncachedIds.slice(i, i + BATCH_SIZE);
             const query = `fields id, cover.image_id; where id = (${batch.join(",")}); limit ${batch.length};`;
+            const batchMap = {};
 
             try {
                 const res = await fetch("/api/igdb", {
@@ -38,7 +46,7 @@ export const getGameCovers = async (gameIds) => {
                     data.forEach((game) => {
                         if (game.cover) {
                             const url = `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.image_id}.jpg`;
-                            coverMap[game.id] = url;
+                            batchMap[game.id] = url;
                             setCachedValue(game.id, "cover", url);
                         }
                     });
@@ -46,17 +54,24 @@ export const getGameCovers = async (gameIds) => {
             } catch (err) {
                 console.error("Error fetching covers batch:", err);
             }
+
+            if (Object.keys(batchMap).length > 0) {
+                Object.assign(coverMap, batchMap);
+                if (onBatch) onBatch(batchMap);
+            }
         }
     }
 
     return coverMap;
 };
 
-export const getGameScreenshots = async (gameIds) => {
+export const getGameScreenshots = async (gameIds, onBatch) => {
     const screenshotMap = {};
     const uncachedIds = [];
 
-    for (const id of gameIds) {
+    const cleanIds = [...new Set(gameIds.filter(id => id != null))];
+
+    for (const id of cleanIds) {
         const cached = getCachedValue(id, "screenshots");
         if (cached) {
             screenshotMap[id] = cached;
@@ -65,11 +80,16 @@ export const getGameScreenshots = async (gameIds) => {
         }
     }
 
+    if (onBatch && Object.keys(screenshotMap).length > 0) {
+        onBatch({ ...screenshotMap });
+    }
+
     if (uncachedIds.length > 0) {
-        const BATCH_SIZE = 100;
+        const BATCH_SIZE = 30; // Screenshots are heavier to reconcile
         for (let i = 0; i < uncachedIds.length; i += BATCH_SIZE) {
             const batch = uncachedIds.slice(i, i + BATCH_SIZE);
             const query = `fields id, screenshots.image_id; where id = (${batch.join(",")}); limit ${batch.length};`;
+            const batchMap = {};
 
             try {
                 const res = await fetch("/api/igdb", {
@@ -92,7 +112,7 @@ export const getGameScreenshots = async (gameIds) => {
                             const urls = game.screenshots.map(
                                 (s) => `https://images.igdb.com/igdb/image/upload/t_1080p/${s.image_id}.jpg`
                             );
-                            screenshotMap[game.id] = urls;
+                            batchMap[game.id] = urls;
                             setCachedValue(game.id, "screenshots", urls);
                         }
                     });
@@ -100,17 +120,24 @@ export const getGameScreenshots = async (gameIds) => {
             } catch (err) {
                 console.error("Error fetching screenshots batch:", err);
             }
+
+            if (Object.keys(batchMap).length > 0) {
+                Object.assign(screenshotMap, batchMap);
+                if (onBatch) onBatch(batchMap);
+            }
         }
     }
 
     return screenshotMap;
 };
 
-export const getGameVideos = async (gameIds) => {
+export const getGameVideos = async (gameIds, onBatch) => {
     const videoMap = {};
     const uncachedIds = [];
 
-    for (const id of gameIds) {
+    const cleanIds = [...new Set(gameIds.filter(id => id != null))];
+
+    for (const id of cleanIds) {
         const cached = getCachedValue(id, "videos");
         if (cached) {
             videoMap[id] = cached;
@@ -119,11 +146,16 @@ export const getGameVideos = async (gameIds) => {
         }
     }
 
+    if (onBatch && Object.keys(videoMap).length > 0) {
+        onBatch({ ...videoMap });
+    }
+
     if (uncachedIds.length > 0) {
-        const BATCH_SIZE = 100;
+        const BATCH_SIZE = 50;
         for (let i = 0; i < uncachedIds.length; i += BATCH_SIZE) {
             const batch = uncachedIds.slice(i, i + BATCH_SIZE);
             const query = `fields id, videos.video_id, videos.name; where id = (${batch.join(",")}); limit ${batch.length};`;
+            const batchMap = {};
 
             try {
                 const res = await fetch("/api/igdb", {
@@ -143,7 +175,7 @@ export const getGameVideos = async (gameIds) => {
                 if (Array.isArray(data)) {
                     data.forEach((game) => {
                         if (game.videos?.length > 0) {
-                            videoMap[game.id] = game.videos;
+                            batchMap[game.id] = game.videos;
                             setCachedValue(game.id, "videos", game.videos);
                         }
                     });
@@ -151,17 +183,24 @@ export const getGameVideos = async (gameIds) => {
             } catch (err) {
                 console.error("Error fetching videos batch:", err);
             }
+
+            if (Object.keys(batchMap).length > 0) {
+                Object.assign(videoMap, batchMap);
+                if (onBatch) onBatch(batchMap);
+            }
         }
     }
 
     return videoMap;
 };
 
-export const getGameTimeToBeat = async (gameIds) => {
+export const getGameTimeToBeat = async (gameIds, onBatch) => {
     const timeToBeatMap = {};
     const uncachedIds = [];
 
-    for (const id of gameIds) {
+    const cleanIds = [...new Set(gameIds.filter(id => id != null))];
+
+    for (const id of cleanIds) {
         const cached = getCachedValue(id, "time_to_beat");
         if (cached) {
             timeToBeatMap[id] = cached;
@@ -170,11 +209,16 @@ export const getGameTimeToBeat = async (gameIds) => {
         }
     }
 
+    if (onBatch && Object.keys(timeToBeatMap).length > 0) {
+        onBatch({ ...timeToBeatMap });
+    }
+
     if (uncachedIds.length > 0) {
-        const BATCH_SIZE = 100;
+        const BATCH_SIZE = 60;
         for (let i = 0; i < uncachedIds.length; i += BATCH_SIZE) {
             const batch = uncachedIds.slice(i, i + BATCH_SIZE);
             const query = `fields game_id, completely, hastily, normally; where game_id = (${batch.join(",")}); limit ${batch.length};`;
+            const batchMap = {};
 
             try {
                 const res = await fetch("/api/igdb", {
@@ -205,13 +249,18 @@ export const getGameTimeToBeat = async (gameIds) => {
                                 normally: entry.normally,
                             };
 
-                            timeToBeatMap[entry.game_id] = timeToBeat;
+                            batchMap[entry.game_id] = timeToBeat;
                             setCachedValue(entry.game_id, "time_to_beat", timeToBeat);
                         }
                     });
                 }
             } catch (err) {
                 console.error("Error fetching time-to-beat batch:", err);
+            }
+
+            if (Object.keys(batchMap).length > 0) {
+                Object.assign(timeToBeatMap, batchMap);
+                if (onBatch) onBatch(batchMap);
             }
         }
     }

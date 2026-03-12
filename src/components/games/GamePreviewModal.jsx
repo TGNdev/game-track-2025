@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
-import CoverSkeleton from "../skeletons/CoverSkeleton";
+import SmartCover from "../shared/SmartCover";
 import { useGameUI } from "../../contexts/GameUIContext";
 
 function GamePreviewModal({ game, bounds, isVisible, onClose }) {
@@ -89,15 +89,11 @@ function GamePreviewModal({ game, bounds, isVisible, onClose }) {
         }}
       >
         <div className="relative">
-          {game.cover ? (
-            <img
-              src={game.cover}
-              alt={game.name}
-              className="w-full h-auto object-cover rounded-t-lg"
-            />
-          ) : (
-            <CoverSkeleton />
-          )}
+          <SmartCover
+            src={game.cover}
+            alt={game.name}
+            className="w-full aspect-[3/4] rounded-t-lg"
+          />
         </div>
         <div className="p-3">
           <h3 className="font-semibold text-base mb-1">{game.name}</h3>

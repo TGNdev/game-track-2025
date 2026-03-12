@@ -1,12 +1,11 @@
-import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { useGameUI } from "../../contexts/GameUIContext";
 import he from "he";
 import { slugify } from "../../js/utils";
-import CoverSkeleton from "../skeletons/CoverSkeleton";
+import SmartCover from "../shared/SmartCover";
+import { useMemo } from "react";
+import { Link } from "react-router-dom";
+import { useGameUI } from "../../contexts/GameUIContext";
 
 const CompactGameCard = ({ game, coverImage }) => {
-  const [coverLoaded, setCoverLoaded] = useState(false);
   const { getPlatformsSvg } = useGameUI();
 
   const releaseYear = useMemo(() => {
@@ -46,12 +45,11 @@ const CompactGameCard = ({ game, coverImage }) => {
     >
       {/* Background Cover */}
       <div className="absolute inset-0 z-0">
-        {!coverLoaded && <CoverSkeleton />}
-        <img
+        <SmartCover
           src={coverImage}
           alt={game.name}
-          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${coverLoaded ? "opacity-60 group-hover:opacity-80" : "opacity-0"}`}
-          onLoad={() => setCoverLoaded(true)}
+          className="w-full h-full transform group-hover:scale-110 transition-transform duration-700"
+          showSkeleton={true}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
       </div>

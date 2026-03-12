@@ -4,7 +4,8 @@ import { useGameData } from "../contexts/GameDataContext";
 import Layout from "../components/shared/Layout";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaBuilding, FaGlobe, FaCity, FaArrowLeft, FaExternalLinkAlt, FaGamepad, FaHammer, FaBullhorn } from "react-icons/fa";
-import { slugify } from "../js/utils";
+import { AiFillEdit } from "react-icons/ai";
+import { useAuth } from "../contexts/AuthContext";
 import he from "he";
 import CompactGameCard from "../components/games/CompactGameCard";
 import { getGameCovers } from "../js/igdb";
@@ -12,6 +13,7 @@ import { getGameCovers } from "../js/igdb";
 const CompanyDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { userData } = useAuth();
   const [activeTab, setActiveTab] = useState("produced");
   const {
     companies,
@@ -32,7 +34,7 @@ const CompanyDetails = () => {
     if (loadingCompanies) return null;
 
     // Search by slug exactly, or by ID as fallback (forward compatibility)
-    const company = companies.find(c => c.slug === id || c.id === id);
+    const company = companies.find(c => c.slug === id || c.id === id || c.allIds?.includes(id));
     if (!company) return null;
 
     return company;
@@ -47,12 +49,12 @@ const CompanyDetails = () => {
     games.forEach(game => {
       const isDeveloper = game.developerRefs?.some(ref => {
         const devId = typeof ref === 'object' ? ref.devId : ref;
-        // Check both canonical slug and internal ID
-        return devId === entity.slug || devId === entity.id;
+        // Check canonical slug, internal ID, or any of the merged IDs
+        return devId === entity.slug || devId === entity.id || entity.allIds?.includes(devId);
       });
       const isEditor = game.editorRefs?.some(ref => {
         const edId = typeof ref === 'object' ? ref.devId : ref;
-        return edId === entity.slug || edId === entity.id;
+        return edId === entity.slug || edId === entity.id || entity.allIds?.includes(edId);
       });
 
       if (isDeveloper) developed.push(game);
@@ -78,6 +80,7 @@ const CompanyDetails = () => {
 
   // Fetch covers for all entity games
   useEffect(() => {
+    let isMounted = true;
     const fetchCovers = async () => {
       const allEntityGames = [...developedGames, ...publishedGames];
       if (allEntityGames.length === 0) return;
@@ -85,11 +88,15 @@ const CompanyDetails = () => {
       const gameIds = [...new Set(allEntityGames.map(g => g.igdb_id).filter(Boolean))];
       if (gameIds.length === 0) return;
 
-      const covers = await getGameCovers(gameIds);
-      setCoverMap(prev => ({ ...prev, ...covers }));
+      await getGameCovers(gameIds, (batch) => {
+        if (isMounted) {
+          setCoverMap(prev => ({ ...prev, ...batch }));
+        }
+      });
     };
 
     fetchCovers();
+    return () => { isMounted = false; };
   }, [developedGames, publishedGames, setCoverMap]);
 
   const parentCompany = useMemo(() => {
@@ -162,6 +169,16 @@ const CompanyDetails = () => {
                 >
                   {he.decode(entity.name)}
                 </motion.h1>
+                {userData?.isAdmin && (
+                  <Link
+                    to={`/admin/companies`}
+                    state={{ search: entity.name }}
+                    className="p-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-amber-500/20 hover:border-amber-500/40 text-amber-500 transition-all shadow-xl group/edit"
+                    title="Edit Company"
+                  >
+                    <AiFillEdit className="size-5 md:size-6 group-hover/edit:scale-110 transition-transform" />
+                  </Link>
+                )}
               </div>
 
               <motion.div

@@ -46,13 +46,18 @@ const AwardsHistory = () => {
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchCovers = async () => {
       if (games.length === 0) return;
-      const gameIds = games.map((g) => g.igdb_id);
-      const covers = await getGameCovers(gameIds);
-      setCoverMap(covers);
+      const gameIds = [...new Set(games.map((g) => g.igdb_id).filter(id => id != null))];
+      await getGameCovers(gameIds, (batch) => {
+        if (isMounted) {
+          setCoverMap(prev => ({ ...prev, ...batch }));
+        }
+      });
     };
     fetchCovers();
+    return () => { isMounted = false; };
   }, [games, setCoverMap]);
 
   useEffect(() => {

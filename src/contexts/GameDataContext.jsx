@@ -186,7 +186,45 @@ export const GameDataProvider = ({ children }) => {
       companiesLoadPromiseRef.current = (async () => {
         try {
           setLoadingCompanies(true);
-          const list = await getCompaniesFromFirestore();
+          const rawList = await getCompaniesFromFirestore();
+          
+          // Merge companies by slug to handle duplicates and reconcile data
+          const mergedMap = {};
+          rawList.forEach(company => {
+            const slug = company.slug || slugify(company.name);
+            if (!mergedMap[slug]) {
+              mergedMap[slug] = {
+                ...company,
+                slug,
+                allIds: [company.id],
+                roles: company.roles || []
+              };
+            } else {
+              const existing = mergedMap[slug];
+              
+              // Combine roles
+              if (company.roles) {
+                company.roles.forEach(role => {
+                  if (!existing.roles.includes(role)) existing.roles.push(role);
+                });
+              }
+              
+              // Track all original IDs
+              if (!existing.allIds.includes(company.id)) {
+                existing.allIds.push(company.id);
+              }
+              
+              // Reconcile metadata: prefer the one with more data
+              const fieldsToMerge = ['logo', 'website', 'country', 'city', 'parentCompanyId', 'studios'];
+              fieldsToMerge.forEach(field => {
+                if (!existing[field] && company[field]) {
+                  existing[field] = company[field];
+                }
+              });
+            }
+          });
+          
+          const list = Object.values(mergedMap);
           setCompanies(list);
           companiesLoadedRef.current = true;
           return list;

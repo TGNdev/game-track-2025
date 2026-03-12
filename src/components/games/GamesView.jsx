@@ -132,40 +132,35 @@ const GamesView = () => {
         return typeof game.release_date === "string";
       })
       .filter((game) => {
-        const getResolvedDevNames = (g) => {
+        const getResolvedCompaniesNames = (g) => {
           let names = [];
-          if (g.developerRefs?.length > 0) {
-            g.developerRefs.forEach(ref => {
-              const refId = typeof ref === 'object' ? ref.devId : ref;
-              const found = companies.find(c => c.id === refId || c.slug === refId);
-              if (found) names.push(found.name);
-            });
-          }
-          if (g.developers?.length > 0) {
-            g.developers.forEach(d => names.push(d.name));
-          }
-          return names;
-        };
 
-        const getResolvedEditorNames = (g) => {
-          let names = [];
-          if (g.editorRefs?.length > 0) {
-            g.editorRefs.forEach(ref => {
+          const resolveRefs = (refs) => {
+            if (!refs || !Array.isArray(refs)) return;
+            refs.forEach(ref => {
               const refId = typeof ref === 'object' ? ref.devId : ref;
-              const found = companies.find(c => c.id === refId || c.slug === refId);
+              const found = companies.find(c => c.id === refId || c.slug === refId || c.allIds?.includes(refId));
               if (found) names.push(found.name);
             });
+          };
+
+          resolveRefs(g.developerRefs);
+          resolveRefs(g.editorRefs);
+
+          // Legacy support
+          if (g.developers?.length > 0) {
+            g.developers.forEach(d => names.push(typeof d === 'string' ? d : d.name));
           }
           if (g.editors?.length > 0) {
-            g.editors.forEach(d => names.push(d));
+            g.editors.forEach(e => names.push(typeof e === 'string' ? e : e.name));
           }
+
           return names;
         };
 
         const matchesSearchValue =
           matchesSearch(game.name, search) ||
-          getResolvedDevNames(game).some((name) => matchesSearch(name, search)) ||
-          getResolvedEditorNames(game).some((name) => matchesSearch(name, search));
+          getResolvedCompaniesNames(game).some((name) => matchesSearch(name, search))
 
         const matchesPlatform =
           selectedPlatforms.length === 0 ||
@@ -270,68 +265,6 @@ const GamesView = () => {
     <div className="max-w-[1400px] mx-auto px-6 pb-12 md:py-20 space-y-10">
       <FeaturedGames games={games} />
 
-      {search && filteredUsers.length > 0 && (
-        <section className="w-full flex flex-col gap-4">
-          <div className="flex items-center gap-2 text-white/60 px-2 font-bold uppercase tracking-wider text-xs">
-            <FaUser className="size-3" />
-            <span>Matching Users ({filteredUsers.length})</span>
-          </div>
-          <ScrollableContainer>
-            {filteredUsers.map(user => (
-              <div
-                key={user.id}
-                onClick={() => navigate(`/profiles/${user.username}`)}
-                className="hover:cursor-pointer shrink-0 flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 p-3 rounded-2xl transition-colors duration-200 shadow-lg"
-              >
-                <div className="p-3 rounded-xl bg-gradient-primary">
-                  <FaUser className="size-5" />
-                </div>
-                <div className="flex flex-col items-start pr-4">
-                  <span className="font-black text-sm">{user.username}</span>
-                  <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest">
-                    {(user.library?.played?.length || 0) + (user.library?.toPlay?.length || 0)} Games
-                  </span>
-                </div>
-              </div>
-            ))}
-          </ScrollableContainer>
-          <div className="border-b border-white/10 w-full mt-2" />
-        </section>
-      )}
-
-      {search && filteredIndustry.length > 0 && (
-        <section className="w-full flex flex-col gap-4">
-          <div className="flex items-center gap-2 text-white/60 px-2 font-bold uppercase tracking-wider text-xs">
-            <FaBuilding className="size-3" />
-            <span>Matching Studios ({filteredIndustry.length})</span>
-          </div>
-          <ScrollableContainer>
-            {filteredIndustry.map(item => (
-              <div
-                key={item.id}
-                onClick={() => navigate(`/companies/${item.slug || item.id}`)}
-                className="hover:cursor-pointer shrink-0 flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 p-3 rounded-2xl transition-colors duration-200 shadow-lg"
-              >
-                <div className="size-11 rounded-xl bg-white/5 border border-white/10 p-1.5 flex items-center justify-center overflow-hidden">
-                  {item.logo ? (
-                    <img src={item.logo} alt={item.name} className="w-full h-full object-contain" />
-                  ) : (
-                    <FaBuilding className="text-white/20" />
-                  )}
-                </div>
-                <div className="flex flex-col items-start pr-4">
-                  <span className="font-black text-sm">{he.decode(item.name)}</span>
-                  <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest">
-                    {item.country || "Profile"}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </ScrollableContainer>
-          <div className="border-b border-white/10 w-full mt-2" />
-        </section>
-      )}
-
       <div className="w-full flex justify-center mt-4">
         <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-1.5 shadow-2xl flex items-center gap-1">
           <button
@@ -372,7 +305,7 @@ const GamesView = () => {
             <input
               type="text"
               placeholder="Search games, studios, users..."
-              className="w-full bg-white/5 border border-white/10 rounded-full pl-12 pr-10 py-3 text-white focus:outline-none focus:border-[#b069ff]/50 transition-all shadow-xl backdrop-blur-sm font-bold tracking-[0.2em] uppercase text-xs"
+              className="w-full bg-white/5 border border-white/10 rounded-full pl-12 pr-10 py-3 text-white focus:outline-none focus:border-[#b069ff]/50 transition-all shadow-xl backdrop-blur-sm font-bold placeholder:tracking-[0.2em] placeholder:uppercase text-xs"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -386,6 +319,67 @@ const GamesView = () => {
             )}
           </div>
         </div>
+
+        {search && filteredUsers.length > 0 && (
+          <section className="w-full flex flex-col gap-4">
+            <div className="flex items-center gap-2 text-white/60 px-2 font-bold uppercase tracking-wider text-xs">
+              <FaUser className="size-3" />
+              <span>Matching Users ({filteredUsers.length})</span>
+            </div>
+            <ScrollableContainer>
+              {filteredUsers.map(user => (
+                <div
+                  key={user.id}
+                  onClick={() => navigate(`/profiles/${user.username}`)}
+                  className="hover:cursor-pointer shrink-0 flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 p-3 rounded-2xl transition-colors duration-200 shadow-lg"
+                >
+                  <div className="p-3 rounded-xl bg-gradient-primary">
+                    <FaUser className="size-5" />
+                  </div>
+                  <div className="flex flex-col items-start pr-4">
+                    <span className="font-black text-sm">{user.username}</span>
+                    <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest">
+                      {(user.library?.played?.length || 0) + (user.library?.toPlay?.length || 0)} Games
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </ScrollableContainer>
+            <div className="border-b border-white/10 w-full mt-2" />
+          </section>
+        )}
+        {search && filteredIndustry.length > 0 && (
+          <section className="w-full flex flex-col gap-4">
+            <div className="flex items-center gap-2 text-white/60 px-2 font-bold uppercase tracking-wider text-xs">
+              <FaBuilding className="size-3" />
+              <span>Matching Studios ({filteredIndustry.length})</span>
+            </div>
+            <ScrollableContainer>
+              {filteredIndustry.map(item => (
+                <div
+                  key={item.id}
+                  onClick={() => navigate(`/companies/${item.slug || item.id}`)}
+                  className="hover:cursor-pointer shrink-0 flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 p-3 rounded-2xl transition-colors duration-200 shadow-lg"
+                >
+                  <div className="size-11 rounded-xl bg-white/5 border border-white/10 p-1.5 flex items-center justify-center overflow-hidden">
+                    {item.logo ? (
+                      <img src={item.logo} alt={item.name} className="w-full h-full object-contain" />
+                    ) : (
+                      <FaBuilding className="text-white/20" />
+                    )}
+                  </div>
+                  <div className="flex flex-col items-start pr-4">
+                    <span className="font-black text-sm">{he.decode(item.name)}</span>
+                    <span className="text-[10px] text-white/40 uppercase font-bold tracking-widest">
+                      {item.country || "Profile"}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </ScrollableContainer>
+            <div className="border-b border-white/10 w-full mt-2" />
+          </section>
+        )}
 
         <AnimatePresence>
           {filtersVisible && (

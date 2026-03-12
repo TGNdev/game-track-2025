@@ -1,17 +1,10 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import SmartCover from '../shared/SmartCover';
 
 const NomineeCard = ({ nominee, game, cover, shouldShowOpacity, isWinner, showCharacterOverride }) => {
-  const [imageLoading, setImageLoading] = useState(true);
-
   const isRoleBased = !!nominee.role;
   const imageUrl = isRoleBased
     ? (showCharacterOverride ? (nominee.role.as.image || nominee.role.actor.image) : nominee.role.actor.image)
     : cover;
-
-  useEffect(() => {
-    setImageLoading(true);
-  }, [imageUrl]);
 
   return (
     <div
@@ -34,37 +27,12 @@ const NomineeCard = ({ nominee, game, cover, shouldShowOpacity, isWinner, showCh
               as <span className="text-white/80">{nominee.role.as.name}</span>
             </div>
           </div>
-          <div className="w-full h-80 overflow-hidden relative flex items-center justify-center">
-            {imageLoading && (
-              <div className="absolute inset-0 flex items-center justify-center z-10">
-                <img src="/loading.gif" alt="Loading..." className="size-24 opacity-60" />
-              </div>
-            )}
-
-            <AnimatePresence mode='wait'>
-              <motion.img
-                key={showCharacterOverride ? 'char' : 'actor'}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: imageLoading ? 0 : 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                src={imageUrl}
-                onLoad={() => setImageLoading(false)}
-                onError={() => setImageLoading(false)}
-                alt={showCharacterOverride ? nominee.role.as.name : nominee.role.actor.name}
-                referrerPolicy="no-referrer"
-                className="object-cover h-full w-full absolute inset-0 transition-transform duration-1000"
-              />
-            </AnimatePresence>
-
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-50" />
-
-            {((!nominee.role.actor.image && !showCharacterOverride) || (!nominee.role.as.image && showCharacterOverride)) && !imageLoading && (
-              <div className="flex items-center justify-center h-full w-full text-white/10 uppercase font-black tracking-[0.2em] text-[10px] italic">
-                No Image Available
-              </div>
-            )}
-          </div>
+          <SmartCover
+            src={imageUrl}
+            alt={showCharacterOverride ? nominee.role.as.name : nominee.role.actor.name}
+            className="w-full h-80"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-50" />
           <div className="p-5 flex items-center justify-center h-20">
             {game && (
               <div className="text-[10px] font-black uppercase tracking-[0.25em] text-white/40 truncate w-full text-center">
@@ -75,26 +43,11 @@ const NomineeCard = ({ nominee, game, cover, shouldShowOpacity, isWinner, showCh
         </>
       ) : game ? (
         <>
-          <div className="w-full h-96 overflow-hidden relative flex items-center justify-center">
-            {imageLoading && (
-              <div className="absolute inset-0 flex items-center justify-center z-10 bg-white/10 backdrop-blur-md">
-                <img src="/loading.gif" alt="Loading..." className="w-10 h-10 opacity-60" />
-              </div>
-            )}
-            {cover && cover.length > 0 ? (
-              <img
-                src={cover}
-                onLoad={() => setImageLoading(false)}
-                onError={() => setImageLoading(false)}
-                alt={game.name}
-                className={`object-cover h-full w-full transition-all duration-700 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full w-full bg-white/5 text-white/10 uppercase font-black tracking-[0.2em] text-[10px] italic">
-                No Cover Available
-              </div>
-            )}
-          </div>
+          <SmartCover
+            src={cover}
+            alt={game.name}
+            className="w-full h-96 bg-white/10 backdrop-blur-md"
+          />
           <div className="p-6 flex items-center justify-center h-20">
             <div className="text-sm font-black uppercase tracking-[0.1em] text-center line-clamp-2 leading-relaxed text-white/90">
               {game.name}

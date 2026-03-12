@@ -1,12 +1,10 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CoverSkeleton from "../skeletons/CoverSkeleton";
+import SmartCover from "../shared/SmartCover";
 import { slugify } from "../../js/utils";
 import { useGameData } from "../../contexts/GameDataContext";
 import { useMemo } from "react";
 
 const FeaturedGame = ({ featured, cover }) => {
-  const [imgLoaded, setImgLoaded] = useState(false);
   const navigate = useNavigate();
   const { companies } = useGameData();
 
@@ -23,17 +21,12 @@ const FeaturedGame = ({ featured, cover }) => {
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-2xl p-4 shadow-2xl relative overflow-hidden flex flex-row gap-3">
-      <div className="relative w-32 aspect-[3/4] max-h-[180px]">
-        {!imgLoaded && <CoverSkeleton />}
-        {cover && (
-          <img
-            src={cover}
-            alt={featured.name}
-            className="absolute inset-0 w-full h-full object-cover rounded-lg transition-opacity duration-300"
-            loading="lazy"
-            onLoad={() => setImgLoaded(true)}
-          />
-        )}
+      <div className="relative w-32 aspect-[3/4] shrink-0">
+        <SmartCover
+          src={cover}
+          alt={featured.name}
+          className="w-full h-full rounded-lg"
+        />
       </div>
       <div className="flex flex-col h-full justify-between gap-4 relative z-10 flex-1 py-4 px-2">
         <div className="flex flex-row items-center justify-between w-full">

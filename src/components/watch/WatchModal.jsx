@@ -40,11 +40,42 @@ const WatchModal = ({ isOpen, onClose, onSave, initialData = null, initialGameId
 
   const filteredGames = useMemo(() => {
     if (!search) return games.slice(0, 10);
-    return games
-      .sort((a, b) => matchesSearch(b.name, search) - matchesSearch(a.name, search))
-      .filter(g => matchesSearch(g.name, search))
+
+    const gameMatches = (g) => {
+      if (matchesSearch(g.name, search)) return true;
+      
+      const companyNames = [];
+      const resolveRefs = (refs) => {
+        if (!refs || !Array.isArray(refs)) return;
+        refs.forEach(ref => {
+          const refId = typeof ref === 'object' ? ref.devId : ref;
+          const found = companies.find(c => c.id === refId || c.slug === refId || c.allIds?.includes(refId));
+          if (found) companyNames.push(found.name);
+        });
+      };
+      resolveRefs(g.developerRefs);
+      resolveRefs(g.editorRefs);
+
+      if (g.developers?.length > 0) {
+        g.developers.forEach(d => companyNames.push(typeof d === 'string' ? d : d.name));
+      }
+      if (g.editors?.length > 0) {
+        g.editors.forEach(e => companyNames.push(typeof e === 'string' ? e : e.name));
+      }
+
+      return companyNames.some(name => matchesSearch(name, search));
+    };
+
+    return [...games]
+      .filter(gameMatches)
+      .sort((a, b) => {
+        const aMatchesName = matchesSearch(a.name, search);
+        const bMatchesName = matchesSearch(b.name, search);
+        if (aMatchesName !== bMatchesName) return bMatchesName - aMatchesName;
+        return a.name.localeCompare(b.name);
+      })
       .slice(0, 10);
-  }, [games, search]);
+  }, [games, search, companies]);
 
   useEffect(() => {
     if (isOpen) {

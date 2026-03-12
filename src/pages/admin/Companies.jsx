@@ -4,7 +4,7 @@ import { FaBuilding, FaPlus, FaTrash, FaSave, FaGlobe, FaCity, FaEdit, FaCheckCi
 import { FiX, FiSearch } from "react-icons/fi";
 import { useAuth } from "../../contexts/AuthContext";
 import { useGameData } from "../../contexts/GameDataContext";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { saveCompany, deleteCompanyFromFirestore } from "../../js/firebase";
 import { slugify } from "../../js/utils";
 import { toast } from "react-toastify";
@@ -22,8 +22,9 @@ export const adminConfig = {
 
 const AdminCompanies = () => {
   const { userData, loading: authLoading } = useAuth();
+  const location = useLocation();
   const { companies, loadingCompanies: loading, ensureCompaniesLoaded: fetchCompanies, refreshCompaniesData } = useGameData();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(location.state?.search || "");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [editingCompany, setEditingCompany] = useState(null);
   const [selectedLetter, setSelectedLetter] = useState("A");

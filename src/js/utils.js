@@ -1,3 +1,5 @@
+import he from "he";
+
 export const slugify = (str) =>
   str
     .toLowerCase()
@@ -78,7 +80,7 @@ export const highlightMatch = (text, query) => {
     result.push(
       <span
         key={i}
-        className="bg-white/20 text-black rounded"
+        className="bg-amber-300 text-black rounded"
       >
         {text.substring(spec.start, spec.end)}
       </span>
@@ -120,28 +122,39 @@ export const getPaginationRange = (length, itemsPerPage, currentPage) => {
   return range;
 }
 
+
 export const matchesSearch = (target, search) => {
-  if (!search || search.length < 2) return true;
+  if (!search) return true;
+  if (!target) return false;
 
-  const q = search.toLowerCase();
+  const q = search.toLowerCase().trim();
+  if (q.length === 0) return true;
+
   const searchTerms = q.split(/\s+/).filter((t) => t.length > 0);
-
   if (searchTerms.length === 0) return true;
 
-  const targetLower = target.toLowerCase();
-  // Split target by space, dash, or colon to get words
-  const targetWords = targetLower.split(/[\s-:]+/).filter((t) => t.length > 0);
+  // Decode entities and normalize accents
+  const normalize = (str) =>
+    he.decode(str)
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+
+  const targetLower = normalize(target);
+  const targetWords = targetLower.split(/[\s-:\.]+/).filter((t) => t.length > 0);
   const targetAcronym = targetWords.map((w) => w[0]).join("");
 
   return searchTerms.every((term) => {
-    // 1. Substring match
-    if (targetLower.includes(term)) return true;
+    const normalizedTerm = normalize(term);
 
-    // 2. Acronym match (the term is part of the acronym)
-    if (targetAcronym.includes(term)) return true;
+    // 1. Substring match
+    if (targetLower.includes(normalizedTerm)) return true;
+
+    // 2. Acronym match
+    if (targetAcronym.includes(normalizedTerm)) return true;
 
     // 3. Any word in target starts with this term
-    if (targetWords.some((word) => word.startsWith(term))) return true;
+    if (targetWords.some((word) => word.startsWith(normalizedTerm))) return true;
 
     return false;
   });

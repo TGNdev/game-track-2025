@@ -1,24 +1,38 @@
-import { useEffect, useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaArrowLeft, FaClock, FaTrophy, FaCalendarAlt, FaExternalLinkAlt, FaBookmark, FaCheck, FaImage, FaExpandAlt, FaChevronLeft, FaChevronRight, FaUsers, FaPlay } from "react-icons/fa";
-import { FiX, FiActivity, FiPlus } from "react-icons/fi";
+import { AiFillEdit } from "react-icons/ai";
+import { FiX, FiActivity, FiPlus, FiClock } from "react-icons/fi";
 import Layout from "../components/shared/Layout";
 import WatchModal from "../components/watch/WatchModal";
 import { useGameData } from "../contexts/GameDataContext";
 import { useGameUI } from "../contexts/GameUIContext";
 import { useAuth } from "../contexts/AuthContext";
-import { getGameCovers, getGameScreenshots, getGameTimeToBeat, getGameVideos } from "../js/igdb";
-import { addToLibrary, removeFromLibrary, addCountdown, removeCountdown, setPlaytime, getPlaytimes, deletePlaytime, getGlobalPlaytimesForGame, addWatchToFirestore, editWatchFromFirestore, editWatchStoryCategoryFromFirestore } from "../js/firebase";
+import {
+  getPlaytimes,
+  setPlaytime,
+  removeFromLibrary,
+  addToLibrary,
+  getGlobalPlaytimesForGame,
+  deletePlaytime,
+  addCountdown,
+  removeCountdown,
+  addWatchToFirestore,
+  editWatchFromFirestore,
+  editWatchStoryCategoryFromFirestore
+} from "../js/firebase";
+import { getGameCovers, getGameScreenshots, getGameVideos, getGameTimeToBeat } from "../js/igdb";
+import { slugify } from "../js/utils";
 import { toast } from "react-toastify";
-import CoverSkeleton from "../components/skeletons/CoverSkeleton";
 import ScreenshotSkeleton from "../components/skeletons/ScreenshotSkeleton";
 import GameTag from "../components/games/GameTag";
 import he from "he";
-import { FiClock } from "react-icons/fi";
 import CompletionModal from "../components/shared/CompletionModal";
 import ConfirmModal from "../components/modals/ConfirmModal";
 import WatchCardSmall from "../components/watch/WatchCardSmall";
+import SmartCover from "../components/shared/SmartCover";
+
 
 const getRatingStyle = (rating) => {
   const baseClasses = "size-12 rounded-xl text-white font-bold flex items-center justify-center text-lg shadow-lg";
@@ -38,7 +52,6 @@ const formatTime = (seconds) => {
 export default function GameDetails() {
   const { game: gameSlug } = useParams();
   const navigate = useNavigate();
-  const [coverLoaded, setCoverLoaded] = useState(false);
   const [currentScreenshotIndex, setCurrentScreenshotIndex] = useState(0);
   const [showAllScreenshots, setShowAllScreenshots] = useState(false);
   const [showAllVideos, setShowAllVideos] = useState(false);
@@ -76,10 +89,10 @@ export default function GameDetails() {
     ensureCompaniesLoaded
   } = useGameData();
 
-  const { getPlatformsSvg, isReleased, activeTags } = useGameUI();
+  const { getPlatformsSvg, isReleased, activeTags, setEdit, setIsModalOpen, setGameToEdit } = useGameUI();
 
   const game = useMemo(() => {
-    return games.find(g => g.slug === gameSlug);
+    return games.find(g => slugify(g.name) === gameSlug);
   }, [games, gameSlug]);
 
   const gameTags = useMemo(() => activeTags(game), [activeTags, game]);
@@ -209,7 +222,7 @@ export default function GameDetails() {
     if (game?.developerRefs && game.developerRefs.length > 0) {
       return game.developerRefs.map(ref => {
         const refId = typeof ref === 'object' ? ref.devId : ref;
-        const found = companies.find(c => c.id === refId || c.slug === refId);
+        const found = companies.find(c => c.id === refId || c.slug === refId || c.allIds?.includes(refId));
         return found ? { name: found.name, link: found.website || "#", refId: found.slug || found.id } : null;
       }).filter(Boolean);
     }
@@ -220,7 +233,7 @@ export default function GameDetails() {
     if (game?.editorRefs && game.editorRefs.length > 0) {
       return game.editorRefs.map(ref => {
         const refId = typeof ref === 'object' ? ref.devId : ref;
-        const found = companies.find(c => c.id === refId || c.slug === refId);
+        const found = companies.find(c => c.id === refId || c.slug === refId || c.allIds?.includes(refId));
         if (found) return { name: found.name, link: found.website || "#", refId: found.slug || found.id };
         return null;
       }).filter(Boolean);
@@ -273,31 +286,27 @@ export default function GameDetails() {
       if (!id) return;
 
       if (!coverMap[id]) {
-        const covers = await getGameCovers([id]);
-        if (Object.keys(covers).length > 0) {
-          setCoverMap(prev => ({ ...prev, ...covers }));
-        }
+        await getGameCovers([id], (batch) => {
+          setCoverMap(prev => ({ ...prev, ...batch }));
+        });
       }
 
       if (!screenshotsMap[id]) {
-        const screenshots = await getGameScreenshots([id]);
-        if (Object.keys(screenshots).length > 0) {
-          setScreenshotsMap(prev => ({ ...prev, ...screenshots }));
-        }
+        await getGameScreenshots([id], (batch) => {
+          setScreenshotsMap(prev => ({ ...prev, ...batch }));
+        });
       }
 
       if (!videosMap[id]) {
-        const videos = await getGameVideos([id]);
-        if (Object.keys(videos).length > 0) {
-          setVideosMap(prev => ({ ...prev, ...videos }));
-        }
+        await getGameVideos([id], (batch) => {
+          setVideosMap(prev => ({ ...prev, ...batch }));
+        });
       }
 
       if (!timesToBeat[id]) {
-        const times = await getGameTimeToBeat([id]);
-        if (Object.keys(times).length > 0) {
-          setTimesToBeat(prev => ({ ...prev, ...times }));
-        }
+        await getGameTimeToBeat([id], (batch) => {
+          setTimesToBeat(prev => ({ ...prev, ...batch }));
+        });
       }
     };
 
@@ -398,29 +407,23 @@ export default function GameDetails() {
         </div>
         <div className="px-4 md:px-6 -mt-20 md:mt-[-8rem] relative z-10 flex flex-col md:flex-row gap-6 md:gap-8 items-start">
           <div className="w-64 shrink-0 relative group self-center md:self-start">
-            <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-2 border-white/10 bg-background relative">
-              {(isActuallyLoading || !coverLoaded) && <CoverSkeleton />}
-              {!isActuallyLoading && gameCover && (
-                <img
-                  src={gameCover}
-                  alt={`${game?.name} cover`}
-                  className={`w-full h-full object-cover transition-opacity duration-500 ${coverLoaded ? 'opacity-100' : 'opacity-0'}`}
-                  onLoad={() => setCoverLoaded(true)}
-                />
-              )}
-              {personalPlaytime && (
-                <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
-                  <div className={`p-2 rounded-lg backdrop-blur-md shadow-lg border border-white/10 ${personalPlaytime.status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-white'}`}>
-                    {personalPlaytime.status === 'completed' ? <FaTrophy className="size-4" /> : <FaClock className="size-4" />}
-                  </div>
-                  {personalPlaytime.hours > 0 && (
-                    <div className={`${personalPlaytime.status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-white'} px-2 py-1 rounded-md backdrop-blur-md text-[10px] font-black border border-white/10`}>
-                      {personalPlaytime.hours}H
-                    </div>
-                  )}
+            <SmartCover
+              src={gameCover}
+              alt={`${game?.name} cover`}
+              className="aspect-[3/4] rounded-2xl shadow-2xl border-2 border-white/10 bg-background"
+            />
+            {personalPlaytime && (
+              <div className="absolute top-2 right-2 flex flex-col gap-2 items-end z-20">
+                <div className={`p-2 rounded-lg backdrop-blur-md shadow-lg border border-white/10 ${personalPlaytime.status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-white'}`}>
+                  {personalPlaytime.status === 'completed' ? <FaTrophy className="size-4" /> : <FaClock className="size-4" />}
                 </div>
-              )}
-            </div>
+                {personalPlaytime.hours > 0 && (
+                  <div className={`${personalPlaytime.status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-white'} px-2 py-1 rounded-md backdrop-blur-md text-[10px] font-black border border-white/10`}>
+                    {personalPlaytime.hours}H
+                  </div>
+                )}
+              </div>
+            )}
             {currentUser ? (
               <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
                 {isReleased(game?.release_date) && (
@@ -487,9 +490,24 @@ export default function GameDetails() {
                   </>
                 )}
               </div>
-              <h1 className="text-3xl md:text-6xl font-black w-full md:text-left text-center leading-tight min-h-[1.2em]">
-                {isActuallyLoading ? <span className="opacity-20 bg-white rounded-lg inline-block w-64 h-12 animate-pulse"></span> : he.decode(game?.name || "")}
-              </h1>
+              <div className="flex items-center gap-4 w-full justify-center md:justify-start">
+                <h1 className="text-3xl md:text-6xl font-black leading-tight min-h-[1.2em]">
+                  {isActuallyLoading ? <span className="opacity-20 bg-white rounded-lg inline-block w-64 h-12 animate-pulse"></span> : he.decode(game?.name || "")}
+                </h1>
+                {userData?.isAdmin && !isActuallyLoading && (
+                  <button
+                    onClick={() => {
+                      setGameToEdit(game);
+                      setEdit(true);
+                      setIsModalOpen(true);
+                    }}
+                    className="p-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-amber-500/20 hover:border-amber-500/40 text-amber-500 transition-all shadow-xl group/edit shrink-0"
+                    title="Edit Game"
+                  >
+                    <AiFillEdit className="size-5 md:size-6 group-hover/edit:scale-110 transition-transform" />
+                  </button>
+                )}
+              </div>
               <div className="flex flex-wrap gap-4 md:gap-6 items-center justify-center md:justify-start text-white/80">
                 <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
                   <FaCalendarAlt className="text-white/40" />

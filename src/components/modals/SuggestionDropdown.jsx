@@ -46,7 +46,7 @@ const SuggestionDropdown = ({ suggestions, value, onSelect, anchorRef }) => {
   return (
     <div
       ref={dropdownRef}
-      className="absolute z-[110] mt-2 w-full bg-black/70 border border-white/10 rounded-xl shadow-2xl overflow-y-auto max-h-60 custom-scrollbar py-2"
+      className="absolute z-[110] mt-2 w-full bg-black border border-white/10 rounded-xl shadow-2xl overflow-y-auto max-h-60 custom-scrollbar py-2"
     >
       {filtered.map((item, idx) => (
         <div

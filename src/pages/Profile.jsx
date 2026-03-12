@@ -19,7 +19,7 @@ const Profile = () => {
   const { username } = useParams();
   const navigate = useNavigate();
   const { userData: loggedInUserData, currentUser } = useAuth();
-  const { games, coverMap, setCoverMap } = useGameData();
+  const { games, companies, coverMap, setCoverMap } = useGameData();
   const { search } = useGameUI();
   const [view, setView] = useState('played');
   const [profileData, setProfileData] = useState(null);
@@ -208,15 +208,20 @@ const Profile = () => {
   };
 
   useEffect(() => {
+    let isMounted = true;
     const allGamesWithCovers = [...completedGames, ...playedGames, ...toPlayGames, ...countdowns];
     if (allGamesWithCovers.length > 0) {
       const fetchCovers = async () => {
-        const gameIds = allGamesWithCovers.map((g) => g.igdb_id);
-        const covers = await getGameCovers(gameIds);
-        setCoverMap(covers);
+        const gameIds = [...new Set(allGamesWithCovers.map((g) => g.igdb_id).filter(id => id != null))];
+        await getGameCovers(gameIds, (batch) => {
+          if (isMounted) {
+            setCoverMap(prev => ({ ...prev, ...batch }));
+          }
+        });
       };
       fetchCovers();
     }
+    return () => { isMounted = false; };
   }, [completedGames, playedGames, toPlayGames, countdowns, setCoverMap]);
 
   useEffect(() => {
@@ -225,17 +230,45 @@ const Profile = () => {
     let targetGame = null;
     let targetView = null;
 
+    // Helper to check if a game matches search by name or company
+    const gameMatches = (g) => {
+      if (matchesSearch(g.name, search)) return true;
+      
+      // Resolve company names
+      const companyNames = [];
+      const resolveRefs = (refs) => {
+        if (!refs || !Array.isArray(refs)) return;
+        refs.forEach(ref => {
+          const refId = typeof ref === 'object' ? ref.devId : ref;
+          const found = companies.find(c => c.id === refId || c.slug === refId || c.allIds?.includes(refId));
+          if (found) companyNames.push(found.name);
+        });
+      };
+      resolveRefs(g.developerRefs);
+      resolveRefs(g.editorRefs);
+
+      // Legacy support
+      if (g.developers?.length > 0) {
+        g.developers.forEach(d => companyNames.push(typeof d === 'string' ? d : d.name));
+      }
+      if (g.editors?.length > 0) {
+        g.editors.forEach(e => companyNames.push(typeof e === 'string' ? e : e.name));
+      }
+
+      return companyNames.some(name => matchesSearch(name, search));
+    };
+
     // Check current view first for efficiency/less jumping
     const currentList = view === 'completed' ? completedGames : view === 'played' ? playedGames : toPlayGames;
-    const currentMatch = currentList.find(g => matchesSearch(g.name, search));
+    const currentMatch = currentList.find(g => gameMatches(g));
 
     if (currentMatch) {
       targetGame = currentMatch;
       targetView = view;
     } else {
-      const matchCompleted = completedGames.find(g => matchesSearch(g.name, search));
-      const matchPlayed = playedGames.find(g => matchesSearch(g.name, search));
-      const matchToPlay = toPlayGames.find(g => matchesSearch(g.name, search));
+      const matchCompleted = completedGames.find(g => gameMatches(g));
+      const matchPlayed = playedGames.find(g => gameMatches(g));
+      const matchToPlay = toPlayGames.find(g => gameMatches(g));
 
       if (matchCompleted) {
         targetGame = matchCompleted;
@@ -262,7 +295,7 @@ const Profile = () => {
       }, 150);
       return () => clearTimeout(timer);
     }
-  }, [search, completedGames, playedGames, toPlayGames, view]);
+  }, [search, completedGames, playedGames, toPlayGames, view, companies]);
 
   if (!currentUser && !username) return <Navigate to="/" />;
   if (loading) return (
