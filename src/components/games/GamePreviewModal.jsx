@@ -1,12 +1,13 @@
 import { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
-import SmartCover from "../shared/SmartCover";
+import CoverSkeleton from "../skeletons/CoverSkeleton";
 import { useGameUI } from "../../contexts/GameUIContext";
 
 function GamePreviewModal({ game, bounds, isVisible, onClose }) {
   const [isFadingIn, setIsFadingIn] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [shouldRender, setShouldRender] = useState(isVisible);
+  const [coverLoaded, setCoverLoaded] = useState(false);
   const containerRef = useRef(null);
   const {
     getPlatformsSvg,
@@ -21,6 +22,7 @@ function GamePreviewModal({ game, bounds, isVisible, onClose }) {
   useEffect(() => {
     if (isVisible) {
       setShouldRender(true);
+      setCoverLoaded(false);
       setIsFadingOut(false);
       requestAnimationFrame(() => {
         setIsFadingIn(true);
@@ -89,11 +91,22 @@ function GamePreviewModal({ game, bounds, isVisible, onClose }) {
         }}
       >
         <div className="relative">
-          <SmartCover
-            src={game.cover}
-            alt={game.name}
-            className="w-full aspect-[3/4] rounded-t-lg"
-          />
+          <div className="relative w-full aspect-[3/4] rounded-t-lg overflow-hidden bg-background">
+            {!coverLoaded && <CoverSkeleton />}
+            {game.cover && (
+              <img
+                ref={(el) => {
+                  if (el && el.complete) {
+                    setCoverLoaded(true);
+                  }
+                }}
+                src={game.cover}
+                alt={game.name}
+                className={`w-full h-full object-cover transition-opacity duration-300 ${coverLoaded ? "opacity-100" : "opacity-0"}`}
+                onLoad={() => setCoverLoaded(true)}
+              />
+            )}
+          </div>
         </div>
         <div className="p-3">
           <h3 className="font-semibold text-base mb-1">{game.name}</h3>

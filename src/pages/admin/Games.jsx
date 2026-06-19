@@ -9,7 +9,7 @@ import { addGameToFirestore, editGameFromFirestore, deleteGameFromFirestore } fr
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import he from "he";
-import SmartCover from "../../components/shared/SmartCover";
+import CoverSkeleton from "../../components/skeletons/CoverSkeleton";
 import SuggestionDropdown from "../../components/modals/SuggestionDropdown";
 import QuickDeveloperModal from "../../components/modals/QuickDeveloperModal";
 import { PLATFORMS, TAGS } from "../../js/config";
@@ -76,6 +76,11 @@ const AdminGames = () => {
   const [suggestionTarget, setSuggestionTarget] = useState(null);
   const [quickDevModal, setQuickDevModal] = useState({ isOpen: false, type: "", initialName: "" });
   const [releaseTba, setReleaseTba] = useState(false);
+  const [previewCoverLoaded, setPreviewCoverLoaded] = useState(false);
+
+  useEffect(() => {
+    setPreviewCoverLoaded(false);
+  }, [formData.igdb_id]);
 
   useEffect(() => {
     ensureGamesLoaded();
@@ -553,8 +558,21 @@ const AdminGames = () => {
 
                 {/* Cover Preview */}
                 <div className="bg-white/5 border border-white/10 rounded-3xl p-4 backdrop-blur-md flex flex-col items-center gap-4">
-                  <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden bg-black/40">
-                    <SmartCover src={coverMap[formData.igdb_id]} alt="Preview" className="w-full h-full" />
+                  <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden bg-black/40 relative">
+                    {!previewCoverLoaded && <CoverSkeleton />}
+                    {coverMap[formData.igdb_id] && (
+                      <img
+                        ref={(el) => {
+                          if (el && el.complete) {
+                            setPreviewCoverLoaded(true);
+                          }
+                        }}
+                        src={coverMap[formData.igdb_id]}
+                        alt="Preview"
+                        className={`w-full h-full object-cover transition-opacity duration-300 ${previewCoverLoaded ? "opacity-100" : "opacity-0"}`}
+                        onLoad={() => setPreviewCoverLoaded(true)}
+                      />
+                    )}
                   </div>
                   <p className="text-[10px] font-black uppercase text-white/20 tracking-widest">Cover Preview (from IGDB)</p>
                 </div>
@@ -711,6 +729,13 @@ const AdminGames = () => {
 
 const GameCardAdmin = memo(({ game, handleEdit, handleDelete }) => {
   const { coverMap } = useGameData();
+  const [coverLoaded, setCoverLoaded] = useState(false);
+  const coverUrl = coverMap[game.igdb_id];
+
+  useEffect(() => {
+    setCoverLoaded(false);
+  }, [coverUrl]);
+
   return (
     <motion.div
       layout
@@ -719,8 +744,21 @@ const GameCardAdmin = memo(({ game, handleEdit, handleDelete }) => {
       exit={{ opacity: 0, scale: 0.95 }}
       className="bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden backdrop-blur-sm hover:border-white/20 transition-all group p-4 flex gap-4"
     >
-      <div className="w-24 aspect-[3/4] rounded-2xl overflow-hidden bg-black/40 flex-shrink-0 shadow-lg">
-        <SmartCover src={coverMap[game.igdb_id]} alt={game.name} className="w-full h-full" />
+      <div className="w-24 aspect-[3/4] rounded-2xl overflow-hidden bg-black/40 flex-shrink-0 shadow-lg relative">
+        {!coverLoaded && <CoverSkeleton />}
+        {coverUrl && (
+          <img
+            ref={(el) => {
+              if (el && el.complete) {
+                setCoverLoaded(true);
+              }
+            }}
+            src={coverUrl}
+            alt={game.name}
+            className={`w-full h-full object-cover transition-opacity duration-300 ${coverLoaded ? "opacity-100" : "opacity-0"}`}
+            onLoad={() => setCoverLoaded(true)}
+          />
+        )}
       </div>
 
       <div className="flex-1 min-w-0 flex flex-col pt-1">

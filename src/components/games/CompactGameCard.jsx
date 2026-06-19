@@ -1,12 +1,17 @@
 import he from "he";
 import { slugify } from "../../js/utils";
-import SmartCover from "../shared/SmartCover";
-import { useMemo } from "react";
+import CoverSkeleton from "../skeletons/CoverSkeleton";
+import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useGameUI } from "../../contexts/GameUIContext";
 
 const CompactGameCard = ({ game, coverImage }) => {
   const { getPlatformsSvg } = useGameUI();
+  const [coverLoaded, setCoverLoaded] = useState(false);
+
+  useEffect(() => {
+    setCoverLoaded(false);
+  }, [coverImage]);
 
   const releaseYear = useMemo(() => {
     if (game.release_date?.seconds) {
@@ -45,12 +50,20 @@ const CompactGameCard = ({ game, coverImage }) => {
     >
       {/* Background Cover */}
       <div className="absolute inset-0 z-0">
-        <SmartCover
-          src={coverImage}
-          alt={game.name}
-          className="w-full h-full transform group-hover:scale-110 transition-transform duration-700"
-          showSkeleton={true}
-        />
+        <div className="w-full h-full relative">
+          {!coverLoaded && <CoverSkeleton />}
+          <img
+            ref={(el) => {
+              if (el && el.complete) {
+                setCoverLoaded(true);
+              }
+            }}
+            src={coverImage}
+            alt={game.name}
+            className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${coverLoaded ? "opacity-60 group-hover:opacity-80" : "opacity-0"}`}
+            onLoad={() => setCoverLoaded(true)}
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
       </div>
 

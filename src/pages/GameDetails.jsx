@@ -31,7 +31,7 @@ import he from "he";
 import CompletionModal from "../components/shared/CompletionModal";
 import ConfirmModal from "../components/modals/ConfirmModal";
 import WatchCardSmall from "../components/watch/WatchCardSmall";
-import SmartCover from "../components/shared/SmartCover";
+import CoverSkeleton from "../components/skeletons/CoverSkeleton";
 
 
 const getRatingStyle = (rating) => {
@@ -60,6 +60,7 @@ export default function GameDetails() {
   const [heroImagesLoaded, setHeroImagesLoaded] = useState({});
   const [sectionImagesLoaded, setSectionImagesLoaded] = useState({});
   const [galleryImageLoaded, setGalleryImageLoaded] = useState(false);
+  const [coverLoaded, setCoverLoaded] = useState(false);
   const [completionModalOpen, setCompletionModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [personalPlaytime, setPersonalPlaytime] = useState(null);
@@ -268,6 +269,7 @@ export default function GameDetails() {
     if (game) {
       document.title = `${he.decode(game.name || "") || "Game"} - Game Track 2025`;
     }
+    setCoverLoaded(false);
     ensureWatchLoaded();
   }, [game, ensureWatchLoaded]);
 
@@ -407,11 +409,22 @@ export default function GameDetails() {
         </div>
         <div className="px-4 md:px-6 -mt-20 md:mt-[-8rem] relative z-10 flex flex-col md:flex-row gap-6 md:gap-8 items-start">
           <div className="w-64 shrink-0 relative group self-center md:self-start">
-            <SmartCover
-              src={gameCover}
-              alt={`${game?.name} cover`}
-              className="aspect-[3/4] rounded-2xl shadow-2xl border-2 border-white/10 bg-background"
-            />
+            <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-2 border-white/10 bg-background relative w-full h-full">
+              {(isActuallyLoading || !coverLoaded) && <CoverSkeleton />}
+              {!isActuallyLoading && gameCover && (
+                <img
+                  ref={(el) => {
+                    if (el && el.complete) {
+                      setCoverLoaded(true);
+                    }
+                  }}
+                  src={gameCover}
+                  alt={`${game?.name} cover`}
+                  className={`w-full h-full object-cover transition-opacity duration-500 ${coverLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  onLoad={() => setCoverLoaded(true)}
+                />
+              )}
+            </div>
             {personalPlaytime && (
               <div className="absolute top-2 right-2 flex flex-col gap-2 items-end z-20">
                 <div className={`p-2 rounded-lg backdrop-blur-md shadow-lg border border-white/10 ${personalPlaytime.status === 'completed' ? 'bg-gradient-tertiary text-white' : 'bg-black/60 text-white'}`}>

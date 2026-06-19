@@ -6,12 +6,17 @@ import { useGameUI } from "../../contexts/GameUIContext";
 import { useGameData } from "../../contexts/GameDataContext";
 import he from "he";
 import { highlightMatch, slugify } from "../../js/utils";
-import SmartCover from "../shared/SmartCover";
+import CoverSkeleton from "../skeletons/CoverSkeleton";
 import GameTag from "./GameTag";
 
 const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [coverLoaded, setCoverLoaded] = useState(false);
+
+  useEffect(() => {
+    setCoverLoaded(false);
+  }, [coverImage]);
   const { companies } = useGameData();
   const {
     search,
@@ -121,11 +126,22 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
         <div className="min-h-0 relative z-10 border-t border-white/5">
           <div className="flex flex-col">
             <div className="flex flex-row p-4 gap-4">
-              <SmartCover
-                src={coverImage}
-                alt={game.name}
-                className="flex-shrink-0 w-32 aspect-[3/4] rounded-xl shadow-2xl border border-white/10 bg-background"
-              />
+              {coverImage && (
+                <div className="relative flex-shrink-0 w-32 aspect-[3/4] rounded-xl overflow-hidden shadow-2xl border border-white/10 bg-background">
+                  {!coverLoaded && <CoverSkeleton />}
+                  <img
+                    ref={(el) => {
+                      if (el && el.complete) {
+                        setCoverLoaded(true);
+                      }
+                    }}
+                    src={coverImage}
+                    alt={game.name}
+                    className={`w-full h-full object-cover transition-opacity duration-300 ${coverLoaded ? "opacity-100" : "opacity-0"}`}
+                    onLoad={() => setCoverLoaded(true)}
+                  />
+                </div>
+              )}
 
               <div className="flex flex-col justify-between py-1 flex-1">
                 <div className="space-y-4">
