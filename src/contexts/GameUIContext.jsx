@@ -49,7 +49,6 @@ export const GameUIProvider = ({ children }) => {
   const [opened, setOpened] = useState(false);
   const { currentUser, userData } = useAuth();
   const [isLogged, setIsLogged] = useState(false);
-  const [edit, setEdit] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [featuredOpen, setFeaturedOpen] = useState(null);
   const [gameToEdit, setGameToEdit] = useState(null);
@@ -140,7 +139,6 @@ export const GameUIProvider = ({ children }) => {
     try {
       await signOut(auth);
       setIsModalOpen(false);
-      setEdit(false);
       toast.success("See you later !");
     } catch (e) {
       console.error("Error logging out: ", e);
@@ -150,6 +148,7 @@ export const GameUIProvider = ({ children }) => {
 
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
+    setGameToEdit(null);
   }, []);
 
   const getPlatformsSvg = useCallback((platform, isCard = false) => {
@@ -247,8 +246,6 @@ export const GameUIProvider = ({ children }) => {
       setOpened,
       isLogged,
       setIsLogged,
-      edit,
-      setEdit,
       isModalOpen,
       setIsModalOpen,
       featuredOpen,
@@ -294,7 +291,6 @@ export const GameUIProvider = ({ children }) => {
       search,
       opened,
       isLogged,
-      edit,
       isModalOpen,
       setIsModalOpen,
       featuredOpen,

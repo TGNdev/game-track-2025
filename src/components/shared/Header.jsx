@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Search from "./Search";
-import { FaPlus } from "react-icons/fa";
-import { AiFillEdit } from "react-icons/ai";
 import { FiMenu } from "react-icons/fi";
 import { useGameUI } from "../../contexts/GameUIContext";
-import { useAuth } from "../../contexts/AuthContext";
 
 const Header = ({ onDrawerOpen }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -27,13 +24,8 @@ const Header = ({ onDrawerOpen }) => {
   const {
     opened, setOpened,
     setFeaturedOpen,
-    isLogged,
-    edit, setEdit,
-    openButtonRef,
-    setIsModalOpen,
     isMobile,
   } = useGameUI();
-  const { userData } = useAuth();
 
   const allowedSearchRoutes = ["/", "/leaks-rumours", "/hall-of-fame", "/game-track-2025"];
   const allowedContolsRoutes = ["/", "/game-track-2025"];
@@ -83,41 +75,6 @@ const Header = ({ onDrawerOpen }) => {
               </button>
             )}
           </div>
-          {isLogged && (
-            <div className="flex flex-row items-center gap-2">
-              {userData?.isAdmin && !edit && (
-                <button
-                  ref={openButtonRef}
-                  className="size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-secondary rounded-md"
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  <FaPlus className="block sm:hidden" />
-                  <div className="hidden sm:block">Add new game</div>
-                </button>
-              )}
-              {userData?.isAdmin && (
-                <button
-                  className={`${edit && "animate-pulse"} size-6 p-1 sm:text-sm sm:w-fit sm:py-2 sm:px-2.5 sm:flex flex-row items-center bg-gradient-tertiary rounded-md`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setEdit(prev => !prev)
-                    if (!opened && !edit) {
-                      setOpened(true);
-                    }
-                  }}
-                >
-                  {edit ? (
-                    <FaPlus className="rotate-45 block sm:hidden" />
-                  ) : (
-                    <AiFillEdit className="block sm:hidden" />
-                  )}
-                  <div className="hidden sm:block">
-                    {edit ? "Quit Edit Mode" : "Edit games"}
-                  </div>
-                </button>
-              )}
-            </div>
-          )}
         </div>
       )}
     </div>

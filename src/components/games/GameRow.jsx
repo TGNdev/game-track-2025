@@ -8,6 +8,7 @@ import he from "he";
 import { highlightMatch } from "../../js/utils";
 import { useGameUI } from "../../contexts/GameUIContext";
 import { useGameData } from "../../contexts/GameDataContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 const getRatingStyle = (rating) => {
   const baseClasses = "min-w-[40px] px-3 py-2 rounded-xl text-white text-xs flex items-center justify-center font-black shadow-lg";
@@ -22,10 +23,10 @@ const GameRow = ({ ref, game, coverImage, screenshots }) => {
   const {
     search,
     getPlatformsSvg,
-    edit,
     setGameToEdit,
     setIsModalOpen,
   } = useGameUI();
+  const { userData } = useAuth();
   const { companies } = useGameData();
 
   const resolvedDevelopers = useMemo(() => {
@@ -162,8 +163,8 @@ const GameRow = ({ ref, game, coverImage, screenshots }) => {
         </div>
       </td>
 
-      {edit && (
-        <td className="px-6 py-4 sticky right-0 bg-sticky-column z-20">
+      {userData?.isAdmin && (
+        <td className="px-6 py-4 sticky right-0 bg-sticky-glass border-l border-white/10 z-20 transition-colors">
           <div className="flex flex-row gap-2 justify-center items-center">
             <button
               onClick={(e) => {

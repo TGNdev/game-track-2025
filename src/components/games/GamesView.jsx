@@ -3,7 +3,7 @@ import GameCard from "./GameCard";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Timestamp } from "firebase/firestore";
-import { FaFilter, FaUser, FaBuilding } from "react-icons/fa";
+import { FaFilter, FaUser, FaBuilding, FaPlus } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
 import FeaturedGames from "./FeaturedGames";
 import { matchesSearch } from "../../js/utils";
@@ -14,13 +14,14 @@ import { useGameData } from "../../contexts/GameDataContext";
 import { useGameUI } from "../../contexts/GameUIContext";
 import { useNavigate } from "react-router-dom";
 import ScrollableContainer from "../shared/ScrollableContainer";
+import { useAuth } from "../../contexts/AuthContext";
 import he from "he";
 
 const GamesView = () => {
   const {
     search,
-    edit,
     isModalOpen,
+    setIsModalOpen,
     featuredOpen,
     setFeaturedOpen,
     itemsPerPage,
@@ -40,6 +41,7 @@ const GamesView = () => {
     setSelectedYear,
     setSearch,
   } = useGameUI();
+  const { userData } = useAuth();
   const {
     games,
     companies,
@@ -300,6 +302,16 @@ const GamesView = () => {
             <FaFilter className={`size-3 transition-colors ${filtersVisible ? 'text-[#b069ff]' : 'text-white/40 group-hover:text-white'}`} />
             <span>{filtersVisible ? "Hide Filters" : "Show Filters"}</span>
           </button>
+          {/* Add Game Button for Admin */}
+          {userData?.isAdmin && (
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] gap-3 px-6 py-3.5 bg-gradient-secondary rounded-full hover:shadow-green-500/20 hover:scale-105 active:scale-95 transition-all shadow-xl whitespace-nowrap"
+            >
+              <FaPlus className="size-3 text-white" />
+              <span>Add New Game</span>
+            </button>
+          )}
           {/* Search Bar */}
           <div className="relative w-full max-w-sm">
             <input
@@ -491,7 +503,7 @@ const GamesView = () => {
               <table className="w-full border-collapse min-w-[1200px]">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="px-6 py-8 sticky left-0 z-30 text-left">
+                    <th className="px-6 py-8 sticky left-0 z-30 text-left bg-sticky-glass border-r border-white/10">
                       <div className="flex flex-col gap-1">
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Game</span>
                         <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest italic opacity-60">Click for details</span>
@@ -518,8 +530,8 @@ const GamesView = () => {
                         </div>
                       </div>
                     </th>
-                    {edit && (
-                      <th className="px-6 py-8 sticky right-0 z-30">
+                    {userData?.isAdmin && (
+                      <th className="px-6 py-8 sticky right-0 z-30 bg-sticky-glass border-l border-white/10">
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Actions</span>
                       </th>
                     )}
@@ -528,7 +540,7 @@ const GamesView = () => {
                 <tbody className="divide-y divide-white/5">
                   {Array.from({ length: itemsPerPage }).map((_, idx) => (
                     <tr key={idx} className="animate-pulse">
-                      <td className="px-6 py-6 sticky left-0 z-20">
+                      <td className="px-6 py-6 sticky left-0 z-20 bg-sticky-glass border-r border-white/10">
                         <div className="flex items-center gap-6">
                           <div className="w-16 aspect-[3/4] bg-white/5 rounded-lg shrink-0 shadow-inner" />
                           <div className="space-y-2 flex-1">
@@ -541,7 +553,7 @@ const GamesView = () => {
                       <td className="px-6 py-6"><div className="h-4 bg-white/5 rounded-full w-32 mx-auto" /></td>
                       <td className="px-6 py-6"><div className="h-4 bg-white/5 rounded-full w-28 mx-auto" /></td>
                       <td className="px-6 py-6 border-l border-white/5"><div className="h-8 bg-white/5 rounded-xl w-24 mx-auto" /></td>
-                      {edit && <td className="px-6 py-6 sticky right-0 z-20"><div className="h-10 bg-white/5 rounded-xl w-20 mx-auto" /></td>}
+                      {userData?.isAdmin && <td className="px-6 py-6 sticky right-0 z-20 bg-sticky-glass border-l border-white/10"><div className="h-10 bg-white/5 rounded-xl w-20 mx-auto" /></td>}
                     </tr>
                   ))}
                 </tbody>
@@ -596,7 +608,7 @@ const GamesView = () => {
               <table className="w-full border-collapse min-w-[1200px]">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="px-6 py-8 sticky left-0 z-20 text-left">
+                    <th className="px-6 py-8 sticky left-0 z-30 text-left bg-sticky-glass border-r border-white/10">
                       <div className="flex flex-col gap-1">
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Game</span>
                         <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest italic opacity-60">Click for details</span>
@@ -623,8 +635,8 @@ const GamesView = () => {
                         </div>
                       </div>
                     </th>
-                    {edit && (
-                      <th className="px-6 py-8 sticky right-0 z-30">
+                    {userData?.isAdmin && (
+                      <th className="px-6 py-8 sticky right-0 z-30 bg-sticky-glass border-l border-white/10">
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">Actions</span>
                       </th>
                     )}

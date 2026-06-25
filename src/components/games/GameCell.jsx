@@ -39,7 +39,7 @@ function GameCell({ game, coverImage }) {
   };
 
   return (
-    <td className="px-4 py-3 sticky left-0 z-20 w-96 group/cell cursor-pointer" onClick={handleGameNavigate}>
+    <td className="px-4 py-3 sticky left-0 z-20 w-96 group/cell cursor-pointer bg-sticky-glass border-r border-white/10 transition-colors" onClick={handleGameNavigate}>
       <div className="relative flex items-center text-left gap-6">
         <div className="absolute -top-3 left-0 z-30 flex gap-1">
           {gameTags.map((tag, index) => (

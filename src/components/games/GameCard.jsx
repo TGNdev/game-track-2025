@@ -4,6 +4,7 @@ import { FiChevronDown } from "react-icons/fi";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { useGameUI } from "../../contexts/GameUIContext";
 import { useGameData } from "../../contexts/GameDataContext";
+import { useAuth } from "../../contexts/AuthContext";
 import he from "he";
 import { highlightMatch, slugify } from "../../js/utils";
 import CoverSkeleton from "../skeletons/CoverSkeleton";
@@ -22,11 +23,11 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
     search,
     getPlatformsSvg,
     opened,
-    edit,
     setIsModalOpen,
     setGameToEdit,
     activeTags
   } = useGameUI();
+  const { userData } = useAuth();
 
   const resolvedDevelopers = useMemo(() => {
     if (game.developerRefs && game.developerRefs.length > 0) {
@@ -220,7 +221,7 @@ const GameCard = ({ ref, game, forceOpen, setForceOpen, coverImage }) => {
                 <FaExternalLinkAlt className="size-3" />
                 View Details
               </button>
-              {edit && (
+              {userData?.isAdmin && (
                 <button
                   className="bg-gradient-tertiary flex items-center justify-center p-3 rounded-xl transition"
                   onClick={(e) => {

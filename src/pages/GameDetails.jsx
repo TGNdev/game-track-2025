@@ -90,7 +90,7 @@ export default function GameDetails() {
     ensureCompaniesLoaded
   } = useGameData();
 
-  const { getPlatformsSvg, isReleased, activeTags, setEdit, setIsModalOpen, setGameToEdit } = useGameUI();
+  const { getPlatformsSvg, isReleased, activeTags, setIsModalOpen, setGameToEdit } = useGameUI();
 
   const game = useMemo(() => {
     return games.find(g => slugify(g.name) === gameSlug);
@@ -511,7 +511,6 @@ export default function GameDetails() {
                   <button
                     onClick={() => {
                       setGameToEdit(game);
-                      setEdit(true);
                       setIsModalOpen(true);
                     }}
                     className="p-3 bg-white/5 border border-white/10 rounded-2xl hover:bg-amber-500/20 hover:border-amber-500/40 text-amber-500 transition-all shadow-xl group/edit shrink-0"

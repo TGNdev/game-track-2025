@@ -15,7 +15,6 @@ const Layout = ({ children }) => {
   const {
     isLogged,
     userData,
-    edit,
     isModalOpen,
     handleCloseModal,
     gameToEdit
@@ -33,7 +32,7 @@ const Layout = ({ children }) => {
 
       {isModalOpen && (
         isLogged && userData?.isAdmin ? (
-          edit ? (
+          gameToEdit ? (
             <EditGameForm
               game={gameToEdit}
               games={games}

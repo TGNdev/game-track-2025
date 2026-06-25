@@ -79,10 +79,11 @@ a div {
     background: var(--bg-background);
     background-attachment: fixed;
   }
-  .bg-sticky-column {
-    background: var(--bg-background);
-    background-attachment: fixed;
-    background-position: 0 0;
+  .bg-sticky-glass {
+    background: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)), var(--bg-background) fixed !important;
+  }
+  .group:hover .bg-sticky-glass {
+    background: linear-gradient(rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.07)), var(--bg-background) fixed !important;
   }
   .bg-gradient-primary {
     @apply bg-gradient-to-br from-[#5a8eff] to-[#b069ff] text-white shadow-lg;
