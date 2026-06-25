@@ -30,6 +30,7 @@ const IndustryWatch = () => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [articleToDelete, setArticleToDelete] = useState(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [hasNavigatedToTarget, setHasNavigatedToTarget] = useState(false);
 
   const handleManualSync = async () => {
     setIsSyncing(true);
@@ -50,16 +51,6 @@ const IndustryWatch = () => {
     ensureWatchLoaded();
   }, [ensureWatchLoaded]);
 
-  useEffect(() => {
-    if (!loadingWatch && targetId) {
-      setTimeout(() => {
-        const element = document.getElementById(targetId);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      }, 100);
-    }
-  }, [loadingWatch, targetId]);
 
   const filteredArticles = useMemo(() => {
     const combined = [
@@ -89,6 +80,33 @@ const IndustryWatch = () => {
       currentPage * itemsPerPage
     );
   }, [filteredArticles, currentPage, itemsPerPage]);
+  useEffect(() => {
+    // Reset navigated flag if targetId changes
+    setHasNavigatedToTarget(false);
+  }, [targetId]);
+
+  useEffect(() => {
+    if (!loadingWatch && targetId && filteredArticles.length > 0 && !hasNavigatedToTarget) {
+      const index = filteredArticles.findIndex(a => a.id === targetId);
+      if (index !== -1) {
+        const targetPage = Math.floor(index / itemsPerPage) + 1;
+        setCurrentPage(targetPage);
+        setHasNavigatedToTarget(true);
+      }
+    }
+  }, [loadingWatch, targetId, filteredArticles, itemsPerPage, setCurrentPage, hasNavigatedToTarget]);
+
+  useEffect(() => {
+    if (!loadingWatch && targetId && hasNavigatedToTarget) {
+      const timer = setTimeout(() => {
+        const element = document.getElementById(targetId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [loadingWatch, targetId, hasNavigatedToTarget, currentPage]);
 
   const handleSave = async (data) => {
     try {
