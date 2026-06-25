@@ -23,7 +23,7 @@ import {
   editWatchStoryCategoryFromFirestore
 } from "../js/firebase";
 import { getGameCovers, getGameScreenshots, getGameVideos, getGameTimeToBeat } from "../js/igdb";
-import { slugify } from "../js/utils";
+import { slugify, isGameRelatedToNews } from "../js/utils";
 import { toast } from "react-toastify";
 import ScreenshotSkeleton from "../components/skeletons/ScreenshotSkeleton";
 import GameTag from "../components/games/GameTag";
@@ -206,14 +206,10 @@ export default function GameDetails() {
     ];
 
     return combined.filter(a => {
-      if (a._type === 'custom') {
-        return a.gameId === game.id || a.gameName === game.name;
-      } else {
-        const gameNameLower = game.name ? game.name.toLowerCase() : "";
-        if (!gameNameLower) return false;
-        return a.title.toLowerCase().includes(gameNameLower) ||
-          a.summary.toLowerCase().includes(gameNameLower);
+      if (a._type === 'custom' && (a.gameId === game.id || a.gameName === game.name)) {
+        return true;
       }
+      return isGameRelatedToNews(game, a.title, a.summary);
     }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   }, [watch, watchStories, game]);
 

@@ -159,3 +159,98 @@ export const matchesSearch = (target, search) => {
     return false;
   });
 };
+
+export const getGameAliases = (gameName) => {
+  const aliases = [gameName];
+
+  // Normalize Roman numerals to Arabic numerals and vice versa
+  const romanToArabic = { 'i': 1, 'ii': 2, 'iii': 3, 'iv': 4, 'v': 5, 'vi': 6, 'vii': 7, 'viii': 8, 'ix': 9, 'x': 10 };
+  const arabicToRoman = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII', 8: 'VIII', 9: 'IX', 10: 'X' };
+
+  const words = gameName.split(/\s+/);
+  if (words.length > 0) {
+    const lastWord = words[words.length - 1];
+    const lastWordLower = lastWord.toLowerCase();
+
+    if (romanToArabic[lastWordLower]) {
+      const arabic = romanToArabic[lastWordLower];
+      const newName = [...words.slice(0, -1), arabic.toString()].join(" ");
+      aliases.push(newName);
+    } else if (/^\d+$/.test(lastWord)) {
+      const arabic = parseInt(lastWord);
+      if (arabicToRoman[arabic]) {
+        const roman = arabicToRoman[arabic];
+        const newName = [...words.slice(0, -1), roman].join(" ");
+        aliases.push(newName);
+      }
+    }
+
+    // Programmatic acronym generation (only for 3 or more capitalized non-roman, non-digit words)
+    const isRoman = (w) => /^[IVXLCDM]+$/i.test(w);
+    const isDigit = (w) => /^\d+$/.test(w);
+    const capWords = words.filter(w => /^[A-Z]/.test(w) && !isRoman(w) && !isDigit(w));
+
+    if (capWords.length >= 3) {
+      const acronym = capWords.map(w => w[0]).join("");
+      aliases.push(acronym);
+
+      if (romanToArabic[lastWordLower] || /^\d+$/.test(lastWord)) {
+        aliases.push(`${acronym} ${lastWord}`);
+        aliases.push(`${acronym}${lastWord}`);
+
+        if (romanToArabic[lastWordLower]) {
+          const arabic = romanToArabic[lastWordLower];
+          aliases.push(`${acronym} ${arabic}`);
+          aliases.push(`${acronym}${arabic}`);
+        } else if (/^\d+$/.test(lastWord)) {
+          const arabic = parseInt(lastWord);
+          const roman = arabicToRoman[arabic];
+          if (roman) {
+            aliases.push(`${acronym} ${roman}`);
+            aliases.push(`${acronym}${roman}`);
+          }
+        }
+      }
+    }
+  }
+
+  return Array.from(new Set(aliases.filter(Boolean)));
+};
+
+export const isGameRelatedToNews = (game, title, summary) => {
+  if (!game) return false;
+
+  const gameName = game.name ? he.decode(game.name) : "";
+  if (!gameName) return false;
+
+  const aliases = getGameAliases(gameName);
+
+  return aliases.some(alias => {
+    const escaped = alias.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+    // Case-sensitivity rule:
+    // Match case-sensitively if the alias is short (length <= 10) OR if it is a single word (no spaces).
+    // This successfully avoids false positives for single common words (inside, control)
+    // or short common phrases (if found).
+    const isCaseSensitive = alias.length <= 10 || !/\s/.test(alias);
+    const flags = isCaseSensitive ? "" : "i";
+
+    const regex = new RegExp('(?<![a-zA-Z0-9])' + escaped + '(?![a-zA-Z0-9])', flags);
+
+    // 1. If the game is mentioned in the Title, it is a primary subject!
+    if (title && regex.test(title)) {
+      return true;
+    }
+
+    // 2. If it's not in the title, it must be mentioned at least 2 times in the summary to be a primary subject.
+    if (summary) {
+      const globalRegex = new RegExp('(?<![a-zA-Z0-9])' + escaped + '(?![a-zA-Z0-9])', flags + "g");
+      const matches = summary.match(globalRegex);
+      if (matches && matches.length >= 2) {
+        return true;
+      }
+    }
+
+    return false;
+  });
+};

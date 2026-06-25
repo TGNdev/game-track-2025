@@ -1,15 +1,29 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import { motion, useScroll } from "framer-motion";
 import { FiExternalLink, FiUser, FiCalendar, FiEdit2, FiTrash2, FiLink } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { slugify } from "../../js/utils";
+import { slugify, isGameRelatedToNews } from "../../js/utils";
+import { useGameData } from "../../contexts/GameDataContext";
 import DOMPurify from "dompurify";
+import he from "he";
 
 const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
   const scrollRef = useRef(null);
   const { scrollYProgress } = useScroll({ container: scrollRef });
   const [isExpanded, setIsExpanded] = useState(false);
+  const { games } = useGameData();
+
+  const linkedGames = useMemo(() => {
+    if (!games || games.length === 0) return [];
+
+    if (article._type === 'custom' && article.gameId) {
+      const explicitGame = games.find(g => g.id === article.gameId);
+      if (explicitGame) return [explicitGame];
+    }
+
+    return games.filter(g => isGameRelatedToNews(g, article.title, article.summary));
+  }, [games, article]);
 
   const formattedDate = new Date(article.createdAt).toLocaleDateString("en-US", {
     month: "short",
@@ -144,11 +158,28 @@ const WatchCard = ({ article, onEdit, onDelete, canEdit, isHighlighted }) => {
           </div>
         </div>
 
-        <div ref={scrollRef} className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto custom-scrollbar min-h-0 flex flex-col justify-between">
           <div
-            className="prose max-w-none prose-invert text-white/70 text-sm md:text-base pb-2"
+            className="prose max-w-none prose-invert text-white/70 text-sm md:text-base pb-4"
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.summary) }}
           />
+          {linkedGames.length > 0 && (
+            <div className="shrink-0 border-t border-white/10 pt-3 mt-2 flex flex-col gap-2">
+              <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Linked Games</span>
+              <div className="flex flex-wrap gap-2">
+                {linkedGames.map(g => (
+                  <Link
+                    key={g.id}
+                    to={`/games/${slugify(g.name)}`}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white/80 hover:text-white transition-all text-xs font-bold w-fit"
+                  >
+                    <span>{he.decode(g.name)}</span>
+                    <FiExternalLink size={12} className="text-white/40" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </motion.div>
